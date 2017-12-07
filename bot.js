@@ -6,10 +6,10 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-    if (message.content === 'ping') {
-        message.reply('pong');
+    if (message.content.endsWith('ing') && message.content.match(/^[A-Za-z]+$/)) {
+        newMessage = message.content.substr(0, message.content.length - 3) + 'o' + message.content.substr(message.content.length - 2, message.content.length + 1);
+        message.reply(newMessage);
     }
 });
 
-// THIS MUST BE THIS WAY
 client.login(process.env.BOT_TOKEN);
