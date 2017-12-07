@@ -10,11 +10,11 @@ client.on('message', message => {
         return;
     }
     else if (message.content === "ting") {
-        message.channel.post("SKKKKRRRA");
-        message.channel.post("POP POP KOT KOT KOT");
-        message.channel.post("SKIBIKI POP POP... AND A PU PU PUDRRR BOOM");
-        message.channel.post("SKYA, DU DU KU KU DUN DUN");
-        message.channel.post("*POOM* *POOM*");
+        message.channel.send("SKKKKRRRA");
+        message.channel.send("POP POP KOT KOT KOT");
+        message.channel.send("SKIBIKI POP POP... AND A PU PU PUDRRR BOOM");
+        message.channel.send("SKYA, DU DU KU KU DUN DUN");
+        message.channel.send("*POOM* *POOM*");
     }
     else if (message.content.endsWith('ing') && message.content.match(/^[A-Za-z]+$/)) {
         newMessage = message.content.substr(0, message.content.length - 3) + 'o' + message.content.substr(message.content.length - 2, message.content.length + 1);
