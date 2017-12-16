@@ -1,9 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-var isReady = true;
 
 client.on('ready', () => {
-    isReady = true;
     console.log('I am ready!');
 });
 
@@ -14,16 +12,14 @@ client.on('message', message => {
     /*else if (message.content === message.channel.around.find(x => x.content === message.content)) {
         message.reply("dorse");
     }*/
-    else if (isReady && message.content === "!exposed")
+    else if (message.content === "!exposed")
     {
-        isReady = false;
         var voiceChannel = message.member.voiceChannel;
         voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile('./Exposed.mp3');
             dispatcher.on("end", end => {
-                isReady = true;
+                voiceChannel.leave();
             });
-            voiceChannel.leave();
         }).catch(error => console.log(error));
     }
     else if (message.content === "ting") {
