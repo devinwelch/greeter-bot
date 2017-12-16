@@ -10,15 +10,17 @@ client.on('message', message => {
         return;
     }
 
-    /*else if (message.content === message.channel.around.find(x => x.content === message.content)) {
+    /*else if (message.content === message.channel.fetchMessages.find()) {
         message.reply("dorse");
-    }*/
+    }
+
+    function wasRepeated(message)*/
 
     //Play the best song ever
     else if (message.content === "!exposed") {
         var voiceChannel = message.member.voiceChannel;
         voiceChannel.join().then(connection => {
-            const dispatcher = connection.playFile('./Doable.mp3');
+            const dispatcher = connection.playFile('./Exposed.mp3');
             dispatcher.on("end", end => {
                 voiceChannel.leave();
             });
@@ -34,7 +36,7 @@ client.on('message', message => {
                 message.member.voiceChannel.leave();
             });
         }).catch(error => console.log(error));
-        //message.react(thatsdoable.id);
+        message.react(message.channel.emojis.find(isDoable));
     }
 
     //Man's not hot
@@ -75,4 +77,8 @@ function isQuestion(message) {
         message.toLowerCase().startsWith("would") || 
         message.toLowerCase().startsWith("will")) &&
         message.endsWith('?');
+}
+
+function isDoable(emoji) {
+    return emoji.name === "thatsdoable" ;
 }
