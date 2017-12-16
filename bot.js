@@ -15,8 +15,7 @@ client.on('message', message => {
     }*/
 
     //Play the best song ever
-    else if (message.content === "!exposed")
-    {
+    else if (message.content === "!exposed") {
         var voiceChannel = message.member.voiceChannel;
         voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile('./Doable.mp3');
@@ -27,7 +26,7 @@ client.on('message', message => {
     }
 
     //Enforce some positivity
-    else if (isQuestion(message.content))
+    else if (message.content === "test")//isQuestion(message.content))
     {
         message.channel.send("test");
         var voiceChannel = message.member.voiceChannel;
