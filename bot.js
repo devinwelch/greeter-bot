@@ -24,7 +24,7 @@ client.on('message', message => {
     }
     else if (isQuestion(message.content))
     {
-        message.react(doable.id);
+        message.react(thatsdoable.id);
         var voiceChannel = message.member.voiceChannel;
         voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile('./Sounds/Doable.mp3');
