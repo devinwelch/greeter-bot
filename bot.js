@@ -11,7 +11,7 @@ client.on('message', message => {
     }
 
     //Stop spammers in their tracks
-    else if (message.content === message.channel.fetchMessages.find((x) => { return x.author === message.author })[-2]) {
+    else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[-2]) {
         message.reply("dorse");
     }
 
