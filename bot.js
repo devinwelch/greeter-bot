@@ -26,17 +26,15 @@ client.on('message', message => {
     }
 
     //Enforce some positivity
-    else if (message.content === "test")//isQuestion(message.content))
-    {
+    else if (isQuestion(message.content)) {
         message.channel.send("test");
-        var voiceChannel = message.member.voiceChannel;
-        voiceChannel.join().then(connection => {
+        message.member.voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile('./Doable.mp3');
             dispatcher.on("end", end => {
-                voiceChannel.leave();
+                message.member.voiceChannel.leave();
             });
         }).catch(error => console.log(error));
-        message.react(thatsdoable.id);
+        //message.react(thatsdoable.id);
     }
 
     //Man's not hot
