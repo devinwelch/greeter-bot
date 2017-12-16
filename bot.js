@@ -10,11 +10,10 @@ client.on('message', message => {
         return;
     }
 
-    /*else if (message.content === message.channel.fetchMessages.find()) {
+    //Stop spammers in their tracks
+    else if (message.content === message.channel.fetchMessages.find((x) => { return x.author === message.author })[-2]) {
         message.reply("dorse");
     }
-
-    function wasRepeated(message)*/
 
     //Play the best song ever
     else if (message.content === "!exposed") {
@@ -36,7 +35,7 @@ client.on('message', message => {
                 message.member.voiceChannel.leave();
             });
         }).catch(error => console.log(error));
-        message.react(message.channel.emojis.find(isDoable));
+        message.react(message.channel.emojis.find("isDoable"));
     }
 
     //Man's not hot
@@ -48,7 +47,7 @@ client.on('message', message => {
         message.channel.send("*POOM* *POOM*");
     }
 
-    //Ping pong!
+    //Ping pong ding dong!
     else if (message.content.endsWith('ing') && message.content.match(/^[A-Za-z]+$/)) {
         newMessage = message.content.substr(0, message.content.length - 3) + 'o' + message.content.substr(message.content.length - 2, message.content.length + 1);
         message.reply(newMessage);
@@ -77,8 +76,8 @@ function isQuestion(message) {
         message.toLowerCase().startsWith("would") || 
         message.toLowerCase().startsWith("will")) &&
         message.endsWith('?');
-}
+};
 
 function isDoable(emoji) {
     return emoji.name === "thatsdoable" ;
-}
+};
