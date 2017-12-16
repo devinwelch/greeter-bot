@@ -16,7 +16,18 @@ client.on('message', message => {
     {
         var voiceChannel = message.member.voiceChannel;
         voiceChannel.join().then(connection => {
-            const dispatcher = connection.playFile('./Exposed.mp3');
+            const dispatcher = connection.playFile('./Sounds/Exposed.mp3');
+            dispatcher.on("end", end => {
+                voiceChannel.leave();
+            });
+        }).catch(error => console.log(error));
+    }
+    else if (isQuestion(message.content))
+    {
+        message.react(doable.id);
+        var voiceChannel = message.member.voiceChannel;
+        voiceChannel.join().then(connection => {
+            const dispatcher = connection.playFile('./Sounds/Doable.mp3');
             dispatcher.on("end", end => {
                 voiceChannel.leave();
             });
@@ -49,3 +60,11 @@ client.on('message', message => {
 });
 
 client.login(process.env.BOT_TOKEN);
+
+function isQuestion(message) {
+    return (message.toLowerCase().startsWith("can") || 
+        message.toLowerCase().startsWith("could") || 
+        message.toLowerCase().startsWith("would") || 
+        message.toLowerCase().startsWith("will")) &&
+        message.endsWith('?');
+}
