@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-var isReady = false;
+var isReady = true;
 
 client.on('ready', () => {
     isReady = true;
