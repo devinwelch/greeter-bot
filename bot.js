@@ -1,13 +1,30 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+var isReady = false;
 
 client.on('ready', () => {
+    isReady = true;
     console.log('I am ready!');
 });
 
 client.on('message', message => {
     if (message.author.bot) {
         return;
+    }
+    /*else if (message.content === message.channel.around.find(x => x.content === message.content)) {
+        message.reply("dorse");
+    }*/
+    else if (isReady && message.content === "!exposed")
+    {
+        isReady = false;
+        var voiceChannel = message.member.voiceChannel;
+        voiceChannel.join().then(connection => {
+            const dispatcher = connection.playFile('./Exposed.mp3');
+            dispatcher.on("end", end => {
+                isReady = true;
+            });
+            voiceChannel.leave();
+        }).catch(error => console.log(error));
     }
     else if (message.content === "ting") {
         message.channel.send("SKKKKRRRA");
@@ -32,6 +49,7 @@ client.on('message', message => {
         }
         message.channel.send(mock);
     }
+
 });
 
 client.login(process.env.BOT_TOKEN);
