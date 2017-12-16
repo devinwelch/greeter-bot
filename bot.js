@@ -24,7 +24,7 @@ client.on('message', message => {
     }
     else if (isQuestion(message.content))
     {
-        message.react(thatsdoable.id);
+        message.channel.send("test");
         var voiceChannel = message.member.voiceChannel;
         voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile('./Sounds/Doable.mp3');
@@ -32,6 +32,7 @@ client.on('message', message => {
                 voiceChannel.leave();
             });
         }).catch(error => console.log(error));
+        message.react(thatsdoable.id);
     }
     else if (message.content === "ting") {
         message.channel.send("SKKKKRRRA");
