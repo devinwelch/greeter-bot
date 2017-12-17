@@ -6,6 +6,9 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
+    //test
+    console.log(message.channel.fetchMessages().find((x) => { return x.author === message.author }));
+
     if (message.author.bot) {
         return;
     }
@@ -35,7 +38,7 @@ client.on('message', message => {
                 message.member.voiceChannel.leave();
             });
         }).catch(error => console.log(error));
-        message.react(message.channel.emojis.find("isDoable"));
+        message.react(message.channel.client.emojis.find("isDoable"));
     }
 
     //Man's not hot
