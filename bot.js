@@ -60,15 +60,19 @@ client.on('message', message => {
                 break;
             //Nominate an AOTY
             case "nominate":
-                album = params.split(" - ")[0];
-                artist = params.split(" - ")[1];
-                console.log("stuff:" + album, artist, message.author.id); //test
-                sql.query(`SELECT * FROM albums`).then(row => {
-                    sql.query(`INSERT INTO albums (album, artist, userID) VALUES ($1, $2, $3)`, [album, artist, message.author.id]);
-                    console.log(message.author.id + " added " + params);
-                }).catch(() => {
-                    console.error;
-                });
+                if (/.+ - .+/.test(params)) {
+                    album = params.split(/ - (.+)/)[0];
+                    artist = params.split(/ - (.+)/)[1];
+                    console.log(`User ${1} added ${2} - ${3}` [message.author.id, album, artist]);
+                    sql.query(`INSERT INTO albums (album, artist, userID) VALUES ($1, $2, $3)`, [album, artist, message.author.id])
+                    .catch(() => {
+                        console.error;
+                        message.reply("ERIC ERIC ERIC");
+                    });
+                }
+                else {
+                    message.reply("Invalid format, please use: ```!nominate [album] - [artist]```");
+                }
                 break;
             default:
                 break;
