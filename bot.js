@@ -16,11 +16,11 @@ client.on('message', message => {
         if (messages[i].author === message.author && messages[i].content === message.content) {
 
         }
-    }
+    }*/
 
     if (message.author.bot) {
         return;
-    } */
+    } 
 
     //Stop spammers in their tracks
     /*else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[message.channel.fetchMessages().length - 2]) {
