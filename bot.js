@@ -1,6 +1,20 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
+const { Client } = require('pg');
+const sql = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: true
+});
+sql.connect();
+sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+    if (err) throw err;
+    for (let row of res.rows) {
+      console.log(JSON.stringify(row));
+    }
+    sql.end();
+});
+
 client.on('ready', () => {
     console.log('I am ready!');
 });
@@ -29,15 +43,42 @@ client.on('message', message => {
     }
     console.log(`we looked at ${messages.length} messages`);
 
-    //Play the best song ever
-    if (message.content === "!exposed") {
-        var voiceChannel = message.member.voiceChannel;
-        voiceChannel.join().then(connection => {
-            const dispatcher = connection.playFile('./Exposed.mp3');
-            dispatcher.on("end", end => {
-                voiceChannel.leave();
-            });
-        }).catch(error => console.log(error));
+    //!Bot commands
+    if (message.content[0] === '!') {
+        cmd = message.content.split(/[\s!]+/)[1].toLowerCase();
+        params = message.content.substring(cmd.length + 1, message.content.length).trim();
+        switch(cmd) {
+            //Play a beautiful serenade
+            case "exposed":
+                var voiceChannel = message.member.voiceChannel;
+                voiceChannel.join().then(connection => {
+                    const dispatcher = connection.playFile('./Exposed.mp3');
+                    dispatcher.on("end", end => {
+                        voiceChannel.leave();
+                    });
+                }).catch(error => console.log(error));
+                break;
+            //Nominate an AOTY
+            case "nominate":
+                album = params.split(" - ")[0];
+                artist = params.split(" - ")[1];
+                message.channel.send("stuff:" + album, artist, message.author.id); //test
+                sql.get(`SELECT * FROM database`).then(row => {
+                    sql.query("INSERT INTO albums (album, artist, userID) VALUES (?, ?, ?)", [album, artist, message.author.id]);
+                    message.channel.send("success"); //test
+                    console.log(message.author.id + " added " + params);
+                    message.channel.send(message.author.id + " added " + params);
+                }).catch(() => {
+                    console.error;
+                    sql.query("CREATE TABLE IF NOT EXISTS albums (album TEXT, artist TEXT, userID TEXT)").then(() => {
+                        message.channel.send("failure"); //test
+                        sql.query("INSERT INTO albums (album, artist, userID) VALUES (?, ?, ?)", [album, artist, message.author.id]);
+                    });
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     //Enforce some positivity
