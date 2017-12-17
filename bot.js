@@ -7,7 +7,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
     //test
-    console.log(message.channel.fetchMessages({limit:10}));
+    //console.log(message.channel.fetchMessages({limit:10}));
     console.log(message.channel.client.emojis);
 
     if (message.author.bot) {
@@ -15,9 +15,9 @@ client.on('message', message => {
     }
 
     //Stop spammers in their tracks
-    else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[message.channel.fetchMessages().length - 2]) {
+    /*else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[message.channel.fetchMessages().length - 2]) {
         message.reply("dorse");
-    }
+    }*/
 
     //Play the best song ever
     else if (message.content === "!exposed") {
