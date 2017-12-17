@@ -11,9 +11,9 @@ client.on('message', message => {
     }
 
     //Stop spammers in their tracks
-    else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[message.channel.fetchMessages() - 2]) {
+    /*else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[message.channel.fetchMessages() - 2]) {
         message.reply("dorse");
-    }
+    }*/
 
     //Play the best song ever
     else if (message.content === "!exposed") {
