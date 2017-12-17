@@ -7,7 +7,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
     //test
-    channel.fetchMessages({limit: 3})
+    message.channel.fetchMessages({limit: 3})
     .then(messages => console.log(messages))
     .catch(console.error);
 
