@@ -7,8 +7,9 @@ client.on('ready', () => {
 
 client.on('message', message => {
     //test
-    //console.log(message.channel.fetchMessages({limit:10}));
-    console.log(message.channel.client.emojis);
+    message.channel.fetchMessages({limit: 10})
+    .then(messages => console.log(`Received ${messages.size} messages`))
+    .catch(console.error);
 
     if (message.author.bot) {
         return;
@@ -32,7 +33,6 @@ client.on('message', message => {
 
     //Enforce some positivity
     else if (isQuestion(message.content)) {
-        message.channel.send("test");
         message.member.voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile('./Doable.mp3');
             dispatcher.on("end", end => {
