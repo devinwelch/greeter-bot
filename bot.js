@@ -11,6 +11,10 @@ client.on('message', message => {
         return;
     }
 
+    /* channel.fetchMessages({limit: 10})
+    .then(messages => console.log(`Received ${messages.size} messages`))
+    .catch(console.error); */
+
     //Stop spammers in their tracks
     messages = message.channel.fetchMessages({limit: 100});
     for(i = messages.length - 1; i >= 0; i--) {
