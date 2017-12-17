@@ -7,13 +7,20 @@ client.on('ready', () => {
 
 client.on('message', message => {
     //test
-    message.channel.fetchMessages().find((x) => { return x.author === message.author })
+    message.channel.fetchMessages().filter((x) => { return x.author === message.author })
     .then(messages => console.log(`Received ${messages.size} messages`))
     .catch(console.error);
 
+    /* messages = message.channel.fetchMessages();
+    for(i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].author === message.author && messages[i].content === message.content) {
+
+        }
+    }
+
     if (message.author.bot) {
         return;
-    }
+    } */
 
     //Stop spammers in their tracks
     /*else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[message.channel.fetchMessages().length - 2]) {
