@@ -25,7 +25,7 @@ client.on('message', message => {
         return;
     }
 
-    channel.fetchMessages({limit: 10})
+    message.channel.fetchMessages({limit: 10})
     .then(messages => console.log(`Received ${messages.size} messages`))
     .catch(console.error);
 
