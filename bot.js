@@ -1,21 +1,21 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-const { Client } = require('pg');
-const sql = new Client({
+var pg = require('pg');
+const sql = new pg.Client({
     connectionString: process.env.DATABASE_URL,
     ssl: true
 });
-sql.connect();
-sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+/* sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
     if (err) throw err;
     for (let row of res.rows) {
       console.log(JSON.stringify(row));
     }
     sql.end();
-});
+}); */
 
 client.on('ready', () => {
+    sql.connect();
     console.log('I am ready!');
 });
 
