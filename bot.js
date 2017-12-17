@@ -7,10 +7,16 @@ client.on('ready', () => {
 
 client.on('message', message => {
     //test
-    message.channel.fetchMessages().filter((x) => { return x.author === message.author })
-    .then(messages => console.log(`Received ${messages.size} messages`))
+    channel.fetchMessages({limit: 3})
+    .then(messages => console.log(messages))
     .catch(console.error);
 
+    //Bot self deprecation
+    if (message.author.bot) {
+        return;
+    }
+
+    //Stop spammers in their tracks
     messages = message.channel.fetchMessages();
     for(i = messages.length - 1; i >= 0; i--) {
         if (messages[i].author === message.author && messages[i].content === message.content) {
@@ -18,17 +24,8 @@ client.on('message', message => {
         }
     }
 
-    if (message.author.bot) {
-        return;
-    } 
-
-    //Stop spammers in their tracks
-    /*else if (message.content === message.channel.fetchMessages().find((x) => { return x.author === message.author })[message.channel.fetchMessages().length - 2]) {
-        message.reply("dorse");
-    }*/
-
     //Play the best song ever
-    else if (message.content === "!exposed") {
+    if (message.content === "!exposed") {
         var voiceChannel = message.member.voiceChannel;
         voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile('./Exposed.mp3');
