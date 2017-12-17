@@ -63,7 +63,7 @@ client.on('message', message => {
                 album = params.split(" - ")[0];
                 artist = params.split(" - ")[1];
                 console.log("stuff:" + album, artist, message.author.id); //test
-                sql.query(`SELECT * FROM database`).then(row => {
+                sql.query(`SELECT * FROM albums`).then(row => {
                     sql.query(`INSERT INTO albums (album, artist, userID) VALUES ($1, $2, $3)`, [album, artist, message.author.id]);
                     console.log(message.author.id + " added " + params);
                 }).catch(() => {
