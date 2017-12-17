@@ -7,7 +7,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
     //test
-    console.log(message.channel.fetchMessages().find((x) => { return x.author === message.author }));
+    console.log(message.channel.fetchMessages({limit:10}));
 
     if (message.author.bot) {
         return;
