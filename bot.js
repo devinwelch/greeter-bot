@@ -19,8 +19,13 @@ client.on('message', message => {
     //Stop spammers in their tracks
     messages = message.channel.fetchMessages();
     for(i = messages.length - 1; i >= 0; i--) {
-        if (messages[i].author === message.author && messages[i].content === message.content) {
-            message.reply("dorse");
+        if (messages[i].author === message.author) {
+            console.log(`Author: ${messages[i].author}`);
+            if (messages[i].content === message.content) {
+                console.log(`Previous: ${message.id}, Comparing:${messages[i].id}`);
+                message.reply("dorse");
+            }
+            break;
         }
     }
 
