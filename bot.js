@@ -11,12 +11,12 @@ client.on('message', message => {
     .then(messages => console.log(`Received ${messages.size} messages`))
     .catch(console.error);
 
-    /* messages = message.channel.fetchMessages();
+    messages = message.channel.fetchMessages();
     for(i = messages.length - 1; i >= 0; i--) {
         if (messages[i].author === message.author && messages[i].content === message.content) {
-
+            message.reply("dorse");
         }
-    }*/
+    }
 
     if (message.author.bot) {
         return;
