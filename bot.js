@@ -23,7 +23,7 @@ client.on('message', message => {
             break;
         }
     }
-    console.log("we looked");
+    console.log(`we looked at ${messages.length} messages`);
 
     //Play the best song ever
     if (message.content === "!exposed") {
