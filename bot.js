@@ -8,6 +8,7 @@ client.on('ready', () => {
 client.on('message', message => {
     //test
     console.log(message.channel.fetchMessages({limit:10}));
+    console.log(message.channel.client.emojis);
 
     if (message.author.bot) {
         return;
@@ -38,7 +39,7 @@ client.on('message', message => {
                 message.member.voiceChannel.leave();
             });
         }).catch(error => console.log(error));
-        message.react(message.channel.client.emojis.find("thatsDoable"));
+        message.react(message.channel.client.emojis.find(isDoable));
     }
 
     //Man's not hot
