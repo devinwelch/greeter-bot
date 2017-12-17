@@ -7,7 +7,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
     //test
-    message.channel.fetchMessages({limit: 10})
+    message.channel.fetchMessages().find((x) => { return x.author === message.author })
     .then(messages => console.log(`Received ${messages.size} messages`))
     .catch(console.error);
 
