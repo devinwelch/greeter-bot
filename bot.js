@@ -38,7 +38,7 @@ client.on('message', message => {
                 message.member.voiceChannel.leave();
             });
         }).catch(error => console.log(error));
-        message.react(message.channel.client.emojis.find("isDoable"));
+        message.react(message.channel.client.emojis.find("thatsDoable"));
     }
 
     //Man's not hot
