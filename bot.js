@@ -6,12 +6,7 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-    //test
-    message.channel.fetchMessages({limit: 3})
-    .then(messages => console.log(messages))
-    .catch(console.error);
-
-    //Bot self deprecation
+    //Bots don't talk to bots
     if (message.author.bot) {
         return;
     }
@@ -28,6 +23,7 @@ client.on('message', message => {
             break;
         }
     }
+    console.log("we looked");
 
     //Play the best song ever
     if (message.content === "!exposed") {
