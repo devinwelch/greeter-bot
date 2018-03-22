@@ -30,7 +30,9 @@ client.on('message', message => {
     .catch(console.error);*/
 
     //Stop spammers in their tracks
-    messagesList = message.channel.fetchMessages({limit: 100});
+    messagesList = message.channel.fetchMessages({limit: 100})
+        .then(messages => messagesList = messages)
+        .catch(console.error);
     for(i = messagesList.length - 1; i >= 0; i--) {
         if (messagesList[i].author === message.author) {
             console.log(`Author: ${messagesList[i].author}`);
