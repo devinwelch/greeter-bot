@@ -30,18 +30,18 @@ client.on('message', message => {
     .catch(console.error);*/
 
     //Stop spammers in their tracks
-    messages = message.channel.fetchMessages({limit: 100});
-    for(i = messages.length - 1; i >= 0; i--) {
-        if (messages[i].author === message.author) {
-            console.log(`Author: ${messages[i].author}`);
-            if (messages[i].content === message.content) {
-                console.log(`Previous: ${message.id}, Comparing:${messages[i].id}`);
+    messagesList = message.channel.fetchMessages({limit: 100});
+    for(i = messagesList.length - 1; i >= 0; i--) {
+        if (messagesList[i].author === message.author) {
+            console.log(`Author: ${messagesList[i].author}`);
+            if (messagesList[i].content === message.content) {
+                console.log(`Previous: ${message.id}, Comparing:${messagesList[i].id}`);
                 message.reply("dorse");
             }
             return;
         }
     }
-    console.log(`we looked at ${messages.length} messages`);
+    console.log(`we looked at ${messagesList.length} messages`);
 
     //!Bot commands
     if (message.content[0] === '!') {
