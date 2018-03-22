@@ -31,19 +31,9 @@ client.on('message', message => {
 
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
-        .then(messages => messagesList = messages)
+        .then(messages => checkForDorse(message, messages.values()))
         .catch(console.error);
-    for(i = messagesList.length - 1; i >= 0; i--) {
-        if (messagesList[i].author === message.author) {
-            console.log(`Author: ${messagesList[i].author}`);
-            if (messagesList[i].content === message.content) {
-                console.log(`Previous: ${message.id}, Comparing:${messagesList[i].id}`);
-                message.reply("dorse");
-            }
-            return;
-        }
-    }
-    console.log(`we looked at ${messagesList.length} messages`);
+    
 
     //!Bot commands
     if (message.content[0] === '!') {
@@ -140,3 +130,17 @@ function isQuestion(message) {
 function isDoable(emoji) {
     return emoji.name === "thatsdoable" ;
 };
+
+function checkForDorse(message, messages) {
+    for(i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].author === message.author) {
+            console.log(`Author: ${messages[i].author}`);
+            if (messages[i].content === message.content) {
+                console.log(`Previous: ${message.id}, Comparing:${messages[i].id}`);
+                message.reply("dorse");
+            }
+            return;
+        }
+    }
+    console.log(`we looked at ${messages.length} messages`);
+}
