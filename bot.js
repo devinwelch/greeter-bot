@@ -30,7 +30,7 @@ client.on('message', message => {
     .catch(console.error);*/
 
     //Stop spammers in their tracks
-    /* messages = message.channel.fetchMessages({limit: 100});
+    messages = message.channel.fetchMessages({limit: 100});
     for(i = messages.length - 1; i >= 0; i--) {
         if (messages[i].author === message.author) {
             console.log(`Author: ${messages[i].author}`);
@@ -38,10 +38,10 @@ client.on('message', message => {
                 console.log(`Previous: ${message.id}, Comparing:${messages[i].id}`);
                 message.reply("dorse");
             }
-            break;
+            return;
         }
     }
-    console.log(`we looked at ${messages.length} messages`); */
+    console.log(`we looked at ${messages.length} messages`);
 
     //!Bot commands
     if (message.content[0] === '!') {
