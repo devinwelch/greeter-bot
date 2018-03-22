@@ -25,9 +25,9 @@ client.on('message', message => {
         return;
     }
 
-    message.channel.fetchMessages({limit: 10})
+    /*message.channel.fetchMessages({limit: 10})
     .then(messages => console.log(`Received ${messages.size} messages`))
-    .catch(console.error);
+    .catch(console.error);*/
 
     //Stop spammers in their tracks
     /* messages = message.channel.fetchMessages({limit: 100});
@@ -103,6 +103,11 @@ client.on('message', message => {
     else if (message.content.endsWith('ing') && message.content.match(/^[A-Za-z]+$/)) {
         newMessage = message.content.substr(0, message.content.length - 3) + 'o' + message.content.substr(message.content.length - 2, message.content.length + 1);
         message.reply(newMessage);
+    }
+
+    //Don't make fun of links
+    else if (message.content.toUpperCase().startsWith('HTTP')) {
+        return;
     }
 
     //Random chance to make fun of you
