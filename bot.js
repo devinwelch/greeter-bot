@@ -132,6 +132,7 @@ function isDoable(emoji) {
 };
 
 function checkForDorse(message, messages) {
+    console.log(messages);
     for(i = messages.length - 1; i >= 0; i--) {
         if (messages[i].author === message.author) {
             console.log(`Author: ${messages[i].author}`);
