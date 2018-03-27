@@ -25,9 +25,10 @@ client.on('message', message => {
         return;
     }
 
-    /*message.channel.fetchMessages({limit: 10})
-    .then(messages => console.log(`Received ${messages.size} messages`))
-    .catch(console.error);*/
+    //Temporary punishment
+    else if (message.createdTimestamp < 1522273178284 && message.author.username === "Wuju") {
+        message.react(message.channel.client.emojis.find(isWuju));
+    }
 
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
@@ -128,10 +129,15 @@ function isQuestion(message) {
 };
 
 function isDoable(emoji) {
-    return emoji.name === "thatsdoable" ;
+    return emoji.name === "thatsdoable";
 };
 
+function isWuju(emoji) {
+    return emoji.name === "DownyBrownie";
+}
+
 function checkForDorse(message, messages) {
+    return; //Don't do this until I figure out how to iterate through the messages
     console.log(messages);
     for(i = messages.length - 1; i >= 0; i--) {
         if (messages[i].author === message.author) {
