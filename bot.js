@@ -153,3 +153,23 @@ function checkForDorse(message, messages) {
     }
     console.log(`we looked at ${messages.length} messages`);
 }
+
+function isItChristian() {
+    swears = ['anal','arse','ass','ballsack','balls','bastard','bitch',
+    'biatch','anus','bloody','blowjob','blow job','bollock','bollok',
+    'boner','boob','bugger','bum','butt','buttplug','clitoris','cock',
+    'coon','crap','cunt','damn','dick','dildo','dyke','fag','feck',
+    'fellate','fellatio','felching','fuck','fudgepacker','fudge packer',
+    'flange','goddamn','hell','homo','jerk','jizz','knobend','labia',
+    'lmao','lmfao','muff','nigger','nigga','omg','penis','piss','poop',
+    'prick','pube','pussy','queer','scrotum','sex','shit','slut','smegma',
+    'spunk','tit','tosser','turd','twat','vagina','wank','whore','wtf']
+
+    for (i = 0; i < swears.length; i++) {
+        if (message.toLowerCase().indexOf(swears[i]) !== -1) {
+            return;
+        }
+    }
+   
+    message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
+}
