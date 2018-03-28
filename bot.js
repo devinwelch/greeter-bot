@@ -43,7 +43,7 @@ client.on('message', message => {
         switch(cmd) {
             //Play a beautiful serenade
             case "exposed":
-                playSong('./Exposed.mp3');
+                playSong(message, './Exposed.mp3');
                 break;
             //Nominate an AOTY
             case "nominate":
@@ -67,12 +67,12 @@ client.on('message', message => {
     }
 
     else if (message.content.toLowerCase() === "all women are queens") {
-        playSong('./Queens.mp3');
+        playSong(message, './Queens.mp3');
     }
 
     //Enforce some positivity
     else if (isQuestion(message.content)) {
-        playSong('./Doable.mp3');
+        playSong(message, './Doable.mp3');
         message.react(message.channel.client.emojis.find(isDoable));
     }
 
@@ -113,7 +113,7 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-function playSong(song) {
+function playSong(message, song) {
     message.member.voiceChannel.join().then(connection => {
         const dispatcher = connection.playFile(song);
         dispatcher.on("end", end => {
