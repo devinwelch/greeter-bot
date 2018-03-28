@@ -76,7 +76,13 @@ client.on('message', message => {
         message.react(message.channel.client.emojis.find(isDoable));
     }
 
+    //What the HECK!!!!
     else if (isItChristian(message));
+
+    //henlo fren
+    else if (message.content === "@greeter-bot") {
+        message.reply("sup chromie homie?");
+    }
 
     //Man's not hot
     else if (message.content === "ting") {
