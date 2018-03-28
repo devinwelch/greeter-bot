@@ -26,9 +26,9 @@ client.on('message', message => {
     }
 
     //Temporary punishment
-    else if (message.createdTimestamp < 1522273178284 && message.author.username === "Wuju") {
+    /*else if (message.createdTimestamp < 1522273178284 && message.author.username === "Wuju") {
         message.react(message.channel.client.emojis.find(isWuju));
-    }
+    }*/
 
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
@@ -43,13 +43,7 @@ client.on('message', message => {
         switch(cmd) {
             //Play a beautiful serenade
             case "exposed":
-                var voiceChannel = message.member.voiceChannel;
-                voiceChannel.join().then(connection => {
-                    const dispatcher = connection.playFile('./Exposed.mp3');
-                    dispatcher.on("end", end => {
-                        voiceChannel.leave();
-                    });
-                }).catch(error => console.log(error));
+                playSong('./Exposed.mp3');
                 break;
             //Nominate an AOTY
             case "nominate":
@@ -72,14 +66,13 @@ client.on('message', message => {
         }
     }
 
+    else if (message.content.toLowerCase() === "all women are queens") {
+        playSong('./Queens.mp3');
+    }
+
     //Enforce some positivity
     else if (isQuestion(message.content)) {
-        message.member.voiceChannel.join().then(connection => {
-            const dispatcher = connection.playFile('./Doable.mp3');
-            dispatcher.on("end", end => {
-                message.member.voiceChannel.leave();
-            });
-        }).catch(error => console.log(error));
+        playSong('./Doable.mp3');
         message.react(message.channel.client.emojis.find(isDoable));
     }
 
@@ -119,6 +112,15 @@ client.on('message', message => {
 });
 
 client.login(process.env.BOT_TOKEN);
+
+function playSong(song) {
+    message.member.voiceChannel.join().then(connection => {
+        const dispatcher = connection.playFile(song);
+        dispatcher.on("end", end => {
+            message.member.voiceChannel.leave();
+        });
+    }).catch(error => console.log(error));
+}
 
 function isQuestion(message) {
     return (message.toLowerCase().startsWith("can") || 
