@@ -25,6 +25,11 @@ client.on('message', message => {
         return;
     }
 
+    //henlo fren
+    if (message.content.indexOf('@greeter-bot') !== -1) {
+        message.reply("sup chromie homie?");
+    }
+
     //Temporary punishment
     /*else if (message.createdTimestamp < 1522273178284 && message.author.username === "Wuju") {
         message.react(message.channel.client.emojis.find(isWuju));
@@ -78,11 +83,6 @@ client.on('message', message => {
 
     //What the HECK!!!!
     else if (isItChristian(message));
-
-    //henlo fren
-    else if (message.content === "@greeter-bot") {
-        message.reply("sup chromie homie?");
-    }
 
     //Man's not hot
     else if (message.content === "ting") {
