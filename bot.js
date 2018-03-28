@@ -168,7 +168,7 @@ function isItChristian(message) {
     'spunk','tit','tosser','turd','twat','vagina','wank','whore','wtf']
 
     for (i = 0; i < swears.length; i++) {
-        if (message.toLowerCase().indexOf(swears[i]) !== -1) {
+        if (message.content.toLowerCase().indexOf(swears[i]) !== -1) {
             return true;
         }
     }
