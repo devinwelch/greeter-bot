@@ -76,6 +76,8 @@ client.on('message', message => {
         message.react(message.channel.client.emojis.find(isDoable));
     }
 
+    else if (!isItChristian(message));
+
     //Man's not hot
     else if (message.content === "ting") {
         message.channel.send("SKKKKRRRA");
@@ -154,7 +156,7 @@ function checkForDorse(message, messages) {
     console.log(`we looked at ${messages.length} messages`);
 }
 
-function isItChristian() {
+function isItChristian(message) {
     swears = ['anal','arse','ass','ballsack','balls','bastard','bitch',
     'biatch','anus','bloody','blowjob','blow job','bollock','bollok',
     'boner','boob','bugger','bum','butt','buttplug','clitoris','cock',
@@ -167,9 +169,11 @@ function isItChristian() {
 
     for (i = 0; i < swears.length; i++) {
         if (message.toLowerCase().indexOf(swears[i]) !== -1) {
-            return;
+            return true;
         }
     }
    
     message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
+
+    return false;
 }
