@@ -22,9 +22,6 @@ client.on('ready', () => {
 client.on('message', message => {
     //Bots don't talk to bots
     if (message.author.bot) {
-        if (message.content.startsWith("New poll! ")) {
-            
-        }
         return;
     }
 
@@ -72,8 +69,7 @@ client.on('message', message => {
             case "poll":
                 options = params.split(/ - /);
                 message.channel.send("New poll!\n" + options[0] + "\n:red_circle: - " + options[1] + "\n:large_blue_circle: - " + options[2])
-                .then(poll => poll.react('🔴'))
-                .then(poll => poll.react('🔵'))
+                .then(poll => poll.pollReactions)
                 .catch(console.error);
                 break;
             case "help":
@@ -158,12 +154,9 @@ function isWuju(emoji) {
     return emoji.name === "DownyBrownie";
 }
 
-function isRed(emoji) {
-    return emoji.name === "red_circle";
-}
-
-function isBlue(emoji) {
-    return emoji.name === "large_blue_circle";
+function pollReactions(message) {
+    message.react('🔴');
+    message.react('🔵');
 }
 
 function checkForDorse(message, messages) {
