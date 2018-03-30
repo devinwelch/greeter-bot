@@ -22,6 +22,10 @@ client.on('ready', () => {
 client.on('message', message => {
     //Bots don't talk to bots
     if (message.author.bot) {
+        if (message.content.startsWith("New poll! ")) {
+            message.react(message.channel.client.emojis.find(isRed));
+            message.react(message.channel.client.emojis.find(isBlue));
+        }
         return;
     }
 
@@ -65,6 +69,12 @@ client.on('message', message => {
                 else {
                     message.reply("Invalid format, please use: ```!nominate [album] - [artist]```");
                 }
+                break;
+            case "poll":
+                options = params.split(/ - /);
+                message.channel.send("New poll! " + options[0] + "\nPress :red_circle: to vote for " + options[1] + " or\n:large_blue_circle: to vote for " + options[2]);
+                break;
+            case "help":
                 break;
             default:
                 break;
@@ -144,6 +154,14 @@ function isDoable(emoji) {
 
 function isWuju(emoji) {
     return emoji.name === "DownyBrownie";
+}
+
+function isRed(emoji) {
+    return emoji.name === "red_circle";
+}
+
+function isBlue(emoji) {
+    return emoji.name === "large_blue_circle";
 }
 
 function checkForDorse(message, messages) {
