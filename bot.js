@@ -23,8 +23,7 @@ client.on('message', message => {
     //Bots don't talk to bots
     if (message.author.bot) {
         if (message.content.startsWith("New poll! ")) {
-            message.react('🔴');
-            message.react('🔵');
+            
         }
         return;
     }
@@ -72,7 +71,10 @@ client.on('message', message => {
                 break;
             case "poll":
                 options = params.split(/ - /);
-                message.channel.send("New poll!\n" + options[0] + "\n:red_circle: - " + options[1] + "\n:large_blue_circle: - " + options[2]);
+                message.channel.send("New poll!\n" + options[0] + "\n:red_circle: - " + options[1] + "\n:large_blue_circle: - " + options[2])
+                .then(poll => poll.react('🔴'))
+                .then(poll => poll.react('🔵'))
+                .catch(console.error);
                 break;
             case "help":
                 break;
