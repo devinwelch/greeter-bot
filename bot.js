@@ -69,7 +69,7 @@ client.on('message', message => {
             case "poll":
                 options = params.split(/ - /);
                 message.channel.send("New poll!\n" + options[0] + "\n:red_circle: - " + options[1] + "\n:large_blue_circle: - " + options[2])
-                .then(poll => poll.pollReactions)
+                .then(poll => poll.pollReactions())
                 .catch(console.error);
                 break;
             case "help":
