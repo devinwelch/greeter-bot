@@ -163,15 +163,15 @@ function checkForDorse(message, messages) {
 }
 
 function isItChristian(message) {
-    swears = ['anal','arse','ass','ballsack','balls','bastard','bitch',
-    'biatch','anus','bloody','blowjob','blow job','bollock','bollok',
-    'boner','boob','bugger','bum','butt','buttplug','clitoris','cock',
-    'coon','crap', 'cuck','cunt','damn','dick','dildo','dyke','fag','feck',
+    swears = ['anal','arse',' ass ','asshole','balls','bastard','bitch',
+    'biatch','anus','bloody','blowjob','blow job','bollock','boner',
+    'boob','bugger','bum','butt','clitoris','cock','coon','crap',
+    'cuck','cunt','damn','dick','dildo','dyke','fag','feck','todger',
     'fellate','fellatio','felching','fuck','fudgepacker','fudge packer',
-    'flange','goddamn','hell','homo','jerk','jizz','knobend','labia',
+    'flange','goddamn','hell','homo','jizz','knobend','labia','wtf',
     'lmao','lmfao','muff','nigger','nigga','omg','penis','piss','poop',
     'prick','pube','pussy','queer','scrotum','sex','shit','slut','smegma',
-    'spunk','thot','tit','tosser','turd','twat','vagina','wank','whore','wtf']
+    'spunk','thot','tit','tosser','turd','twat','vagina','wank','whore']
 
     badWord = false;
 
@@ -185,3 +185,10 @@ function isItChristian(message) {
     
     return badWord;
 }
+
+//TODO:
+/*
+Calculate GBPs
+- for swearing
+!punish
+*/
