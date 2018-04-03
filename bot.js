@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-/* var pg = require('pg');
+/* SQL stuff not working, keep it here for now
+var pg = require('pg');
 const sql = new pg.Client({
     connectionString: process.env.DATABASE_URL,
     ssl: true
@@ -20,8 +21,8 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-    //Bots don't talk to bots
-    if (message.author.bot) {
+    //Bots don't talk to bots nor links
+    if (message.author.bot || message.content.toUpperCase().startsWith('HTTP')) {
         return;
     }
 
@@ -118,6 +119,12 @@ client.on('message', message => {
         }
     }
 
+    
+    //What the HECK!!!!
+    else if (isNotChristian(message)) {
+        message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
+    }
+
     //The never-ending debate
     else if (message.content.toLowerCase() === "all women are queens") {
         playSong(message, './Queens.mp3');
@@ -128,9 +135,6 @@ client.on('message', message => {
         playSong(message, './Doable.mp3');
         message.react(message.channel.client.emojis.find(isDoable));
     }
-
-    //What the HECK!!!!
-    else if (isItChristian(message));
 
     //Man's not hot
     else if (message.content === "ting") {
@@ -145,11 +149,6 @@ client.on('message', message => {
     else if (message.content.endsWith('ing') && message.content.match(/^[A-Za-z]+$/)) {
         newMessage = message.content.substr(0, message.content.length - 3) + 'o' + message.content.substr(message.content.length - 2, message.content.length + 1);
         message.reply(newMessage);
-    }
-
-    //Don't make fun of links
-    else if (message.content.toUpperCase().startsWith('HTTP')) {
-        return;
     }
 
     //Random chance to make fun of you
@@ -194,8 +193,8 @@ function isDoable(emoji) {
 };
 
 function pollReactions(message) {
-    message.react('🔵');
     message.react('🔴');
+    message.react('🔵');
 }
 
 function checkForDorse(message, messages) {
@@ -204,7 +203,7 @@ function checkForDorse(message, messages) {
     }
 }
 
-function isItChristian(message) {
+function isNotChristian(message) {
     swears = ['anal','arse',' ass ','asshole','balls','bastard','bitch',
     'biatch','anus','bloody','blowjob','blow job','bollock','boner',
     'boob','bugger','bum','butt','clitoris','cock','coon','crap',
@@ -215,17 +214,13 @@ function isItChristian(message) {
     'prick','pube','pussy','queer','scrotum','sex','shit','slut','smegma',
     'spunk','thot','tit','tosser','turd','twat','vagina','wank','whore']
 
-    badWord = false;
-
     for (i = 0; i < swears.length; i++) {
         if (message.content.toLowerCase().indexOf(swears[i]) !== -1) {
-            badWord = true;
-            message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
-            break;
+            return true;
         }
     }
     
-    return badWord;
+    return false;
 }
 
 /*TODO:
