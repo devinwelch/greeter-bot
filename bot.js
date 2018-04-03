@@ -66,13 +66,33 @@ client.on('message', message => {
                     message.reply("Invalid format, please use: ```!nominate [album] - [artist]```");
                 }
                 break;
+            //Create a poll with reactions
             case "poll":
                 options = params.split(/ - /);
                 message.channel.send("New poll!\n" + options[0] + "\n:red_circle: - " + options[1] + "\n:large_blue_circle: - " + options[2])
                 .then(poll => pollReactions(poll))
                 .catch(console.error);
                 break;
+            //Find out what greeter-bot can do
             case "help":
+                switch(params[0].replace('!', '')) {
+                    case null:
+                    case "":
+                        message.channel.send("Available commands: !exposed, !nominate, !poll\nUse ```!help [command name]``` to find out more about a specific command.");
+                        break;
+                    case "exposed":
+                        message.channel.send("Play a beautiful serenade in the voice channel the user is currently in");
+                        break;
+                    case "nominate":
+                        message.channel.send("Use: ```!nominate [album] - [artist]```\nNominate an album of the year, only to be given an error back. Blame Bus.");
+                        break;
+                    case "poll":
+                        message.channel.send("Use: ```!poll - [question] - [option 1] - [option 2]\nCreate a poll to be voted on using reactions. This will be fleshed out more later.");
+                        break;
+                    default:
+                        message.channel.send("Command not found. Use ```!help``` for list of available commands.");
+                        break;
+                }
                 break;
             default:
                 break;
@@ -155,8 +175,8 @@ function isWuju(emoji) {
 }
 
 function pollReactions(message) {
-    message.react('🔴');
     message.react('🔵');
+    message.react('🔴');
 }
 
 function checkForDorse(message, messages) {
