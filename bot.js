@@ -63,7 +63,7 @@ client.on('message', message => {
                     });
                 }
                 else {
-                    message.reply("Invalid format, please use: ```!nominate [album] - [artist]```");
+                    message.reply("Invalid format, use **!help** for more information.");
                 }
                 break;
             //Create a poll with reactions
@@ -75,9 +75,16 @@ client.on('message', message => {
                 break;
             //For D&D nerds mostly
             case "roll":
-                numbers = params.replace('d', '').split(/-/);
-                roll = Math.floor(Math.random() * numbers[numbers.length - 1]) + numbers[1] != null ? numbers[0] : 1;
-                message.channel.send(message.author.username + " rolled a **" + roll + "**");
+                if (/d?\d+-?\d*/) {
+                    numbers = params.replace('d', '').split(/-/);
+                    max = numbers.length === 2 ? Number(numbers[1]) : Number(numbers[0]);
+                    min = numbers.length === 2 ? Number(numbers[0]) : 1;
+                    roll = Math.floor(Math.random() * (max - min)) + min;
+                    message.channel.send(message.author.username + " rolled a **" + roll + "**");
+                }
+                else {
+                    message.reply("Invalid format, use **!help** for more information.");
+                }
                 break;
             //Find out what greeter-bot can do
             case "help":
