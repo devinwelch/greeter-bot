@@ -15,7 +15,7 @@ sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err
 }); */
 
 client.on('ready', () => {
-    sql.connect();
+    //sql.connect();
     console.log('I am ready!');
 });
 
@@ -240,8 +240,18 @@ function isItChristian(message) {
 }
 
 /*TODO:
+
+Ideas
+-----
 Calculate GBPs
 - for swearing
 !punish
 connect 4
+
+Code
+----
+String resources
+refactor god class
+caching
+
 */
