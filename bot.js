@@ -26,7 +26,7 @@ client.on('message', message => {
     }
 
     //henlo fren
-    if (message.isMemberMentioned(message.guild.members.find('username', 'greeter-bot'))) {
+    if (message.isMemberMentioned(message.guild.members.find('user.username', 'greeter-bot'))) {
         message.reply("sup chromie homie?");
     }
 
@@ -37,9 +37,8 @@ client.on('message', message => {
 
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
-        .then(messages => checkForDorse(message, messages.values()))
+        .then(messages => checkForDorse(message, messages.findAll('author', message.author)))
         .catch(console.error);
-    
 
     //!Bot commands
     if (message.content[0] === '!') {
@@ -200,19 +199,10 @@ function pollReactions(message) {
 }
 
 function checkForDorse(message, messages) {
-    return; //Don't do this until I figure out how to iterate through the messages
     console.log(messages);
-    for(i = messages.length - 1; i >= 0; i--) {
-        if (messages[i].author === message.author) {
-            console.log(`Author: ${messages[i].author}`);
-            if (messages[i].content === message.content) {
-                console.log(`Previous: ${message.id}, Comparing:${messages[i].id}`);
-                message.reply("dorse");
-            }
-            return;
-        }
+    if (messages.length > 1 && messages[1].content == message.content) {
+        message.reply("dorse");
     }
-    console.log(`we looked at ${messages.length} messages`);
 }
 
 function isItChristian(message) {
