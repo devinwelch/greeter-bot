@@ -75,11 +75,11 @@ client.on('message', message => {
                 break;
             //For D&D nerds mostly
             case "roll":
-                if (/d?\d+-?\d*/) {
+                if (/d?\d+-?\d*/.test(params)) {
                     numbers = params.replace('d', '').split(/-/);
                     max = numbers.length === 2 ? Number(numbers[1]) : Number(numbers[0]);
                     min = numbers.length === 2 ? Number(numbers[0]) : 1;
-                    roll = Math.floor(Math.random() * (max - min)) + min;
+                    roll = Math.floor(Math.random() * (max - min + 1)) + min;
                     message.channel.send(message.author.username + " rolled a **" + roll + "**");
                 }
                 else {
