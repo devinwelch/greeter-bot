@@ -26,9 +26,9 @@ client.on('message', message => {
     }
 
     //henlo fren
-    if (message.isMemberMentioned(message.guild.members.find('user.username', 'greeter-bot'))) {
+    /*if (message.isMemberMentioned(message.guild.members.find('user.username', 'greeter-bot'))) {
         message.reply("sup chromie homie?");
-    }
+    }*/
 
     //Temporary punishment
     /*else if (message.createdTimestamp < 1522273178284 && message.author.username === "Wuju") {
