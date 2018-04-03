@@ -91,7 +91,7 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!exposed**, **!nominate**, and **!poll**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        message.channel.send("Available commands: **!exposed**, **!nominate**, **!poll**, and **!roll**. Use:\n```!help [command name]``` to find out more about a specific command.");
                         break;
                     case "exposed":
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
