@@ -199,7 +199,6 @@ function pollReactions(message) {
 }
 
 function checkForDorse(message, messages) {
-    console.log(messages);
     if (messages.length > 1 && messages[1].content == message.content) {
         message.reply("dorse");
     }
