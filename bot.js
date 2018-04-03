@@ -97,7 +97,7 @@ client.on('message', message => {
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
                         break;
                     case "help":
-                        helpResponse = spongeMock("My name is " + message.author.userName + " and I think I'm soooo clever.");
+                        helpResponse = spongeMock("My name is " + message.author.username + " and I think I'm soooo clever.");
                         message.channel.send(helpResponse);
                         break;
                     case "nominate":
