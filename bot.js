@@ -75,7 +75,7 @@ client.on('message', message => {
                 break;
             //Find out what greeter-bot can do
             case "help":
-                switch(options[0].replace('!', '')) {
+                switch(params.replace('!', '')) {
                     case null:
                     case "":
                         message.channel.send("Available commands: !exposed, !nominate, !poll\nUse ```!help [command name]``` to find out more about a specific command.");
