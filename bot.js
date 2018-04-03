@@ -73,6 +73,12 @@ client.on('message', message => {
                 .then(poll => pollReactions(poll))
                 .catch(console.error);
                 break;
+            //For D&D nerds mostly
+            case "roll":
+                numbers = params.replace('d', '').split(/-/);
+                roll = Math.floor(Math.random() * numbers[numbers.length - 1]) + numbers[1] != null ? numbers[0] : 1;
+                message.channel.send(message.author.username + " rolled a **" + roll + "**");
+                break;
             //Find out what greeter-bot can do
             case "help":
                 switch(params.replace('!', '')) {
@@ -81,13 +87,20 @@ client.on('message', message => {
                         message.channel.send("Available commands: **!exposed**, **!nominate**, and **!poll**. Use:\n```!help [command name]``` to find out more about a specific command.");
                         break;
                     case "exposed":
-                        message.channel.send("Play a beautiful serenade in the voice channel the user is currently in");
+                        message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
+                        break;
+                    case "help":
+                        helpResponse = spongeMock("My name is " + message.author.userName + " and I think I'm soooo clever.");
+                        message.channel.send(helpResponse);
                         break;
                     case "nominate":
                         message.channel.send("```!nominate [album] - [artist]```\nNominate an album of the year, only to be given an error back. Blame Bus.");
                         break;
                     case "poll":
                         message.channel.send("```!poll - [question] - [option 1] - [option 2]```\nCreate a poll to be voted on using reactions. This will be fleshed out more later.");
+                        break;
+                    case "roll":
+                        message.channel.send("```!roll (d)[upper limit]\n!roll (d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die. Examples:```!roll d20\n!roll 6\n!roll 5-10```");
                         break;
                     default:
                         message.channel.send("Command not found. Use:```!help``` for list of available commands.");
@@ -134,17 +147,8 @@ client.on('message', message => {
 
     //Random chance to make fun of you
     else if (Math.floor(Math.random() * 20) === 0) {
-        toggle = true;
-        mock = "";
-        for(i = 0; i < message.content.length; i++) {
-            mock += toggle ? message.content[i].toUpperCase() : message.content[i].toLowerCase();
-            if (message.content[i].match(/[a-z]/i)) {
-                toggle = !toggle;
-            }
-        }
-        message.channel.send(mock);
+        message.channel.send(spongeMock(message.content));
     }
-
 });
 
 client.login(process.env.BOT_TOKEN);
@@ -158,6 +162,18 @@ function playSong(message, song) {
     }).catch(error => console.log(error));
 }
 
+function spongeMock(messageText) {
+    toggle = true;
+        mock = "";
+        for(i = 0; i < messageText.length; i++) {
+            mock += toggle ? messageText[i].toUpperCase() : messageText[i].toLowerCase();
+            if (messageText[i].match(/[a-z]/i)) {
+                toggle = !toggle;
+            }
+        }
+    return mock;
+}
+
 function isQuestion(message) {
     return (message.toLowerCase().startsWith("can") || 
         message.toLowerCase().startsWith("could") || 
@@ -169,10 +185,6 @@ function isQuestion(message) {
 function isDoable(emoji) {
     return emoji.name === "thatsdoable";
 };
-
-function isWuju(emoji) {
-    return emoji.name === "DownyBrownie";
-}
 
 function pollReactions(message) {
     message.react('🔵');
