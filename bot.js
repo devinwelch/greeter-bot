@@ -119,7 +119,6 @@ client.on('message', message => {
         }
     }
 
-    
     //What the HECK!!!!
     else if (isNotChristian(message)) {
         message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
@@ -216,6 +215,7 @@ function isNotChristian(message) {
 
     for (i = 0; i < swears.length; i++) {
         if (message.content.toLowerCase().indexOf(swears[i]) !== -1) {
+            if (message.content.toLowerCase().indexOf("hello") !== -1) continue;
             return true;
         }
     }
