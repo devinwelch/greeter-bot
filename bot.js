@@ -75,12 +75,25 @@ client.on('message', message => {
                 break;
             //For D&D nerds mostly
             case "roll":
-                if (/d?\d+-?\d*/.test(params)) {
-                    numbers = params.replace('d', '').split(/-/);
+                if (/(d?|\dd)\d+(-\d+)?/.test(params)) {
+                    rollMessage = message.author.username + " rolled ";
+
+                    numberOfRolls = 1;
+                    if (/\dd.+/.test(params)) {
+                        numberOfRolls = params.split(/d/)[0];
+                    }
+
+                    numbers = params.replace(/(\dd|d)/, '').split(/-/);
                     max = numbers.length === 2 ? Number(numbers[1]) : Number(numbers[0]);
                     min = numbers.length === 2 ? Number(numbers[0]) : 1;
-                    roll = Math.floor(Math.random() * (max - min + 1)) + min;
-                    message.channel.send(message.author.username + " rolled a **" + roll + "**");
+                    
+                    for(i = 0; i < numberOfRolls; i++) {
+                        roll = Math.floor(Math.random() * (max - min + 1)) + min;
+                        rollMessage += "**" + roll + "**";
+                        if (i !== numberOfRolls - 1) rollMessage += ", ";
+                    }
+                    
+                    message.channel.send(rollMessage);
                 }
                 else {
                     message.reply("Invalid format, use **!help** for more information.");
@@ -211,7 +224,7 @@ function isNotChristian(message) {
     'flange','goddamn','hell','homo','jizz','knobend','labia','wtf',
     'lmao','lmfao','muff','nigger','nigga','omg','penis','piss','poop',
     'prick','pube','pussy','queer','scrotum','sex','shit','slut','smegma',
-    'spunk','thot','tit','tosser','turd','twat','vagina','wank','whore']
+    'spunk','thot','tosser','turd','twat','vagina','wank','whore']
 
     for (i = 0; i < swears.length; i++) {
         if (message.content.toLowerCase().indexOf(swears[i]) !== -1) {
