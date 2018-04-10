@@ -1,3 +1,20 @@
+/*TODO:
+
+Ideas
+-----
+Calculate GBPs
+- for swearing
+!punish
+connect 4
+
+Code
+----
+String resources
+refactor god class
+caching
+
+*/
+
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
@@ -69,8 +86,40 @@ client.on('message', message => {
             //Create a poll with reactions
             case "poll":
                 options = params.split(/;/);
-                message.channel.send("New poll!\n" + options[0] + "\n:red_circle: - " + options[1] + "\n:large_blue_circle: - " + options[2])
-                .then(poll => pollReactions(poll))
+                pollMessage = "New poll, React to cast your ballot!\n" + options[0].replace(/!poll\s*/, '');
+                optionsCounter = 1;
+                
+                switch(options.length) {
+                    case 0:
+                    case 1: 
+                        pollMessage = "Invalid format, use **!help** for more information.";
+                        break;
+                    case 2:
+                        pollMessage = "Don't be a communist, please use multiple options!";
+                        break;
+                    case 3:
+                    case 4:
+                    case 5:
+                        pollMessage += "\n🔵 - " + options[1].trim();
+                        pollMessage += "\n🔴 - " + options[2].trim();
+                        if (options.length > 3) {
+                            pollMessage += "\n⚫ - " + options[3].trim();
+                            if (options.length === 5) pollMessage += "\n⚪ - " + options[4].trim();
+                        }
+                        break;
+                    default:
+                        pollMessage = "Too many options, I can't choose!";
+                        break;
+                }
+                message.channel.send(pollMessage)
+                .then(() => {
+                    message.react('🔴');
+                    message.react('🔵');
+                    if (options > 3) {
+                        message.react('⚫');
+                        if (options === 5) message.react('⚪');
+                    }
+                })
                 .catch(console.error);
                 break;
             //For D&D nerds mostly
@@ -117,7 +166,7 @@ client.on('message', message => {
                         message.channel.send("```!nominate [album] - [artist]```\nNominate an album of the year, only to be given an error back. Blame Bus.");
                         break;
                     case "poll":
-                        message.channel.send("```!poll - [question] - [option 1] - [option 2]```\nCreate a poll to be voted on using reactions. This will be fleshed out more later.");
+                        message.channel.send("```!poll [question]; [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options to be voted on using reactions.");
                         break;
                     case "roll":
                         message.channel.send("```!roll (x)(d)[upper limit]\n!roll (x)(d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die x times. Examples:```!roll 20\n!roll 3d6\n!roll 5-10```");
@@ -204,11 +253,6 @@ function isDoable(emoji) {
     return emoji.name === "thatsdoable";
 };
 
-function pollReactions(message) {
-    message.react('🔴');
-    message.react('🔵');
-}
-
 function checkForDorse(message, messages) {
     if (messages.length > 1 && messages[1].content == message.content) {
         message.reply("dorse");
@@ -235,20 +279,3 @@ function isNotChristian(message) {
     
     return false;
 }
-
-/*TODO:
-
-Ideas
------
-Calculate GBPs
-- for swearing
-!punish
-connect 4
-
-Code
-----
-String resources
-refactor god class
-caching
-
-*/
