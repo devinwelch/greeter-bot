@@ -85,8 +85,8 @@ client.on('message', message => {
                 break;
             //Create a poll with reactions
             case "poll":
-                options = params.split(/(\?|;)/);
-                pollMessage = "New poll, React to cast your ballot!\n" + options[0].replace(/!poll\s*/, '');
+                options = params.split(/[\?;]/);
+                pollMessage = "New poll, React to cast your ballot!\n**" + options[0].replace(/!poll\s*/, '') + "?**";
                 optionsCounter = 1;
                 
                 switch(options.length) {
@@ -113,7 +113,7 @@ client.on('message', message => {
                 }
                 message.channel.send(pollMessage)
                 .then(poll => {
-                    if (options.length > 2) {
+                    if (options.length > 2 && options.length < 6) {
                         poll.react('🔴');
                         poll.react('🔵');
                         if (options.length > 3) {
