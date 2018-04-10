@@ -85,7 +85,7 @@ client.on('message', message => {
                 break;
             //Create a poll with reactions
             case "poll":
-                options = params.split(/;/);
+                options = params.split(/(?|;)/);
                 pollMessage = "New poll, React to cast your ballot!\n" + options[0].replace(/!poll\s*/, '');
                 optionsCounter = 1;
                 
@@ -112,12 +112,14 @@ client.on('message', message => {
                         break;
                 }
                 message.channel.send(pollMessage)
-                .then(() => {
-                    message.react('🔴');
-                    message.react('🔵');
-                    if (options > 3) {
-                        message.react('⚫');
-                        if (options === 5) message.react('⚪');
+                .then(poll => {
+                    if (options.length > 2) {
+                        poll.react('🔴');
+                        poll.react('🔵');
+                        if (options.length > 3) {
+                            poll.react('⚫');
+                            if (options.length === 5) poll.react('⚪');
+                        }
                     }
                 })
                 .catch(console.error);
@@ -166,7 +168,7 @@ client.on('message', message => {
                         message.channel.send("```!nominate [album] - [artist]```\nNominate an album of the year, only to be given an error back. Blame Bus.");
                         break;
                     case "poll":
-                        message.channel.send("```!poll [question]; [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options to be voted on using reactions.");
+                        message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.");
                         break;
                     case "roll":
                         message.channel.send("```!roll (x)(d)[upper limit]\n!roll (x)(d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die x times. Examples:```!roll 20\n!roll 3d6\n!roll 5-10```");
