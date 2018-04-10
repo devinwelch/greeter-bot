@@ -68,22 +68,22 @@ client.on('message', message => {
                 break;
             //Create a poll with reactions
             case "poll":
-                options = params.split(/ - /);
+                options = params.split(/;/);
                 message.channel.send("New poll!\n" + options[0] + "\n:red_circle: - " + options[1] + "\n:large_blue_circle: - " + options[2])
                 .then(poll => pollReactions(poll))
                 .catch(console.error);
                 break;
             //For D&D nerds mostly
             case "roll":
-                if (/(d?|\dd)\d+(-\d+)?/.test(params)) {
+                if (/(d?|\d+d)\d+(-\d+)?/.test(params)) {
                     rollMessage = message.author.username + " rolled ";
 
                     numberOfRolls = 1;
-                    if (/\dd.+/.test(params)) {
+                    if (/\d+d.+/.test(params)) {
                         numberOfRolls = params.split(/d/)[0];
                     }
 
-                    numbers = params.replace(/(\dd|d)/, '').split(/-/);
+                    numbers = params.replace(/(\d+d|d)/, '').split(/-/);
                     max = numbers.length === 2 ? Number(numbers[1]) : Number(numbers[0]);
                     min = numbers.length === 2 ? Number(numbers[0]) : 1;
                     
@@ -92,7 +92,7 @@ client.on('message', message => {
                         rollMessage += "**" + roll + "**";
                         if (i !== numberOfRolls - 1) rollMessage += ", ";
                     }
-                    
+
                     message.channel.send(rollMessage);
                 }
                 else {
@@ -120,7 +120,7 @@ client.on('message', message => {
                         message.channel.send("```!poll - [question] - [option 1] - [option 2]```\nCreate a poll to be voted on using reactions. This will be fleshed out more later.");
                         break;
                     case "roll":
-                        message.channel.send("```!roll (d)[upper limit]\n!roll (d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die. Examples:```!roll d20\n!roll 6\n!roll 5-10```");
+                        message.channel.send("```!roll (x)(d)[upper limit]\n!roll (x)(d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die x times. Examples:```!roll 20\n!roll 3d6\n!roll 5-10```");
                         break;
                     default:
                         message.channel.send("Command not found. Use:```!help``` for list of available commands.");
