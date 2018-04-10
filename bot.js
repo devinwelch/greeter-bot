@@ -6,6 +6,7 @@ Calculate GBPs
 - for swearing
 !punish
 connect 4
+slow roll
 
 Code
 ----
@@ -88,6 +89,10 @@ client.on('message', message => {
                 options = params.split(/[\?;]/);
                 pollMessage = "New poll, React to cast your ballot!\n**" + options[0].replace(/!poll\s*/, '') + "?**";
                 optionsCounter = 1;
+
+                for(i = 0; i < options.length; i++) {
+                    if (options[i] === "") options.splice(i, 1);
+                }
                 
                 switch(options.length) {
                     case 0:
