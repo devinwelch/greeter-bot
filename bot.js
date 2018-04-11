@@ -235,8 +235,8 @@ function editMore(message, count) {
     //sleep(1000);
     count--;
     if (count === 0) break;
-    message.edit(message.content + count)
-        .then(thisMessage => editMore(thisMessage, count));
+    message.edit("then this");
+        //.then(thisMessage => editMore(thisMessage, count));
 }
 
 function sleep(miliseconds) {
