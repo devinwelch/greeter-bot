@@ -117,23 +117,21 @@ client.on('message', message => {
                         break;
                 }
                 message.channel.send(pollMessage)
-                .then(poll => {
-                    if (options.length > 2 && options.length < 6) {
-                        poll.react('🔴');
-                        poll.react('🔵');
-                        if (options.length > 3) {
-                            poll.react('⚫');
-                            if (options.length === 5) poll.react('⚪');
+                    .then(poll => {
+                        if (options.length > 2 && options.length < 6) {
+                            poll.react('🔴');
+                            poll.react('🔵');
+                            if (options.length > 3) {
+                                poll.react('⚫');
+                                if (options.length === 5) poll.react('⚪');
+                            }
                         }
-                    }
-                })
+                    })
                 .catch(console.error);
                 break;
             //For D&D nerds mostly
             case "roll":
                 if (/(d?|\d+d)\d+(-\d+)?/.test(params)) {
-                    rollMessage = message.author.username + " rolled ";
-
                     numberOfRolls = 1;
                     if (/\d+d.+/.test(params)) {
                         numberOfRolls = params.split(/d/)[0];
@@ -143,22 +141,13 @@ client.on('message', message => {
                     max = numbers.length === 2 ? Number(numbers[1]) : Number(numbers[0]);
                     min = numbers.length === 2 ? Number(numbers[0]) : 1;
                     
-                    for(i = 0; i < numberOfRolls; i++) {
-                        roll = Math.floor(Math.random() * (max - min + 1)) + min;
-                        rollMessage += "**" + roll + "**";
-                        if (i !== numberOfRolls - 1) rollMessage += ", ";
-                    }
-
-                    message.channel.send(rollMessage);
+                    message.channel.send(message.author.username + " rolled ")
+                        .then(rollMessage => slowRoll(rollMessage, min, max, numberOfRolls))
+                        .catch(console.error);
                 }
                 else {
                     message.reply("Invalid format, use **!help** for more information.");
                 }
-                break;
-            case "test":
-                message.channel.send("first this")
-                .then(thisMessage => editMore(thisMessage, 3))
-                .catch(console.error);
                 break;
             //Find out what greeter-bot can do
             case "help":
@@ -232,19 +221,21 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-function editMore(message, count) {
-    sleep(1000);
-    count--;
-    if (count === 0) return;
-    message.edit(message.content + count)
-        .then(thisMessage => editMore(thisMessage, count));
+function slowRoll(message) {
+    sleep(3000);
+    if (count-- === 0) return;
+
+    roll = Math.floor(Math.random() * (max - min + 1)) + min;
+    rollMessage += "**" + roll + "**";
+    if (count !== 0) rollMessage += ", ";
+
+    message.edit(message.content + rollMessage)
+        .then(thisMessage => slowRoll(thisMessage, min, max, count));
 }
 
 function sleep(miliseconds) {
     var currentTime = new Date().getTime();
- 
-    while (currentTime + miliseconds >= new Date().getTime()) {
-    }
+    while (currentTime + miliseconds >= new Date().getTime()) {}
  }
 
 function playSong(message, song) {
