@@ -18,7 +18,7 @@ caching
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-var connectFour = require('./connect.js');
+//var connectFour = require('./connect.js');
 
 /* SQL stuff not working, keep it here for now
 var pg = require('pg');
