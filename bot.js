@@ -226,7 +226,7 @@ function slowRoll(message, min, max, count) {
     if (count-- === 0) return;
 
     roll = Math.floor(Math.random() * (max - min + 1)) + min;
-    rollMessage += "**" + roll + "**";
+    rollMessage = "**" + roll + "**";
     if (count !== 0) rollMessage += ", ";
 
     message.edit(message.content + rollMessage)
