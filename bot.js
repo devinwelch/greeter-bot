@@ -221,7 +221,7 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-function slowRoll(message) {
+function slowRoll(message, min, max, count) {
     sleep(3000);
     if (count-- === 0) return;
 
