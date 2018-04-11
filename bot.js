@@ -158,6 +158,7 @@ client.on('message', message => {
             case "test":
                 message.channel.send("first this")
                     .then(thisMessage => editMore(thisMessage, 3));
+                break;
             //Find out what greeter-bot can do
             case "help":
                 switch(params.replace('!', '')) {
@@ -231,7 +232,7 @@ client.on('message', message => {
 client.login(process.env.BOT_TOKEN);
 
 function editMore(message, count) {
-    sleep(1000);
+    //sleep(1000);
     count--;
     if (count === 0) break;
     message.edit(message.content + count)
