@@ -36,6 +36,7 @@ sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err
 client.on('ready', () => {
     //sql.connect();
     console.log('I am ready!');
+    client.user.setGame('!help for more info')
 });
 
 client.on('message', message => {
@@ -43,16 +44,6 @@ client.on('message', message => {
     if (message.author.bot || message.content.toUpperCase().startsWith('HTTP')) {
         return;
     }
-
-    //henlo fren
-    /*if (message.isMemberMentioned(message.guild.members.find('user.username', 'greeter-bot'))) {
-        message.reply("sup chromie homie?");
-    }*/
-
-    //Temporary punishment
-    /*else if (message.createdTimestamp < 1522273178284 && message.author.username === "Wuju") {
-        message.react(message.channel.client.emojis.find(isWuju));
-    }*/
 
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
