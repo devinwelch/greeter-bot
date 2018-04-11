@@ -37,7 +37,7 @@ sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err
 client.on('ready', () => {
     //sql.connect();
     console.log('I am ready!');
-    client.user.setActivity('!help for more info', { type: 'LISTENING' });
+    //client.user.setActivity('!help for more info', { type: 'LISTENING' });
 });
 
 client.on('message', message => {
