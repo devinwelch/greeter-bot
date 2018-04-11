@@ -130,6 +130,8 @@ client.on('message', message => {
                 .catch(console.error);
                 break;
             //For D&D nerds mostly
+            case "rollfast":
+                quick = true;
             case "roll":
                 if (/(d?|\d+d)\d+(-\d+)?/.test(params)) {
                     numberOfRolls = 1;
@@ -137,12 +139,24 @@ client.on('message', message => {
                         numberOfRolls = params.split(/d/)[0];
                     }
 
+                    rollMessage = message.author.username + " rolled ";
+
                     numbers = params.replace(/(\d+d|d)/, '').split(/-/);
                     max = numbers.length === 2 ? Number(numbers[1]) : Number(numbers[0]);
                     min = numbers.length === 2 ? Number(numbers[0]) : 1;
+
+                    if (quick) {
+                        for(i = 0; i < numberOfRolls; i++) {
+                            roll = Math.floor(Math.random() * (max - min + 1)) + min;
+                            rollMessage += "**" + roll + "**";
+                            if (i !== numberOfRolls - 1) rollMessage += ", ";
+                        }
+                        message.channel.send(rollMessage);
+                        break;
+                    }
                     
-                    message.channel.send(message.author.username + " rolled ")
-                        .then(rollMessage => slowRoll(rollMessage, min, max, numberOfRolls))
+                    message.channel.send(rollMessage)
+                        .then(editMessage => slowRoll(editMessage, min, max, numberOfRolls))
                         .catch(console.error);
                 }
                 else {
@@ -154,7 +168,7 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!exposed**, **!nominate**, **!poll**, and **!roll**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        message.channel.send("Available commands: **!exposed**, **!nominate**, **!poll**, **!roll**, and **rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
                         break;
                     case "exposed":
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
@@ -171,6 +185,9 @@ client.on('message', message => {
                         break;
                     case "roll":
                         message.channel.send("```!roll (x)(d)[upper limit]\n!roll (x)(d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die x times. Examples:```!roll 20\n!roll 3d6\n!roll 5-10```");
+                        break;
+                    case "rollfast":
+                        message.channel.send("Roll without pauses. See **!help roll** for more information.");
                         break;
                     default:
                         message.channel.send("Command not found. Use:```!help``` for list of available commands.");
