@@ -155,6 +155,9 @@ client.on('message', message => {
                     message.reply("Invalid format, use **!help** for more information.");
                 }
                 break;
+            case "test":
+                message.channel.send("first this")
+                    .then(thisMessage => editMore(thisMessage, 3));
             //Find out what greeter-bot can do
             case "help":
                 switch(params.replace('!', '')) {
@@ -226,6 +229,21 @@ client.on('message', message => {
 });
 
 client.login(process.env.BOT_TOKEN);
+
+function editMore(message, count) {
+    sleep(1000);
+    count--;
+    if (count === 0) break;
+    message.edit(message.content + count)
+        .then(thisMessage => editMore(thisMessage, count));
+}
+
+function sleep(miliseconds) {
+    var currentTime = new Date().getTime();
+ 
+    while (currentTime + miliseconds >= new Date().getTime()) {
+    }
+ }
 
 function playSong(message, song) {
     message.member.voiceChannel.join().then(connection => {
