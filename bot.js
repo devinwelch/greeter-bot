@@ -170,7 +170,7 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!exposed**, **!nominate**, **!poll**, **!roll**, and **rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        message.channel.send("Available commands: **!exposed**, **!nominate**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
                         break;
                     case "exposed":
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
@@ -186,7 +186,7 @@ client.on('message', message => {
                         message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.");
                         break;
                     case "roll":
-                        message.channel.send("```!roll (x)(d)[upper limit]\n!roll (x)(d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die x times. Examples:```!roll 20\n!roll 3d6\n!roll 5-10```");
+                        message.channel.send("```!roll (x)(d)[upper limit]\n!roll (x)(d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die x times; 'd' character is optional except for multi-rolls. Examples:```!roll 20\n!roll 3d6\n!roll 5-10```");
                         break;
                     case "rollfast":
                         message.channel.send("Roll without pauses. See **!help roll** for more information.");
