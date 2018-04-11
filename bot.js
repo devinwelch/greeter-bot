@@ -222,11 +222,11 @@ client.on('message', message => {
 client.login(process.env.BOT_TOKEN);
 
 function slowRoll(message, min, max, count) {
-    sleep(3000);
+    sleep(2000);
     if (count-- === 0) return;
 
     roll = Math.floor(Math.random() * (max - min + 1)) + min;
-    rollMessage = "**" + roll + "**";
+    rollMessage = " **" + roll + "**";
     if (count !== 0) rollMessage += ", ";
 
     message.edit(message.content + rollMessage)
