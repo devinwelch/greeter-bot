@@ -157,7 +157,8 @@ client.on('message', message => {
                 break;
             case "test":
                 message.channel.send("first this")
-                    .then(thisMessage => editMore(thisMessage, 3));
+                    .then(thisMessage => editMore(thisMessage, 3))
+                    .catch(console.error);
                 break;
             //Find out what greeter-bot can do
             case "help":
