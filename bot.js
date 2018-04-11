@@ -63,6 +63,7 @@ client.on('message', message => {
     if (message.content[0] === '!') {
         cmd = message.content.split(/[\s!]+/)[1].toLowerCase();
         params = message.content.substring(cmd.length + 1, message.content.length).trim();
+        quick = false;
         switch(cmd) {
             //Play a beautiful serenade
             case "exposed":
@@ -137,6 +138,7 @@ client.on('message', message => {
                     numberOfRolls = 1;
                     if (/\d+d.+/.test(params)) {
                         numberOfRolls = params.split(/d/)[0];
+                        if (numberOfRolls > 10) quick = true;
                     }
 
                     rollMessage = message.author.username + " rolled ";
