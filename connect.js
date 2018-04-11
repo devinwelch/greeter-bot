@@ -13,7 +13,16 @@ class ConnectFour {
     }
 
     constructor(board) {
-        
+        this.board = board;
+        redCount = 0;
+        blueCount = 0;
+        for (i = 0; i < 6; i++) {
+            for (j = 0; j < 7; j++) {
+                if(this.getCell(i, j) === "🔴") redCount++;
+                else if(this.getCell(i, j) === "🔵") blueCount++;
+            }
+        }
+        this.isRedTurn = redCount === blueCount;
     }
 
     getCell(x, y) {
@@ -29,8 +38,8 @@ class ConnectFour {
         for (i = 0; i < 6; i++) {
             for (j = 0; j < 7; j++) {
                 boardString += this.getCell(i, j);
-                if (j === 6) boardString += "\n";
             }
+            boardString += "\n";
         }
 
         return boardString;

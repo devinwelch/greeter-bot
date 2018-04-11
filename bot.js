@@ -61,7 +61,7 @@ client.on('message', message => {
                 playSong(message, './Exposed.mp3');
                 break;
             //Nominate an AOTY
-            case "nominate":
+            /*case "nominate":
                 if (/.+ - .+/.test(params)) {
                     album = params.split(/ - (.+)/)[0];
                     artist = params.split(/ - (.+)/)[1];
@@ -75,7 +75,7 @@ client.on('message', message => {
                 else {
                     message.reply("Invalid format, use **!help** for more information.");
                 }
-                break;
+                break;*/
             //Create a poll with reactions
             case "poll":
                 options = params.split(/[\?;]/);
@@ -170,9 +170,9 @@ client.on('message', message => {
                         helpResponse = spongeMock("My name is " + message.author.username + " and I think I'm soooo clever.");
                         message.channel.send(helpResponse);
                         break;
-                    case "nominate":
+                    /*case "nominate":
                         message.channel.send("```!nominate [album] - [artist]```\nNominate an album of the year, only to be given an error back. Blame Bus.");
-                        break;
+                        break;*/
                     case "poll":
                         message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.");
                         break;
