@@ -18,6 +18,7 @@ caching
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
+var connectFour = require('./connect.js');
 
 /* SQL stuff not working, keep it here for now
 var pg = require('pg');
@@ -36,7 +37,7 @@ sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err
 client.on('ready', () => {
     //sql.connect();
     console.log('I am ready!');
-    client.user.setGame('!help for more info')
+    client.user.setActivity('!help for more info', { type: 'LISTENING' });
 });
 
 client.on('message', message => {
@@ -161,7 +162,7 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!exposed**, **!nominate**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        message.channel.send("Available commands: **!exposed**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
                         break;
                     case "exposed":
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
@@ -170,9 +171,6 @@ client.on('message', message => {
                         helpResponse = spongeMock("My name is " + message.author.username + " and I think I'm soooo clever.");
                         message.channel.send(helpResponse);
                         break;
-                    /*case "nominate":
-                        message.channel.send("```!nominate [album] - [artist]```\nNominate an album of the year, only to be given an error back. Blame Bus.");
-                        break;*/
                     case "poll":
                         message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.");
                         break;
@@ -282,7 +280,7 @@ function isDoable(emoji) {
 };
 
 function checkForDorse(message, messages) {
-    if (messages.length > 1 && messages[1].content == message.content) {
+    if (messages.length > 1 && messages[1].content == messages[0].content) {
         message.reply("dorse");
     }
 }
