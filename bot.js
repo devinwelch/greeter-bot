@@ -280,7 +280,7 @@ function isDoable(emoji) {
 };
 
 function checkForDorse(message, messages) {
-    if (messages.length > 1 && messages[1].content == messages[0].content && messages[0].attachments.array().length > 0) {
+    if (messages.length > 1 && messages[1].content == messages[0].content && messages[0].attachments.array().length === 0) {
         message.reply("dorse");
     }
 }
