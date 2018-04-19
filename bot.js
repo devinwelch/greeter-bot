@@ -190,6 +190,11 @@ client.on('message', message => {
         }
     }
 
+    else if ((message.content.indexOf(":goose:") !== -1 || message.content.indexOf(":Groose:") !== -1) &&
+             (message.content.indexOf(":night:") !== -1 || message.content.indexOf(":knight:") !== -1)) {
+        playSong(message, './Sounds/goosenight.wav');
+    }
+
     //What the HECK!!!!
     else if (isNotChristian(message)) {
         message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
