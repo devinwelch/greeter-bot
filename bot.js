@@ -42,7 +42,7 @@ client.on('ready', () => {
 
 client.on('messageReactionAdd', (reaction, user) => {
     if (reaction.message.startsWith("Connect 4!")) {
-        board = new ConnectFour(reaction.message.content);
+        board = new connectFour.ConnectFour(reaction.message.content);
         switch(reaction.emoji.name) {
             case "one":
                 board.placePiece(0);
@@ -92,7 +92,7 @@ client.on('message', message => {
             //Play games with your buddies
             case "challenge":
             case "connect":
-                board = new ConnectFour();
+                board = new connectFour.ConnectFour();
                 message.channel.send(board.getBoard())
                     .then(game => gameReactions(game))
                     .catch(console.error());
