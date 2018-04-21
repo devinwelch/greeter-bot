@@ -6,7 +6,6 @@ Calculate GBPs
 - for swearing
 !punish
 connect 4
-slow roll
 
 Code
 ----
@@ -18,7 +17,7 @@ caching
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const ConnectFour = require('./connect.js');
+const connectFour = require('./connect.js');
 
 /* SQL stuff not working, keep it here for now
 var pg = require('pg');
@@ -42,7 +41,7 @@ client.on('ready', () => {
 
 client.on('messageReactionAdd', (reaction, user) => {
     if (reaction.message.startsWith("Connect 4!")) {
-        let board = new ConnectFour(reaction.message.content);
+        let board = new connectFour.ConnectFour(reaction.message.content);
         switch(reaction.emoji.name) {
             case "one":
                 board.placePiece(0);
@@ -92,7 +91,7 @@ client.on('message', message => {
             //Play games with your buddies
             case "challenge":
             case "connect":
-                let board = new ConnectFour();
+                let board = new connectFour.ConnectFour();
                 message.channel.send(board.getBoard())
                     .then(game => gameReactions(game))
                     .catch(console.error());
