@@ -18,7 +18,7 @@ caching
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-var connectFour = require('./connect.js');
+const ConnectFour = require('./connect.js');
 
 /* SQL stuff not working, keep it here for now
 var pg = require('pg');
@@ -42,7 +42,7 @@ client.on('ready', () => {
 
 client.on('messageReactionAdd', (reaction, user) => {
     if (reaction.message.startsWith("Connect 4!")) {
-        board = new connectFour.ConnectFour(reaction.message.content);
+        let board = new ConnectFour(reaction.message.content);
         switch(reaction.emoji.name) {
             case "one":
                 board.placePiece(0);
@@ -92,7 +92,7 @@ client.on('message', message => {
             //Play games with your buddies
             case "challenge":
             case "connect":
-                board = new connectFour.ConnectFour();
+                let board = new ConnectFour();
                 message.channel.send(board.getBoard())
                     .then(game => gameReactions(game))
                     .catch(console.error());
