@@ -18,7 +18,7 @@ caching
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-//var connectFour = require('./connect.js');
+var connectFour = require('./connect.js');
 
 /* SQL stuff not working, keep it here for now
 var pg = require('pg');
@@ -40,6 +40,38 @@ client.on('ready', () => {
     //client.user.setActivity('!help for more info', { type: 'LISTENING' });
 });
 
+client.on('messageReactionAdd', (reaction, user) => {
+    if (reaction.message.startsWith("Connect 4!")) {
+        board = new ConnectFour(reaction.message.content);
+        switch(reaction.emoji.name) {
+            case "one":
+                board.placePiece(0);
+                break;
+            case "two":
+                board.placePiece(1);
+                break;
+            case "three":
+                board.placePiece(2);
+                break;
+            case "four":
+                board.placePiece(3);
+                break;
+            case "five":
+                board.placePiece(4);
+                break;
+            case "six":
+                board.placePiece(5);
+                break;
+            case "seven":
+                board.placePiece(6);
+                break;
+            default:
+                break;
+        }
+        reaction.messsage.edit(board.getBoard());
+    }
+});
+
 client.on('message', message => {
     //Bots don't talk to bots nor links
     if (message.author.bot || message.content.toUpperCase().startsWith('HTTP')) {
@@ -57,6 +89,14 @@ client.on('message', message => {
         params = message.content.substring(cmd.length + 1, message.content.length).trim();
         quick = false;
         switch(cmd) {
+            //Play games with your buddies
+            case "challenge":
+            case "connect":
+                board = new ConnectFour();
+                message.channel.send(board.getBoard())
+                    .then(game => gameReactions(game))
+                    .catch(console.error());
+                break;
             //Play a beautiful serenade
             case "exposed":
                 playSong(message, './Exposed.mp3');
@@ -249,6 +289,16 @@ function slowRoll(message, min, max, count) {
 function sleep(miliseconds) {
     var currentTime = new Date().getTime();
     while (currentTime + miliseconds >= new Date().getTime()) {}
+ }
+
+ function gameReactions(boardMessage) {
+    boardMessage.react("1️⃣");
+    boardMessage.react("2️⃣");
+    boardMessage.react("3️⃣");
+    boardMessage.react("4️⃣");
+    boardMessage.react("5️⃣");
+    boardMessage.react("6️⃣");
+    boardMessage.react("7️⃣");
  }
 
 function playSong(message, song) {
