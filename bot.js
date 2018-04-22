@@ -98,7 +98,7 @@ client.on('message', message => {
                 break;
             //Play a beautiful serenade
             case "exposed":
-                playSong(message, './Exposed.mp3');
+                playSong(message, 'Exposed.mp3');
                 break;
             //Nominate an AOTY
             /*case "nominate":
@@ -231,7 +231,7 @@ client.on('message', message => {
 
     else if ((message.content.indexOf(":goose:") !== -1 || message.content.indexOf(":Groose:") !== -1) &&
              (message.content.indexOf(":night:") !== -1 || message.content.indexOf(":knight:") !== -1)) {
-        playSong(message, './Sounds/goosenight.wav');
+        playSong(message, 'goosenight.wav');
     }
 
     //What the HECK!!!!
@@ -241,12 +241,12 @@ client.on('message', message => {
 
     //The never-ending debate
     else if (message.content.toLowerCase() === "all women are queens") {
-        playSong(message, './Queens.mp3');
+        playSong(message, 'Queens.mp3');
     }
 
     //Enforce some positivity
     else if (isQuestion(message.content)) {
-        playSong(message, './Doable.mp3');
+        playSong(message, 'Doable.mp3');
         message.react(message.channel.client.emojis.find(isDoable));
     }
 
@@ -268,6 +268,11 @@ client.on('message', message => {
     //Random chance to make fun of you
     else if (Math.floor(Math.random() * 20) === 0) {
         message.channel.send(spongeMock(message.content));
+    }
+
+    //Random chance to scream at you
+    else if (Math.floor(Math.random() * 100) === 0 && message.author) {
+        playSong(message, "Ree.mp3");
     }
 });
 
@@ -302,7 +307,7 @@ function sleep(miliseconds) {
 
 function playSong(message, song) {
     message.member.voiceChannel.join().then(connection => {
-        const dispatcher = connection.playFile(song);
+        const dispatcher = connection.playFile("./Sounds/" + song);
         dispatcher.on("end", end => {
             message.member.voiceChannel.leave();
         });
