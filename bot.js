@@ -40,7 +40,7 @@ client.on('ready', () => {
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
-    if (reaction.message.startsWith("Connect 4!")) {
+    if (false && reaction.message.content.startsWith("Connect 4!")) {
         let board = new connectFour.ConnectFour(reaction.message.content);
         switch(reaction.emoji.name) {
             case "one":
