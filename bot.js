@@ -81,7 +81,14 @@ client.on('message', message => {
 
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
-        .then(messages => checkForDorse(message, messages.findAll('author', message.author)))
+        .then(messages => {
+            filteredMessages = messages.findAll('author', message.author);
+            if (filteredMessages.length > 1 &&
+                filteredMessages[1].content == filteredMessages[0].content &&
+                filteredMessages[0].attachments.array().length === 0) {
+                message.reply("dorse");
+            }
+        })
         .catch(console.error);
 
     //!Bot commands
@@ -269,7 +276,7 @@ client.on('message', message => {
 
     //Random chance to make fun of you or scream at you
     else if (Math.floor(Math.random() * 20) === 0) {
-        if (Math.floor(Math.random() * 4) === 0 && message.member.voiceChannel !== null) {
+        if (Math.floor(Math.random() * 4) === 0 && message.member.voiceChannel !== undefined) {
             playSong(message, "Ree.mp3");
         }
         else {   
@@ -308,7 +315,7 @@ function sleep(miliseconds) {
  }
 
 function playSong(message, song) {
-    if (message.member.voiceChannel !== null && message.member.voiceChannel.guild.id === message.guild.id) {
+    if (message.member.voiceChannel !== undefined && message.member.voiceChannel.guild.id === message.guild.id) {
         message.member.voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile("./Sounds/" + song);
             dispatcher.on("end", end => {
@@ -341,12 +348,6 @@ function isQuestion(message) {
 function isDoable(emoji) {
     return emoji.name === "thatsdoable";
 };
-
-function checkForDorse(message, messages) {
-    if (messages.length > 1 && messages[1].content == messages[0].content && messages[0].attachments.array().length === 0) {
-        message.reply("dorse");
-    }
-}
 
 function isNotChristian(message) {
     swears = ['anal','arse',' ass ','asshole','balls','bastard','bitch',
