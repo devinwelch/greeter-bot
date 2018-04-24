@@ -77,8 +77,6 @@ client.on('message', message => {
         return;
     }
 
-    console.log(message.content);
-
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
         .then(messages => {
@@ -239,7 +237,7 @@ client.on('message', message => {
     }
 
     //Sweet dreams!
-    else if (/.*:(g|Gr)oose:\s?:k?night:.*/.test(message.content)) {
+    else if (/.*:(g|Gr)oose:.*:k?night:.*/.test(message.content)) {
         playSong(message, 'goosenight.wav');
     }
 
