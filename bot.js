@@ -77,6 +77,8 @@ client.on('message', message => {
         return;
     }
 
+    console.log(message.member.voiceChannel);
+
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
         .then(messages => checkForDorse(message, messages.findAll('author', message.author)))
@@ -306,7 +308,7 @@ function sleep(miliseconds) {
  }
 
 function playSong(message, song) {
-    if (message.member.voiceChannel.guild.id === message.guild.id) {
+    if (message.member.voiceChannel !== null && message.member.voiceChannel.guild.id === message.guild.id) {
         message.member.voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile("./Sounds/" + song);
             dispatcher.on("end", end => {
