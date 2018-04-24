@@ -306,12 +306,14 @@ function sleep(miliseconds) {
  }
 
 function playSong(message, song) {
-    message.member.voiceChannel.join().then(connection => {
-        const dispatcher = connection.playFile("./Sounds/" + song);
-        dispatcher.on("end", end => {
-            message.member.voiceChannel.leave();
-        });
-    }).catch(error => console.log(error));
+    if (message.member.voiceChannel.guild.id === message.guild.id) {
+        message.member.voiceChannel.join().then(connection => {
+            const dispatcher = connection.playFile("./Sounds/" + song);
+            dispatcher.on("end", end => {
+                message.member.voiceChannel.leave();
+            });
+        }).catch(error => console.log(error));
+    }
 }
 
 function spongeMock(messageText) {
