@@ -238,6 +238,7 @@ client.on('message', message => {
 
     //Sweet dreams!
     else if (/.*:(g|Gr)oose:\s?:k?night:.*/.test(message.content)) {
+        console.log("we in here");
         playSong(message, 'goosenight.wav');
     }
 
