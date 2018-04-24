@@ -77,8 +77,6 @@ client.on('message', message => {
         return;
     }
 
-    console.log(message.member.voiceChannel);
-
     //Stop spammers in their tracks
     message.channel.fetchMessages({limit: 100})
         .then(messages => {
