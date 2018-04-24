@@ -265,14 +265,14 @@ client.on('message', message => {
         message.reply(newMessage);
     }
 
-    //Random chance to make fun of you
+    //Random chance to make fun of or scream at you
     else if (Math.floor(Math.random() * 20) === 0) {
-        message.channel.send(spongeMock(message.content));
-    }
-
-    //Random chance to scream at you
-    else if (Math.floor(Math.random() * 100) === 0 && message.author) {
-        playSong(message, "Ree.mp3");
+        if (Math.floor(Math.random() * 3) === 0) {
+            playSong(message, "Ree.mp3");
+        }
+        else {   
+            message.channel.send(spongeMock(message.content));
+        }
     }
 });
 
