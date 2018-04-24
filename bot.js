@@ -237,7 +237,7 @@ client.on('message', message => {
     }
 
     //Sweet dreams!
-    else if (/:(g|Gr)oose:\s?:k?night:/.test(message.content)) {
+    else if (/.*:(g|Gr)oose:\s?:k?night:.*/.test(message.content)) {
         playSong(message, 'goosenight.wav');
     }
 
