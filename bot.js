@@ -236,14 +236,15 @@ client.on('message', message => {
         }
     }
 
-    else if ((message.content.indexOf(":goose:") !== -1 || message.content.indexOf(":Groose:") !== -1) &&
-             (message.content.indexOf(":night:") !== -1 || message.content.indexOf(":knight:") !== -1)) {
+    //Sweet dreams!
+    else if (/:(g|Gr)oose:\s?:k?night:/.test(message.content)) {
         playSong(message, 'goosenight.wav');
     }
 
     //What the HECK!!!!
     else if (isNotChristian(message)) {
-        message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
+        message.reply("Hell yeah MOTHERFUCKER!!! " + message.guild.emojis.random(1).toString());
+        //message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
     }
 
     //The never-ending debate
