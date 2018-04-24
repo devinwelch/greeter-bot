@@ -265,9 +265,9 @@ client.on('message', message => {
         message.reply(newMessage);
     }
 
-    //Random chance to make fun of or scream at you
+    //Random chance to make fun of you or scream at you
     else if (Math.floor(Math.random() * 20) === 0) {
-        if (Math.floor(Math.random() * 3) === 0) {
+        if (Math.floor(Math.random() * 4) === 0 && message.member.voiceChannel !== null) {
             playSong(message, "Ree.mp3");
         }
         else {   
