@@ -51,7 +51,7 @@ client.on('messageReactionAdd', (reaction, user) => {
                 reaction.message.edit(user.username + " wins! " + newEmoji.toString());
             }
             else {
-                reaction.message.edit("**Guess the emoji** again (using reactions): " + message.guild.emojis.random(1).toString());
+                reaction.message.edit("**Guess the emoji** again (using reactions): " + reaction.message.guild.emojis.random(1).toString());
             }
         }
 
