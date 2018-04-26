@@ -39,6 +39,7 @@ client.on('ready', () => {
     //client.user.setActivity('!help for more info', { type: 'LISTENING' });
 });
 
+/* This feature is a joke
 client.on('guildMemberSpeaking', (member, speaking) => {
         member.voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile("./Sounds/over.wav");
@@ -47,6 +48,7 @@ client.on('guildMemberSpeaking', (member, speaking) => {
             });
         }).catch(error => console.log(error));
 });
+*/
 
 client.on('messageReactionAdd', (reaction, user) => {
     //Only consider reactions to greeter-bot
