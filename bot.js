@@ -45,7 +45,7 @@ client.on('messageReactionAdd', (reaction, user) => {
         //emoji game
         if (reaction.message.content.startsWith("**Guess the emoji**")) {
             reaction.message.clearReactions();
-            newEmoji = message.guild.emojis.random(1);
+            newEmoji = reaction.message.guild.emojis.random(1);
 
             if (newEmoji.id === reaction.emoji.id) {
                 reaction.message.edit(user.username + " wins! " + newEmoji.toString());
@@ -122,7 +122,7 @@ client.on('message', message => {
                 break;
             //The League of Legends of emoji guessing
             case "emoji":
-                message.channel.send("**Guess the emoji** (using reactions): " + message.guild.emojis.random(1).toString());
+                message.channel.send("**Guess the emoji** (using reactions)");
                 break;
             //Play a beautiful serenade
             case "exposed":
