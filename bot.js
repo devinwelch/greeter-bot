@@ -39,13 +39,15 @@ client.on('ready', () => {
     //client.user.setActivity('!help for more info', { type: 'LISTENING' });
 });
 
-client.on('guildMemberUpdate', (member, speaking) => {
-    member.voiceChannel.join().then(connection => {
-        const dispatcher = connection.playFile("./Sounds/over.wav");
-        dispatcher.on("end", end => {
-            message.member.voiceChannel.leave();
-        });
-    }).catch(error => console.log(error));
+client.on('guildMemberSpeaking', (member, speaking) => {
+    if (!speaking) {
+        member.voiceChannel.join().then(connection => {
+            const dispatcher = connection.playFile("./Sounds/over.wav");
+            dispatcher.on("end", end => {
+                message.member.voiceChannel.leave();
+            });
+        }).catch(error => console.log(error));
+    }
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
