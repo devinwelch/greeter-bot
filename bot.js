@@ -44,7 +44,7 @@ client.on('messageReactionAdd', (reaction, user) => {
     if (reaction.message.member.id === client.user.id) {
         //emoji game
         if (reaction.message.content.startsWith("**Guess the emoji**")) {
-            reaction.message.clearReactions();
+            //reaction.message.clearReactions(); disabled until bwandy fixes permissions
             newEmoji = reaction.message.guild.emojis.random(1);
 
             if (newEmoji.id === reaction.emoji.id) {
@@ -229,7 +229,10 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!exposed**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        message.channel.send("Available commands: **!emoji**, **!exposed**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        break;
+                    case "emoji":
+                        message.channel.send("Add reactions to guess the next random emoji. Will only select server-specific emojis. Winner *should* be announced after successful guess!");
                         break;
                     case "exposed":
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
