@@ -40,35 +40,52 @@ client.on('ready', () => {
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
-    if (false && reaction.message.content.startsWith("Connect 4!")) {
-        let board = new connectFour.ConnectFour(reaction.message.content);
-        switch(reaction.emoji.name) {
-            case "one":
-                board.placePiece(0);
-                break;
-            case "two":
-                board.placePiece(1);
-                break;
-            case "three":
-                board.placePiece(2);
-                break;
-            case "four":
-                board.placePiece(3);
-                break;
-            case "five":
-                board.placePiece(4);
-                break;
-            case "six":
-                board.placePiece(5);
-                break;
-            case "seven":
-                board.placePiece(6);
-                break;
-            default:
-                break;
+    //Only consider reactions to greeter-bot
+    if (reaction.message.member.id === client.user.id) {
+        //emoji game
+        if (reaction.message.content.startsWith("**Guess the emoji**")) {
+            reaction.message.clearReactions();
+            newEmoji = message.guild.emojis.random(1);
+
+            if (newEmoji.id === reaction.emoji.id) {
+                reaction.message.edit(user.username + " wins! " + newEmoji.toString());
+            }
+            else {
+                reaction.message.edit("**Guess the emoji** again (using reactions): " + message.guild.emojis.random(1).toString());
+            }
         }
-        reaction.messsage.edit(board.getBoard());
-    }
+
+        //connect four
+        if (false && reaction.message.content.startsWith("Connect 4!")) {
+            let board = new connectFour.ConnectFour(reaction.message.content);
+            switch(reaction.emoji.name) {
+                case "one":
+                    board.placePiece(0);
+                    break;
+                case "two":
+                    board.placePiece(1);
+                    break;
+                case "three":
+                    board.placePiece(2);
+                    break;
+                case "four":
+                    board.placePiece(3);
+                    break;
+                case "five":
+                    board.placePiece(4);
+                    break;
+                case "six":
+                    board.placePiece(5);
+                    break;
+                case "seven":
+                    board.placePiece(6);
+                    break;
+                default:
+                    break;
+            }
+            reaction.messsage.edit(board.getBoard());
+        }
+    }   
 });
 
 client.on('message', message => {
@@ -102,6 +119,10 @@ client.on('message', message => {
                 message.channel.send(board.getBoard())
                     .then(game => gameReactions(game))
                     .catch(console.error());
+                break;
+            //The League of Legends of emoji guessing
+            case "emoji":
+                message.channel.send("**Guess the emoji** (using reactions): " + message.guild.emojis.random(1).toString());
                 break;
             //Play a beautiful serenade
             case "exposed":
