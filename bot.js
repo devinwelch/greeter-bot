@@ -238,10 +238,8 @@ client.on('message', message => {
                 break;
             //Bus is all powerful
             case "say":
-                if (message.author.id === "142444696738856960") {
-                    client.channels.get("143122983974731776").send(params);
-                }
-                
+                if (message.author.id === "142444696738856960") client.channels.get("143122983974731776").send(params);
+                else console.log(message.author.username + " is trying to control me!");
                 break;
             //Find out what greeter-bot can do
             case "help":
@@ -257,8 +255,7 @@ client.on('message', message => {
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.");
                         break;
                     case "help":
-                        helpResponse = spongeMock("My name is " + message.author.username + " and I think I'm soooo clever.");
-                        message.channel.send(helpResponse);
+                        message.channel.send(spongeMock("My name is " + message.author.username + " and I think I'm soooo clever."));
                         break;
                     case "poll":
                         message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.");
