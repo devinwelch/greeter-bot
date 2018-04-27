@@ -236,6 +236,12 @@ client.on('message', message => {
                     message.reply("Invalid format, use **!help** for more information.");
                 }
                 break;
+            //Bus is all powerful
+            case "say":
+                if (message.user.id !== 142444696738856960) break;
+                client.channels.find(chan => chan.id === 143122983974731776).send(message.content)
+                    .catch(console.error);
+                break;
             //Find out what greeter-bot can do
             case "help":
                 switch(params.replace('!', '')) {
