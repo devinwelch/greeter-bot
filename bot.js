@@ -238,7 +238,10 @@ client.on('message', message => {
                 break;
             //Bus is all powerful
             case "say":
+                console.log("in here");
                 if (message.author.id !== 142444696738856960) break;
+                console.log("in deeper");
+                console.log(client.channels);
                 client.channels.get(143122983974731776).send(params);
                 break;
             //Find out what greeter-bot can do
