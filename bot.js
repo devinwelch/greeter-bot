@@ -238,11 +238,8 @@ client.on('message', message => {
                 break;
             //Bus is all powerful
             case "say":
-                console.log("userID:     " + message.author.id);
-                console.log("compare to: 142444696738856960");
-                if (message.author.id === 142444696738856960) {
-                    console.log(client.channels);
-                    client.channels.get(143122983974731776).send(params);
+                if (message.author.id === "142444696738856960") {
+                    client.channels.get("143122983974731776").send(params);
                 }
                 
                 break;
