@@ -55,13 +55,13 @@ client.on('messageReactionAdd', (reaction, user) => {
     if (reaction.message.member.id === client.user.id) {
         //emoji game
         if (reaction.message.content.startsWith("**Guess the emoji**")) {
-            reaction.message.clearReactions();
             newEmoji = reaction.message.guild.emojis.random(1);
 
             if (newEmoji.id === reaction.emoji.id) {
-                reaction.message.edit(user.username + " wins! " + newEmoji.toString());
+                reaction.message.edit("**" + user.username + "** wins! " + newEmoji.toString());
             }
             else {
+                reaction.message.clearReactions();
                 reaction.message.edit("**Guess the emoji** again (using reactions): " + reaction.message.guild.emojis.random(1).toString());
             }
         }
@@ -126,6 +126,7 @@ client.on('message', message => {
             //Play games with your buddies
             case "challenge":
             case "connect":
+                break;
                 let board = new connectFour.ConnectFour();
                 message.channel.send(board.getBoard())
                     .then(game => gameReactions(game))
