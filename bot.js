@@ -55,7 +55,7 @@ client.on('messageReactionAdd', (reaction, user) => {
     if (reaction.message.member.id === client.user.id) {
         //emoji game
         if (reaction.message.content.startsWith("**Guess the emoji**")) {
-            //reaction.message.clearReactions(); disabled until bwandy fixes permissions
+            reaction.message.clearReactions();
             newEmoji = reaction.message.guild.emojis.random(1);
 
             if (newEmoji.id === reaction.emoji.id) {
