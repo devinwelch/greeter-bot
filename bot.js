@@ -239,7 +239,7 @@ client.on('message', message => {
             //Bus is all powerful
             case "say":
                 if (message.user.id !== 142444696738856960) break;
-                client.channels.find(chan => chan.id === 143122983974731776).send(message.content)
+                client.channels.find(chan => chan.id === 143122983974731776).send(params)
                     .catch(console.error);
                 break;
             //Find out what greeter-bot can do
