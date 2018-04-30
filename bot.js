@@ -18,6 +18,7 @@ caching
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const connectFour = require('./connect.js');
+var schedule = require('node-schedule');
 
 /* SQL stuff not working, keep it here for now
 var pg = require('pg');
@@ -325,6 +326,10 @@ client.on('message', message => {
 });
 
 client.login(process.env.BOT_TOKEN);
+
+var j = schedule.scheduleJob('0 55,56 * * * *', function(){
+    console.log('This is scheduled');
+  });
 
 function slowRoll(message, min, max, count) {
     sleep(2000);
