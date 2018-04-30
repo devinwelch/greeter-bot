@@ -327,8 +327,8 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-var j = schedule.scheduleJob('0 55,56 * * * *', function(){
-    console.log('This is scheduled');
+var j = schedule.scheduleJob('0 58,59 * * * *', function(){
+    console.log('This is scheduled new');
   });
 
 function slowRoll(message, min, max, count) {
