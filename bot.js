@@ -308,7 +308,7 @@ function myDudes() {
             popularChannel.leave();
         });
     }).catch(error => console.log(error));
-}
+};
 
 function slowRoll(message, min, max, count) {
     sleep(2000);
@@ -320,12 +320,12 @@ function slowRoll(message, min, max, count) {
 
     message.edit(message.content + rollMessage)
         .then(thisMessage => slowRoll(thisMessage, min, max, count));
-}
+};
 
 function sleep(miliseconds) {
     var currentTime = new Date().getTime();
     while (currentTime + miliseconds >= new Date().getTime()) {}
- }
+ };
 
  function gameReactions(boardMessage) {
     boardMessage.react("1️⃣");
@@ -335,7 +335,7 @@ function sleep(miliseconds) {
     boardMessage.react("5️⃣");
     boardMessage.react("6️⃣");
     boardMessage.react("7️⃣");
- }
+ };
 
 function playSong(message, song) {
     if (message.member.voiceChannel !== undefined && message.member.voiceChannel.guild.id === message.guild.id) {
@@ -346,7 +346,7 @@ function playSong(message, song) {
             });
         }).catch(error => console.log(error));
     }
-}
+};
 
 function spongeMock(messageText) {
     toggle = true;
@@ -358,7 +358,7 @@ function spongeMock(messageText) {
             }
         }
     return mock;
-}
+};
 
 function isQuestion(message) {
     return (message.toLowerCase().startsWith("can") || 
@@ -391,4 +391,4 @@ function isNotChristian(message) {
     }
     
     return false;
-}
+};
