@@ -295,7 +295,7 @@ schedule.scheduleJob('0 4-23 * * 3', myDudes());
 schedule.scheduleJob('0 0-3 * * 4', myDudes());
 
 function myDudes() {
-    var popularChannel = client.channels
+    let popularChannel = client.channels
         //find voice channels
         .filter(channel => channel.bitrate !== undefined)
         //sort by most members
