@@ -291,8 +291,10 @@ client.on('message', message => {
 client.login(process.env.BOT_TOKEN);
 
 //Tell the time
-schedule.scheduleJob('56 * * * 2', function(){
-//schedule.scheduleJob('0 * * * 3', function(){
+schedule.scheduleJob('0 4-23 * * 3', myDudes());
+schedule.scheduleJob('0 0-3 * * 4', myDudes());
+
+function myDudes() {
     var popularChannel = client.channels
         //find voice channels
         .filter(channel => channel.bitrate !== undefined)
@@ -300,13 +302,13 @@ schedule.scheduleJob('56 * * * 2', function(){
         .sort(function (channel1, channel2) { return channel2.members.array().length - channel1.members.array().length; })
         .first();
 
-        popularChannel.join().then(connection => {
-            const dispatcher = connection.playFile("./Sounds/Wednesday.mp3");
-            dispatcher.on("end", end => {
-                popularChannel.leave();
-            });
-        }).catch(error => console.log(error));
-  });
+    popularChannel.join().then(connection => {
+        const dispatcher = connection.playFile("./Sounds/Wednesday.mp3");
+        dispatcher.on("end", end => {
+            popularChannel.leave();
+        });
+    }).catch(error => console.log(error));
+}
 
 function slowRoll(message, min, max, count) {
     sleep(2000);
