@@ -327,9 +327,9 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-var j = schedule.scheduleJob('0 15 20 * * *', function(){
+var j = schedule.scheduleJob('45 20 * * *', function(){
     client.channels.get("198558126193115136").join().then(connection => {
-        const dispatcher = connection.playFile("./Sounds/815.wav");
+        const dispatcher = connection.playFile("./Sounds/845.wav");
         dispatcher.on("end", end => {
             client.channels.get("198558126193115136").leave();
         });
@@ -364,12 +364,14 @@ function sleep(miliseconds) {
  }
 
 function playSong(message, song) {
-    clinet.channels.join().then(connection => {
-        const dispatcher = connection.playFile("./Sounds/" + song);
-        dispatcher.on("end", end => {
-            message.member.voiceChannel.leave();
-        });
-    }).catch(error => console.log(error));
+    if (message.member.voiceChannel !== undefined && message.member.voiceChannel.guild.id === message.guild.id) {
+        message.member.voiceChannel.join().then(connection => {
+           const dispatcher = connection.playFile("./Sounds/" + song);
+            dispatcher.on("end", end => {
+                message.member.voiceChannel.leave();
+            });
+        }).catch(error => console.log(error));
+    }
 }
 
 function spongeMock(messageText) {
