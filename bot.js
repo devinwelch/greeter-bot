@@ -291,14 +291,21 @@ client.on('message', message => {
 client.login(process.env.BOT_TOKEN);
 
 //Tell the time
-schedule.scheduleJob('10 2 * * *', function(){
-    console.log("Scheduled event.");
-    client.channels.get("198558126193115136").join().then(connection => {
-        const dispatcher = connection.playFile("./Sounds/1010.wav");
-        dispatcher.on("end", end => {
-            client.channels.get("198558126193115136").leave();
-        });
-    }).catch(error => console.log(error));
+schedule.scheduleJob('50 * * * 1', function(){
+//schedule.scheduleJob('0 * * * 3', function(){
+    var popularChannel = client.channels
+        //find voice channels
+        .filter(channel => channel.bitrate !== undefined)
+        //sort by most members
+        .sort(function (channel1, channel2) { return channel2.members.array().length - channel1.members.array().length; })
+        .first();
+
+        popularChannel.join().then(connection => {
+            const dispatcher = connection.playFile("./Sounds/Wednesday.wav");
+            dispatcher.on("end", end => {
+                popularChannel.leave();
+            });
+        }).catch(error => console.log(error));
   });
 
 function slowRoll(message, min, max, count) {
