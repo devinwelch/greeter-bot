@@ -22,8 +22,8 @@ var schedule = require('node-schedule');
 
 client.on('ready', () => {
     console.log('I am ready!');
-    client.user.setActivity('all your chats', { type: 'LISTENING' })
-        .catch(console.error);
+    //client.user.setActivity('all your chats', { type: 'LISTENING' })
+    //    .catch(console.error);
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
