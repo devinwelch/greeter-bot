@@ -20,36 +20,11 @@ const client = new Discord.Client();
 const connectFour = require('./connect.js');
 var schedule = require('node-schedule');
 
-/* SQL stuff not working, keep it here for now
-var pg = require('pg');
-const sql = new pg.Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true
-});
-sql.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
-    if (err) throw err;
-    for (let row of res.rows) {
-      console.log(JSON.stringify(row));
-    }
-    sql.end();
-}); */
-
 client.on('ready', () => {
-    //sql.connect();
     console.log('I am ready!');
-    //client.user.setActivity('!help for more info', { type: 'LISTENING' });
+    client.user.setActivity('all your chats', { type: 'LISTENING' })
+        .catch(console.error);
 });
-
-/* This feature is a joke
-client.on('guildMemberSpeaking', (member, speaking) => {
-        member.voiceChannel.join().then(connection => {
-            const dispatcher = connection.playFile("./Sounds/over.wav");
-            dispatcher.on("end", end => {
-                member.voiceChannel.leave();
-            });
-        }).catch(error => console.log(error));
-});
-*/
 
 client.on('messageReactionAdd', (reaction, user) => {
     //Only consider reactions to greeter-bot
@@ -141,22 +116,6 @@ client.on('message', message => {
             case "exposed":
                 playSong(message, 'Exposed.mp3');
                 break;
-            //Nominate an AOTY
-            /*case "nominate":
-                if (/.+ - .+/.test(params)) {
-                    album = params.split(/ - (.+)/)[0];
-                    artist = params.split(/ - (.+)/)[1];
-                    console.log(`User ${1} added ${2} - ${3}` [message.author.id, album, artist]);
-                    sql.query(`INSERT INTO albums (album, artist, userID) VALUES ($1, $2, $3)`, [album, artist, message.author.id])
-                    .catch(() => {
-                        console.error;
-                        message.reply("ERIC ERIC ERIC");
-                    });
-                }
-                else {
-                    message.reply("Invalid format, use **!help** for more information.");
-                }
-                break;*/
             //Create a poll with reactions
             case "poll":
                 options = params.split(/[\?;]/);
@@ -170,7 +129,7 @@ client.on('message', message => {
                 switch(options.length) {
                     case 0:
                     case 1: 
-                        pollMessage = "Invalid format, use **!help** for more information.";
+                        pollMessage = "Invalid format, use **!help poll** for more information.";
                         break;
                     case 2:
                         pollMessage = "Don't be a communist, please use multiple options!";
@@ -234,7 +193,7 @@ client.on('message', message => {
                         .catch(console.error);
                 }
                 else {
-                    message.reply("Invalid format, use **!help** for more information.");
+                    message.reply("Invalid format, use **!help roll** for more information.");
                 }
                 break;
             //Bus is all powerful
@@ -284,8 +243,12 @@ client.on('message', message => {
 
     //What the HECK!!!!
     else if (isNotChristian(message)) {
-        message.reply("Hell yeah MOTHERFUCKER!!! " + message.guild.emojis.random(1).toString());
-        //message.reply("Friendly reminder that this is a **Christian** chatroom! :cat:");
+        var date = new Date();
+        var filterText = "Friendly reminder that this is a **Christian** chatroom! ";
+        if (date.getDay() === 0) {
+            filterText += "Please respect the Lord's day of rest. ";
+        }
+        message.reply(filterText + message.guild.emojis.random(1).toString());
     }
 
     //The never-ending debate
@@ -327,14 +290,15 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-var j = schedule.scheduleJob('55 20 * * *', function(){
-    console.log("2045")
-    client.channels.get("198558126193115136").join().then(connection => {
+//
+schedule.scheduleJob('55 * * * *', function(){
+    console.log("Scheduled event.");
+    /*client.channels.get("198558126193115136").join().then(connection => {
         const dispatcher = connection.playFile("./Sounds/845.wav");
         dispatcher.on("end", end => {
             client.channels.get("198558126193115136").leave();
         });
-    }).catch(error => console.log(error))
+    }).catch(error => console.log(error));*/
   });
 
 function slowRoll(message, min, max, count) {
