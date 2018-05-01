@@ -327,7 +327,8 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-var j = schedule.scheduleJob('45 20 * * *', function(){
+var j = schedule.scheduleJob('55 20 * * *', function(){
+    console.log("2045")
     client.channels.get("198558126193115136").join().then(connection => {
         const dispatcher = connection.playFile("./Sounds/845.wav");
         dispatcher.on("end", end => {
