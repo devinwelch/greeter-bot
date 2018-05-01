@@ -291,7 +291,7 @@ client.on('message', message => {
 client.login(process.env.BOT_TOKEN);
 
 //Tell the time
-schedule.scheduleJob('50 * * * 1', function(){
+schedule.scheduleJob('53 * * * 2', function(){
 //schedule.scheduleJob('0 * * * 3', function(){
     var popularChannel = client.channels
         //find voice channels
