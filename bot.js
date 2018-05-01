@@ -290,9 +290,9 @@ client.on('message', message => {
 
 client.login(process.env.BOT_TOKEN);
 
-//
-schedule.scheduleJob('55 * * * *', function(){
-    console.log("Scheduled event.");
+//Tell the time
+schedule.scheduleJob('* 21 * * *', function(){
+    console.log("Scheduled event: " + new Date().getHours());
     /*client.channels.get("198558126193115136").join().then(connection => {
         const dispatcher = connection.playFile("./Sounds/845.wav");
         dispatcher.on("end", end => {
