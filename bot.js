@@ -115,7 +115,7 @@ client.on('message', message => {
             //Play a beautiful serenade
             case "exposed":
                 playSong(message, 'Exposed.mp3')
-                    .then(playSong(message, 'HumanMusic.mp3'));
+                    .then(song => playSong(message, 'HumanMusic.mp3'));
                 break;
             //Create a poll with reactions
             case "poll":
