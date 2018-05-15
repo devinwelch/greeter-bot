@@ -121,7 +121,7 @@ client.on('message', message => {
             //Announce yourself
             case "me":
                 user = params !== "" ? params : message.author.username;
-                path = "Friends/" + user + ".mp3";
+                path = "Friends/" + user.toLowerCase() + ".mp3";
                 if (fs.existsSync("./Sounds/" + path)) {
                     playSong(message, path);
                 }
@@ -231,7 +231,7 @@ client.on('message', message => {
                         message.channel.send(spongeMock("My name is " + message.author.username + " and I think I'm soooo clever."));
                         break;
                     case "me":
-                        message.channel.send("Play a personalized greeting. If not set up, contact Bus" + message.guild.emojis.find('id', '445756948596523018'));
+                        message.channel.send("Play a personalized greeting. If not set up, contact Bus. To play another user's sound:\n```!me [username]```");
                         break;
                     case "poll":
                         message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.");
