@@ -121,7 +121,7 @@ client.on('message', message => {
             //Announce yourself
             case "me":
                 path = "Friends/" + message.author.username + ".mp3";
-                if (fs.existsSync(path)) {
+                if (fs.existsSync(".\Sounds" + path)) {
                     playSong(message, path);
                 }
                 else {
