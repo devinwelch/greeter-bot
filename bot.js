@@ -218,7 +218,7 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!emoji**, **!exposed**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        message.channel.send("Available commands: **!emoji**, **!exposed**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
                         break;
                     case "emoji":
                         message.channel.send("Add reactions to guess the next random emoji. Will only select server-specific emojis. Winner *should* be announced after successful guess!");
@@ -228,6 +228,9 @@ client.on('message', message => {
                         break;
                     case "help":
                         message.channel.send(spongeMock("My name is " + message.author.username + " and I think I'm soooo clever."));
+                        break;
+                    case "me":
+                        message.channel.send("Play a personalized greeting. If not set up, contact Bus" + message.guild.emojis.find('id', '445756948596523018'));
                         break;
                     case "poll":
                         message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.");
