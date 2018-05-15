@@ -19,6 +19,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const connectFour = require('./connect.js');
 var schedule = require('node-schedule');
+var fs = require('fs');
+
 
 client.on('ready', () => {
     console.log('I am ready!');
@@ -115,6 +117,16 @@ client.on('message', message => {
             //Play a beautiful serenade
             case "exposed":
                 playSong(message, 'ExposedHumans.mp3');
+                break;
+            //Announce yourself
+            case "me":
+                path = "Friends/" + message.author.username + ".mp3";
+                if (fs.existsSync(path)) {
+                    playSong(message, path);
+                }
+                else {
+                    message.reply("Username not found, find a sound clip and give it to Bus!");
+                }
                 break;
             //Create a poll with reactions
             case "poll":
