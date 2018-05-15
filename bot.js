@@ -120,7 +120,8 @@ client.on('message', message => {
                 break;
             //Announce yourself
             case "me":
-                path = "Friends/" + message.author.username + ".mp3";
+                user = params != undefined ? params[0] : message.author.username;
+                path = "Friends/" + user + ".mp3";
                 if (fs.existsSync("./Sounds/" + path)) {
                     playSong(message, path);
                 }
