@@ -257,6 +257,11 @@ client.on('message', message => {
         playSong(message, 'goosenight.wav');
     }
 
+    //Sweet memes!
+    else if (/.*:(g|Gr)oose:.*:day:.*/.test(message.content)) {
+        playSong(message, 'Goose day.mp3');
+    }
+
     //What the HECK!!!!
     else if (isNotChristian(message)) {
         var date = new Date();
