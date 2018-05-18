@@ -362,16 +362,21 @@ function slowRoll(message, min, max, count) {
  };
 
 function playSong(message, song) {
-    if (message.member.voiceChannel !== undefined && message.member.voiceChannel.guild.id === message.guild.id) {
+    if (message.member.voiceChannel !== undefined && message.member.voiceChannel.guild.id === message.guild.id && message.guild.me.voiceChannel === undefined) {
         message.member.voiceChannel.join().then(connection => {
            const dispatcher = connection.playFile("./Sounds/" + song);
             dispatcher.on("end", end => {
-                sleep(5000);
-                let num = Math.floor(Math.random() * 3) + 1;
-                const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
-                knocker.on("end", endor => {
+                if (Math.floor(Math.random() * 6) === 0) {
+                    sleep(5000);
+                    let num = Math.floor(Math.random() * 3) + 1;
+                    const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
+                    knocker.on("end", endor => {
+                        message.member.voiceChannel.leave();
+                    });
+                }
+                else {
                     message.member.voiceChannel.leave();
-                });
+                }
             });
         }).catch(error => console.log(error));
     }
