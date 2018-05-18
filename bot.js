@@ -302,7 +302,7 @@ client.on('message', message => {
     else if (Math.floor(Math.random() * 20) === 0) {
         if (Math.floor(Math.random() * 4) === 0 && message.member.voiceChannel !== undefined) {
             playSong(message, "Ree.mp3");
-            message.react('443565080202969127');
+            message.react(message.guild.emojis.get('446856263330955264'));
         }
         else {   
             message.channel.send(spongeMock(message.content));
