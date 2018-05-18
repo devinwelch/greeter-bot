@@ -351,11 +351,6 @@ function slowRoll(message, min, max, count) {
         .then(thisMessage => slowRoll(thisMessage, min, max, count));
 };
 
-function sleep(miliseconds) {
-    var currentTime = new Date().getTime();
-    while (currentTime + miliseconds >= new Date().getTime()) {}
- };
-
  function gameReactions(boardMessage) {
     boardMessage.react("1️⃣");
     boardMessage.react("2️⃣");
@@ -371,6 +366,7 @@ function playSong(message, song) {
         message.member.voiceChannel.join().then(connection => {
            const dispatcher = connection.playFile("./Sounds/" + song);
             dispatcher.on("end", end => {
+                sleep(5000);
                 let num = Math.floor(Math.random() * 3) + 1;
                 const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
                 knocker.on("end", endor => {
@@ -380,6 +376,11 @@ function playSong(message, song) {
         }).catch(error => console.log(error));
     }
 };
+
+function sleep(miliseconds) {
+    var currentTime = new Date().getTime();
+    while (currentTime + miliseconds >= new Date().getTime()) {}
+ };
 
 function spongeMock(messageText) {
     toggle = true;
