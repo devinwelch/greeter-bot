@@ -371,7 +371,11 @@ function playSong(message, song) {
         message.member.voiceChannel.join().then(connection => {
            const dispatcher = connection.playFile("./Sounds/" + song);
             dispatcher.on("end", end => {
-                message.member.voiceChannel.leave();
+                let num = Math.floor(Math.random() * 3) + 1;
+                const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
+                knocker.on("end", endor => {
+                    message.member.voiceChannel.leave();
+                });
             });
         }).catch(error => console.log(error));
     }
