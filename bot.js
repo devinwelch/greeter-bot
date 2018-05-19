@@ -252,6 +252,11 @@ client.on('message', message => {
         }
     }
 
+    //Hello Troll on Q
+    else if (message.content.toLowerCase().indexOf("hello") !== -1) {
+        message.reply("Hey its me Q");
+    }
+
     //Sweet dreams!
     else if (/.*:(g|Gr)oose:.*:k?night:.*/.test(message.content)) {
         playSong(message, 'goosenight.wav');
