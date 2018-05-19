@@ -254,7 +254,7 @@ client.on('message', message => {
 
     //Hello Troll on Q
     else if (message.content.toLowerCase().indexOf("hello") !== -1) {
-        message.reply("Hey its me Q, just kidding its Bwandy");
+        message.reply("Hey it's me, Q! JK it's Bwandy hehe");
     }
 
     //Sweet dreams!
