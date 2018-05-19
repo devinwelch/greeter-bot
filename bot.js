@@ -104,7 +104,10 @@ client.on('message', message => {
             //Kick greeter-bot from voice
             case "begonebot":
             case "begone":
-                message.guild.me.voiceChannel.leave();
+                channel = message.guild.me.voiceChannel;
+                if (channel !== undefined) {   
+                    channel.leave();
+                }
                 break;
             //Play games with your buddies
             case "challenge":
