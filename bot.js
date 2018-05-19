@@ -254,7 +254,6 @@ client.on('message', message => {
                         message.react(function () {
                             return emoji.name === "DownyBrownie";
                         });
-                        break;
                     }
                 });
                 break;
