@@ -101,6 +101,11 @@ client.on('message', message => {
         params = message.content.substring(cmd.length + 1, message.content.length).trim();
         quick = false;
         switch(cmd) {
+            //Kick greeter-bot from voice
+            case "begonebot":
+            case "begone":
+                message.guild.me.voiceChannel.leave();
+                break;
             //Play games with your buddies
             case "challenge":
             case "connect":
@@ -219,7 +224,10 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!emoji**, **!exposed**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        message.channel.send("Available commands: **!begone**, **!emoji**, **!exposed**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.");
+                        break;
+                    case "begone":
+                        message.channel.send("Kick greeter-bot out of the voice channel. Alias: begonebot");
                         break;
                     case "emoji":
                         message.channel.send("Add reactions to guess the next random emoji. Will only select server-specific emojis. Winner *should* be announced after successful guess!");
