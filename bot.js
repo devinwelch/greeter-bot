@@ -120,7 +120,7 @@ client.on('message', message => {
                 break;
             //Announce yourself
             case "me":
-                user = params !== "" ? params : message.author.username;
+                user = params !== "" ? params === message.author.username ? "congratulations" : params : message.author.username;
                 path = "Friends/" + user.toLowerCase() + ".mp3";
                 if (fs.existsSync("./Sounds/" + path)) {
                     playSong(message, path);
@@ -247,7 +247,16 @@ client.on('message', message => {
                         break;
                 }
                 break;
+            //Don't forget me
             default:
+                message.guild.members.array().forEach(function(member) {
+                    if (cmd === member.user.username) {
+                        message.react(function () {
+                            return emoji.name === "DownyBrownie";
+                        });
+                        break;
+                    }
+                });
                 break;
         }
     }
