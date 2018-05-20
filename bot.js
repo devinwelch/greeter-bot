@@ -262,8 +262,7 @@ client.on('message', message => {
             default:
                 for (let member of message.guild.members.array()) {
                     if (cmd.toLowerCase() === member.user.username.toLowerCase()) {
-                        message.react(message.guild.emojis.get('447551962020577290'))
-                            .then(console.log)
+                        message.react(client.emojis.get("447551962020577290"))
                             .catch(console.error);
                         break;
                     }
