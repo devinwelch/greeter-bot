@@ -401,11 +401,11 @@ function playSong(message, song) {
                     let num = Math.floor(Math.random() * 3) + 1;
                     const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
                     knocker.on("end", endor => {
-                        message.member.voiceChannel.leave();
+                        message.guild.me.voiceChannel.leave();
                     });
                 }
                 else {
-                    message.member.voiceChannel.leave();
+                    message.guild.me.voiceChannel.leave();
                 }
             });
         }).catch(error => console.log(error));
