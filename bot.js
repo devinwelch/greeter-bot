@@ -262,7 +262,7 @@ client.on('message', message => {
             default:
                 for (let member of message.guild.members.array()) {
                     if (cmd.toLowerCase() === member.user.username.toLowerCase()) {
-                        message.react(client.emojis.get("447551962020577290"))
+                        message.react(client.emojis.get("309497209475563521"))
                             .catch(console.error);
                         break;
                     }
@@ -326,7 +326,7 @@ client.on('message', message => {
     else if (Math.floor(Math.random() * 20) === 0) {
         if (Math.floor(Math.random() * 4) === 0 && message.member.voiceChannel !== undefined) {
             playSong(message, "Ree.mp3");
-            message.react(message.guild.emojis.get('447551247973744641').toString())
+            message.react(client.emojis.get("241629835166744576"))
                 .catch(console.error);
         }
         else {   
