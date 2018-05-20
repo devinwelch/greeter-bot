@@ -260,14 +260,13 @@ client.on('message', message => {
                 break;
             //Don't forget me
             default:
-                message.guild.members.array().forEach(function(member) {
-                    console.log("Trying: " + cmd + ", " + member.user.username);
+                for (let member of message.guild.members.array()) {
                     if (cmd.toLowerCase() === member.user.username.toLowerCase()) {
-                        console.log("In here");
-                        message.react(message.guild.emojis.get('447551962020577290'))
-                        .catch(console.error);
+                        message.react(message.guild.emojis.get('447551962020577290').toString())
+                            .catch(console.error);
                     }
-                });
+                    break;
+                }
                 break;
         }
     }
