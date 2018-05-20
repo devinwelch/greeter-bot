@@ -262,9 +262,8 @@ client.on('message', message => {
             default:
                 message.guild.members.array().forEach(function(member) {
                     if (cmd === member.user.username) {
-                        message.react(function () {
-                            return emoji.name === "DownyBrownie";
-                        });
+                        message.react(message.guild.emojis.get('447551962020577290'))
+                        .catch(console.error);
                     }
                 });
                 break;
@@ -326,9 +325,8 @@ client.on('message', message => {
     else if (Math.floor(Math.random() * 20) === 0) {
         if (Math.floor(Math.random() * 4) === 0 && message.member.voiceChannel !== undefined) {
             playSong(message, "Ree.mp3");
-            message.react(function () {
-                return emoji.name === "normiesbegone";
-            });
+            message.react(message.guild.emojis.get('447551247973744641'))
+                .catch(console.error);
         }
         else {   
             message.channel.send(spongeMock(message.content));
