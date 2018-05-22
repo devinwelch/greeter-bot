@@ -34,9 +34,10 @@ client.on('ready', () => {
 
 //play them song upon entering
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-    path = "./Sounds/Friends/" + oldMember.user.username.toLowerCase() + ".mp3";
-    console.log(oldMember);
-    console.log(newMember);
+    if (newMember.id === newMember.guild.me.id) return;
+    path = "./Sounds/Friends/" + newMember.user.username.toLowerCase() + ".mp3";
+    console.log(oldMember.user);
+    console.log(newMember.user);
 
     if (newMember.guild.me.voiceChannel === undefined &&    //greeter-bot isn't talking
         newMember.voiceChannel !== undefined &&             //user is in voice channel
