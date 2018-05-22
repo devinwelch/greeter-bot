@@ -34,18 +34,23 @@ client.on('ready', () => {
 
 //play them song upon entering
 client.on('voiceStateUpdate', (oldMember, newMember) => {
+    path = "./Sounds/Friends/" + newMember.user.username.toLowerCase() + ".mp3";
+    console.log(themeSong);
+
     if (newMember.guild.me.voiceChannel === undefined &&    //greeter-bot isn't talking
         newMember.voiceChannel !== undefined &&             //user is in voice channel
         !newMember.selfDeaf &&                              //user isn't deafened
         !newMember.selfMute &&                              //user isn't muted
         themeSong.indexOf(newMember.id) === -1 &&           //user hasn't played song today
-        fs.existsSync("./Sounds/" + path))                  //user has a song code
-    {               
+        fs.existsSync(path))                                //user has a song code
+    {
+        console.log(newMember.user.username + "joined.");
+
         newMember.voiceChannel.join().then(connection => {
-            const dispatcher = connection.playFile("./Sounds/Friends/" + newMember.user.username.toLowerCase() + ".mp3");
+            const dispatcher = connection.playFile(path);
             themeSong.push(newMember.id);
             dispatcher.on("end", end => {
-                message.guild.me.voiceChannel.leave();
+                newMember.guild.me.voiceChannel.leave();
             });
         }).catch(error => console.log(error));
     }
