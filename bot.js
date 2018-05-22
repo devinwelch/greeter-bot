@@ -32,12 +32,10 @@ client.on('ready', () => {
     //    .catch(console.error);
 });
 
-//play them song upon entering
+//play theme song upon entering
 client.on('voiceStateUpdate', (oldMember, newMember) => {
     if (newMember.id === newMember.guild.me.id) return;
     path = "./Sounds/Friends/" + newMember.user.username.toLowerCase() + ".mp3";
-    console.log(oldMember.user);
-    console.log(newMember.user);
 
     if (newMember.guild.me.voiceChannel === undefined &&    //greeter-bot isn't talking
         newMember.voiceChannel !== undefined &&             //user is in voice channel
@@ -401,7 +399,9 @@ schedule.scheduleJob('0 0-3 * * 4', function() {
 
 //Reset theme songs
 schedule.scheduleJob('0 0 * * *', function() {
+    console.log("Resetting theme songs");
     themeSong = [];
+    
 });
 
 function slowRoll(message, min, max, count) {
