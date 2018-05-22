@@ -5,6 +5,8 @@ Ideas
 Calculate GBPs
 - for swearing
 !punish
+- downy reaction
+- loud noise during talk
 connect 4
 
 Code
@@ -12,6 +14,7 @@ Code
 String resources
 refactor god class
 caching
+refactor playSong so not repeated
 
 */
 
@@ -21,11 +24,31 @@ const connectFour = require('./connect.js');
 var schedule = require('node-schedule');
 var fs = require('fs');
 
+var themeSong = [];
 
 client.on('ready', () => {
     console.log('I am ready!');
     //client.user.setActivity('all your chats', { type: 'LISTENING' })
     //    .catch(console.error);
+});
+
+//play them song upon entering
+client.on('voiceStateUpdate', (oldMember, newMember) => {
+    if (newMember.guild.me.voiceChannel === undefined &&    //greeter-bot isn't talking
+        newMember.voiceChannel !== undefined &&             //user is in voice channel
+        !newMember.selfDeaf &&                              //user isn't deafened
+        !newMember.selfMute &&                              //user isn't muted
+        themeSong.indexOf(newMember.id) === -1 &&           //user hasn't played song today
+        fs.existsSync("./Sounds/" + path))                  //user has a song code
+    {               
+        newMember.voiceChannel.join().then(connection => {
+            const dispatcher = connection.playFile("./Sounds/Friends/" + newMember.user.username.toLowerCase() + ".mp3");
+            themeSong.push(newMember.id);
+            dispatcher.on("end", end => {
+                message.guild.me.voiceChannel.leave();
+            });
+        }).catch(error => console.log(error));
+    }
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
@@ -367,6 +390,11 @@ schedule.scheduleJob('0 0-3 * * 4', function() {
             popularChannel.leave();
         });
     }).catch(error => console.log(error));
+});
+
+//Reset theme songs
+schedule.scheduleJob('0 0 * * *', function() {
+    themeSong = [];
 });
 
 function slowRoll(message, min, max, count) {
