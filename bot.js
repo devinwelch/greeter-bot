@@ -42,8 +42,9 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
         themeSong.indexOf(newMember.id) === -1 &&           //user hasn't played song today
         fs.existsSync("./Sounds/" + path))                  //user has a song code
     {
-        console.log(newMember.user.username + " played his/her song!");
         playSong(newMember.voiceChannel, path, true);
+        themeSong.push(newMember.id);
+        console.log(newMember.user.username + " played his/her song!");
     }
 });
 
