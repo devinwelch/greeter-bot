@@ -30,22 +30,6 @@ client.on('ready', () => {
     //    .catch(console.error);
 });
 
-client.on('guildMemberSpeaking', (member, speaking) => {
-    if (member.voiceChannelID !== '195012176610590720') {
-        playSong(message, song)
-    }
-
-    if (speaking) {
-        join and talk
-        repeat
-    }
-    else {
-        disconnect
-    }
-    join the channel and talk
-    
-});
-
 //play theme song upon entering
 client.on('voiceStateUpdate', (oldMember, newMember) => {
     if (newMember.id === newMember.guild.me.id) return;
