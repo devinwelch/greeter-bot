@@ -5,7 +5,6 @@ Ideas
 Calculate GBPs
 - for swearing
 !punish
-- downy reaction
 - loud noise during talk
 connect 4
 
@@ -14,7 +13,6 @@ Code
 String resources
 refactor god class
 caching
-refactor playSong so not repeated
 
 */
 
@@ -32,27 +30,36 @@ client.on('ready', () => {
     //    .catch(console.error);
 });
 
+client.on('guildMemberSpeaking', (member, speaking) => {
+    if (member.voiceChannelID !== '195012176610590720') {
+        playSong(message, song)
+    }
+
+    if (speaking) {
+        join and talk
+        repeat
+    }
+    else {
+        disconnect
+    }
+    join the channel and talk
+    
+});
+
 //play theme song upon entering
 client.on('voiceStateUpdate', (oldMember, newMember) => {
     if (newMember.id === newMember.guild.me.id) return;
-    path = "./Sounds/Friends/" + newMember.user.username.toLowerCase() + ".mp3";
+    path = "Friends/" + newMember.user.username.toLowerCase() + ".mp3";
 
     if (newMember.guild.me.voiceChannel === undefined &&    //greeter-bot isn't talking
         newMember.voiceChannel !== undefined &&             //user is in voice channel
         !newMember.selfDeaf &&                              //user isn't deafened
         !newMember.selfMute &&                              //user isn't muted
         themeSong.indexOf(newMember.id) === -1 &&           //user hasn't played song today
-        fs.existsSync(path))                                //user has a song code
+        fs.existsSync("./Sounds/" + path))                  //user has a song code
     {
         console.log(newMember.user.username + " played his/her song!");
-
-        newMember.voiceChannel.join().then(connection => {
-            const dispatcher = connection.playFile(path);
-            themeSong.push(newMember.id);
-            dispatcher.on("end", end => {
-                newMember.guild.me.voiceChannel.leave();
-            });
-        }).catch(error => console.log(error));
+        playSong(newMember.voiceChannel, path, true);
     }
 });
 
@@ -152,14 +159,14 @@ client.on('message', message => {
                 break;
             //Play a beautiful serenade
             case "exposed":
-                playSong(message, 'ExposedHumans.mp3');
+                playSong(message.member.voiceChannel, 'ExposedHumans.mp3');
                 break;
             //Announce yourself
             case "me":
                 user = params !== "" ? params.toLowerCase() === message.author.username.toLowerCase() ? "congratulations" : params : message.author.username;
                 path = "Friends/" + user.toLowerCase() + ".mp3";
                 if (fs.existsSync("./Sounds/" + path)) {
-                    playSong(message, path);
+                    playSong(message.member.voiceChannel, path);
                 }
                 else {
                     message.reply("Username not found, find a sound clip and give it to Bus!");
@@ -306,12 +313,12 @@ client.on('message', message => {
 
     //Sweet dreams!
     else if (/.*:(g|Gr)oose:.*:k?night:.*/.test(message.content)) {
-        playSong(message, 'goosenight.wav');
+        playSong(message.member.voiceChannel, 'goosenight.wav');
     }
 
     //Sweet memes!
     else if (/.*:(g|Gr)oose:.*:day:.*/.test(message.content)) {
-        playSong(message, 'Goose day.mp3');
+        playSong(message.member.voiceChannel, 'Goose day.mp3');
     }
 
     //What the HECK!!!!
@@ -326,12 +333,12 @@ client.on('message', message => {
 
     //The never-ending debate
     else if (message.content.toLowerCase() === "all women are queens") {
-        playSong(message, 'Queens.mp3');
+        playSong(message.member.voiceChannel, 'Queens.mp3');
     }
 
     //Enforce some positivity
     else if (isQuestion(message.content)) {
-        playSong(message, 'Doable.mp3');
+        playSong(message.member.voiceChannel, 'Doable.mp3');
         message.react(message.channel.client.emojis.find(isDoable));
     }
 
@@ -353,7 +360,7 @@ client.on('message', message => {
     //Random chance to make fun of you or scream at you
     else if (Math.floor(Math.random() * 20) === 0) {
         if (Math.floor(Math.random() * 4) === 0 && message.member.voiceChannel !== undefined) {
-            playSong(message, "Ree.mp3");
+            playSong(message.member.voiceChannel, "Ree.mp3");
             message.react(client.emojis.get("241629835166744576"))
                 .catch(console.error);
         }
@@ -367,42 +374,28 @@ client.login(process.env.BOT_TOKEN);
 
 //Tell the time
 schedule.scheduleJob('0 4-23 * * 3', function() {
-    let popularChannel = client.channels
-        //find voice channels
-        .filter(channel => channel.bitrate !== undefined)
-        //sort by most members
-        .sort(function (channel1, channel2) { return channel2.members.array().length - channel1.members.array().length; })
-        .first();
-
-    popularChannel.join().then(connection => {
-        const dispatcher = connection.playFile("./Sounds/Wednesday.mp3");
-        dispatcher.on("end", end => {
-            popularChannel.leave();
-        });
-    }).catch(error => console.log(error));
+    declareDay();
 });
 schedule.scheduleJob('0 0-3 * * 4', function() {
-    let popularChannel = client.channels
-        //find voice channels
-        .filter(channel => channel.bitrate !== undefined)
-        //sort by most members
-        .sort(function (channel1, channel2) { return channel2.members.array().length - channel1.members.array().length; })
-        .first();
-
-    popularChannel.join().then(connection => {
-        const dispatcher = connection.playFile("./Sounds/Wednesday.mp3");
-        dispatcher.on("end", end => {
-            popularChannel.leave();
-        });
-    }).catch(error => console.log(error));
+    declareDay();
 });
 
 //Reset theme songs
 schedule.scheduleJob('0 0 * * *', function() {
     console.log("Resetting theme songs");
     themeSong = [];
-    
 });
+
+function declareDay() {
+    let popularChannel = client.channels
+        //find voice channels
+        .filter(channel => channel.bitrate !== undefined)
+        //sort by most members
+        .sort(function (channel1, channel2) { return channel2.members.array().length - channel1.members.array().length; })
+        .first();
+
+        playSong(popularChannel, "Wednesday.mp3", true);
+};
 
 function slowRoll(message, min, max, count) {
     sleep(2000);
@@ -426,21 +419,21 @@ function slowRoll(message, min, max, count) {
     boardMessage.react("7️⃣");
  };
 
-function playSong(message, song) {
-    if (message.member.voiceChannel !== undefined && message.member.voiceChannel.guild.id === message.guild.id && message.guild.me.voiceChannel === undefined) {
-        message.member.voiceChannel.join().then(connection => {
-           const dispatcher = connection.playFile("./Sounds/" + song);
-            dispatcher.on("end", end => {
-                if (Math.floor(Math.random() * 6) === 0) {
+function playSong(voiceChannel, song, noKnock) {
+    if (voiceChannel !== undefined && client.voiceConnections.get(voiceChannel.guild.id) === undefined) {
+        voiceChannel.join().then(connection => {
+            const dispatcher = connection.playFile("./Sounds/" + song);
+            dispatcher.on("end", () => {
+                if (!noKnock && Math.floor(Math.random() * 6) === 0) {
                     sleep(5000);
                     let num = Math.floor(Math.random() * 3) + 1;
                     const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
-                    knocker.on("end", endor => {
-                        message.guild.me.voiceChannel.leave();
+                    knocker.on("end", () => {
+                        voiceChannel.guild.me.voiceChannel.leave();
                     });
                 }
                 else {
-                    message.guild.me.voiceChannel.leave();
+                    voiceChannel.guild.me.voiceChannel.leave();
                 }
             });
         }).catch(error => console.log(error));
