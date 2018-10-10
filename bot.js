@@ -34,7 +34,9 @@ client.on('ready', () => {
 client.on('voiceStateUpdate', (oldMember, newMember) => {
     if (newMember.id === newMember.guild.me.id) return;
         
-    path = newMember.voiceChannel.members.array().length > 1 && Math.floor(Math.random() * 15) === 0
+    path = newMember.voiceChannel !== undefined &&
+           newMember.voiceChannel.members.array().length > 1 &&
+           Math.floor(Math.random() * 15) === 0
         ? "gnomed.mp3"
         : "Friends/" + newMember.user.username.toLowerCase() + ".mp3";
 
