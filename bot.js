@@ -423,6 +423,7 @@ function playSong(voiceChannel, song, noKnock) {
                     });
                 }
                 else {
+                    sleep(2000)
                     voiceChannel.guild.me.voiceChannel.leave();
                 }
             });
