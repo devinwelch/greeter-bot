@@ -40,12 +40,6 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
         ? "gnomed.mp3"
         : "Friends/" + newMember.user.username.toLowerCase() + ".mp3";
 
-    //APRIL PRANKS
-    d = new Date()
-    if (d.getMonth() === 3 && d.getDate() === 1) {
-        path = "gnomed.mp3"
-    }
-
     if (newMember.guild.me.voiceChannel === undefined &&    //greeter-bot isn't talking
         newMember.voiceChannel !== undefined &&             //user is in voice channel
         !newMember.selfDeaf &&                              //user isn't deafened
@@ -417,6 +411,11 @@ function slowRoll(message, min, max, count) {
 
 function playSong(voiceChannel, song, noKnock) {
     if (voiceChannel !== undefined && client.voiceConnections.get(voiceChannel.guild.id) === undefined) {
+        //APRIL PRANKS
+        d = new Date()
+        if (d.getMonth() === 3 && d.getDate() === 1) {
+            song = "gnomed.mp3"
+        }
         voiceChannel.join().then(connection => {
             const dispatcher = connection.playFile("./Sounds/" + song);
             dispatcher.on("end", () => {
