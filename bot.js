@@ -307,7 +307,7 @@ client.on('message', message => {
     }
 
     //Sweet memes!
-    else if (/.*:(g|Gr)oose:.*:day:.*/.test(message.content)) {
+    else if (/.*:gr?oose:.*:day:.*/.test(message.content)) {
         playSong(message.member.voiceChannel, 'Goose day.mp3');
     }
 
