@@ -302,7 +302,7 @@ client.on('message', message => {
     }
 
     //Sweet dreams!
-    else if (/.*:(g|Gr)oose:.*:k?night:.*/.test(message.content)) {
+    else if (/.*:gr?oose:.*:k?night:.*/.test(message.content)) {
         playSong(message.member.voiceChannel, 'goosenight.wav');
     }
 
