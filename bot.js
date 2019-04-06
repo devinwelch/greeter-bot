@@ -23,6 +23,7 @@ var schedule = require('node-schedule')
 var fs = require('fs')
 
 var themeSong = []
+var swears = []
 
 client.on('ready', () => {
     console.log('I am ready!')
@@ -454,7 +455,6 @@ function spongeMock(messageText) {
 
 function isQuestion(message) {
     return (message.toLowerCase().startsWith("can") || 
-        message.toLowerCase().startsWith("could") || 
         message.toLowerCase().startsWith("would") || 
         message.toLowerCase().startsWith("will")) &&
         message.endsWith('?')
@@ -465,15 +465,9 @@ function isDoable(emoji) {
 }
 
 function isNotChristian(message) {
-    swears = ['anal','arse',' ass ','asshole','balls','bastard','bitch',
-    'biatch','anus','bloody','blowjob','blow job','bollock','boner',
-    'boob','bugger','bum','butt','clitoris','cock','coon','crap',
-    'cuck','cunt','damn','dick','dildo','dyke','fag','feck','todger',
-    'fellate','fellatio','felching','fuck','fudgepacker','fudge packer',
-    'flange','goddamn','hell','homo','jizz','knobend','labia','wtf',
-    'lmao','lmfao','muff','nigger','nigga','omg','penis','piss','poop',
-    'prick','pube','pussy','queer','scrotum','sex','shit','slut','smegma',
-    'spunk','thot','tosser','turd','twat','vagina','wank','whore']
+    if (swears.length === 0) {
+        fs.readFileSync('swears.txt').toString().split("\n");
+    }
 
     for (i = 0; i < swears.length; i++) {
         if (message.content.toLowerCase().indexOf(swears[i]) !== -1) {
