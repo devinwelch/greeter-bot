@@ -466,7 +466,7 @@ function isDoable(emoji) {
 
 function isNotChristian(message) {
     if (swears.length === 0) {
-        fs.readFileSync('./swears.txt').toString().split("\n");
+        swears = fs.readFileSync('./swears.txt').toString().split("\n");
     }
 
     for (i = 0; i < swears.length; i++) {
