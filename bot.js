@@ -424,11 +424,15 @@ function playSong(voiceChannel, song, noKnock) {
                     let num = Math.floor(Math.random() * 3) + 1;
                     const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
                     knocker.on("end", () => {
-                        voiceChannel.guild.me.voiceChannel.leave();
+                        setTimeout(function(){
+                            voiceChannel.guild.me.voiceChannel.leave()
+                        }, 2000)
                     });
                 }
                 else {
-                    voiceChannel.guild.me.voiceChannel.leave();
+                    setTimeout(function(){
+                        voiceChannel.guild.me.voiceChannel.leave()
+                    }, 2000)
                 }
             });
         }).catch(error => console.log(error));
