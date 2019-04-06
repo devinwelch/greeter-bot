@@ -302,12 +302,12 @@ client.on('message', message => {
     }
 
     //Sweet dreams!
-    else if (/.*:gr?oose:.*:k?night:.*/.test(message.content)) {
+    else if (/.*:(g|Gr)oose:.*:k?night:.*/.test(message.content)) {
         playSong(message.member.voiceChannel, 'goosenight.wav');
     }
 
     //Sweet memes!
-    else if (/.*:gr?oose:.*:day:.*/.test(message.content)) {
+    else if (/.*:(g|Gr)oose:.*:day:.*/.test(message.content)) {
         playSong(message.member.voiceChannel, 'Goose day.mp3');
     }
 
@@ -424,15 +424,11 @@ function playSong(voiceChannel, song, noKnock) {
                     let num = Math.floor(Math.random() * 3) + 1;
                     const knocker = connection.playFile("./Sounds/knock" + num.toString() + ".mp3");
                     knocker.on("end", () => {
-                        setTimeout(function(){
-                            voiceChannel.guild.me.voiceChannel.leave()
-                        }, 2000)
+                        voiceChannel.leave();
                     });
                 }
                 else {
-                    setTimeout(function(){
-                        voiceChannel.guild.me.voiceChannel.leave()
-                    }, 2000)
+                    voiceChannel.leave();
                 }
             });
         }).catch(error => console.log(error));
