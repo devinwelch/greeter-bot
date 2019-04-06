@@ -302,12 +302,12 @@ client.on('message', message => {
     }
 
     //Sweet dreams!
-    else if (/.*:(g|Gr)oose:.*:k?night:.*/.test(message.content)) {
+    else if (/.*:gr?oose:.*:k?night:.*/.test(message.content)) {
         playSong(message.member.voiceChannel, 'goosenight.wav');
     }
 
     //Sweet memes!
-    else if (/.*:(g|Gr)oose:.*:day:.*/.test(message.content)) {
+    else if (/.*:gr?oose:.*:day:.*/.test(message.content)) {
         playSong(message.member.voiceChannel, 'Goose day.mp3');
     }
 
