@@ -371,11 +371,36 @@ schedule.scheduleJob('0 0-3 * * 4', function() {
     declareDay()
 })
 
+//Holiday anthem
+schedule.scheduleJob('* 4-23 10 4 *', function() {
+    jam()
+})
+schedule.scheduleJob('* 0-3 12 4 *', function() {
+    jam()
+})
+schedule.scheduleJob('0 4 12 4 *', function() {
+    //stop playing music
+})
+
 //Reset theme songs
 schedule.scheduleJob('0 0 * * *', function() {
     console.log("Resetting theme songs")
     themeSong = []
 })
+
+function jam() {
+    if (client.voiceConnections.get('143133300993556480') === undefined) {
+        client.channels.get('143133300993556481').join().then(connection => {
+            function play(connection) {
+                const stream = ytdl('https://www.youtube.com/watch?v=iCh4iFrUxXw', { filter: 'audioonly' })
+                const dispatcher = connection.playStream(stream)
+                dispatcher.on('end', () => { 
+                    play(connection);
+                });
+            }
+        }).catch(error => console.log(error))
+    }
+}
 
 function declareDay() {
     let popularChannel = client.channels
