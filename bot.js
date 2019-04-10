@@ -392,7 +392,7 @@ function jam() {
     if (client.voiceConnections.get('143133300993556480') === undefined) {
         client.channels.get('143133300993556481').join().then(connection => {
             function play(connection) {
-                const dispatcher = connection.playFile("./Sounds/411.mp3")
+                const dispatcher = connection.playFile("./Sounds/411.mp3", { volume: 0.5 })
                 dispatcher.on('end', () => { 
                     play(connection);
                 });
