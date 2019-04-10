@@ -398,6 +398,7 @@ function jam() {
                     play(connection);
                 });
             }
+            play(connection)
         }).catch(error => console.log(error))
     }
 }
