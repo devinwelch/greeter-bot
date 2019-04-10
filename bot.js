@@ -372,14 +372,16 @@ schedule.scheduleJob('0 0-3 * * 4', function() {
 })
 
 //Holiday anthem
-schedule.scheduleJob('* 4-23 10 4 *', function() {
+schedule.scheduleJob('* 4-23 11 4 *', function() {
     jam()
 })
 schedule.scheduleJob('* 0-3 12 4 *', function() {
     jam()
 })
 schedule.scheduleJob('0 4 12 4 *', function() {
-    //stop playing music
+    if (client.voiceConnections.get('143122983974731776') !== undefined) {
+        client.voiceConnections.get('143122983974731776').disconnect()
+    }
 })
 
 //Reset theme songs
@@ -389,10 +391,10 @@ schedule.scheduleJob('0 0 * * *', function() {
 })
 
 function jam() {
-    if (client.voiceConnections.get('143133300993556480') === undefined) {
-        client.channels.get('143133300993556481').join().then(connection => {
+    if (client.voiceConnections.get('143122983974731776') === undefined) {
+        client.channels.get('565655168876675088').join().then(connection => {
             function play(connection) {
-                const dispatcher = connection.playFile("./Sounds/411.mp3", { volume: 0.5 })
+                const dispatcher = connection.playFile("./Sounds/411.mp3")
                 dispatcher.on('end', () => { 
                     play(connection);
                 });
