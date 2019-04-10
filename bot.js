@@ -392,8 +392,7 @@ function jam() {
     if (client.voiceConnections.get('143133300993556480') === undefined) {
         client.channels.get('143133300993556481').join().then(connection => {
             function play(connection) {
-                const stream = ytdl('https://www.youtube.com/watch?v=iCh4iFrUxXw', { filter: 'audioonly' })
-                const dispatcher = connection.playStream(stream)
+                const dispatcher = connection.playFile("./Sounds/411.mp3")
                 dispatcher.on('end', () => { 
                     play(connection);
                 });
