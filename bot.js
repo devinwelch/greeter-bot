@@ -402,7 +402,7 @@ function playMe(name, voiceChannel, gnomed = false, noKnock = false) {
 		regex = RegExp('^' + name.toLowerCase())
 		files = fs.readdirSync('./Sounds/Friends/').filter(file => regex.test(file))
 		
-		if (file.length === 0) {
+		if (files.length === 0) {
 			return
 		}
 		
