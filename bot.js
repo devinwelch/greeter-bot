@@ -33,25 +33,21 @@ client.on('ready', () => {
 
 //play theme song upon entering
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-    if (newMember.id === newMember.guild.me.id) return
-        
-    path = newMember.voiceChannel !== undefined &&
-           newMember.voiceChannel.members.array().length > 1 &&
-           Math.floor(Math.random() * 15) === 0
-        ? "gnomed.mp3"
-        : "Friends/" + newMember.user.username.toLowerCase() + ".mp3"
-
-    if (newMember.guild.me.voiceChannel === undefined &&    //greeter-bot isn't talking
-        newMember.voiceChannel !== undefined &&             //user is in voice channel
-        !newMember.selfDeaf &&                              //user isn't deafened
-        !newMember.selfMute &&                              //user isn't muted
-        themeSong.indexOf(newMember.id) === -1 &&           //user hasn't played song today
-        fs.existsSync("./Sounds/" + path))                  //user has a song code
-    {
-        playSong(newMember.voiceChannel, path, true)
-        themeSong.push(newMember.id)
-        console.log(newMember.user.username + " played his/her song!")
-    }
+	me = newMember.guild.me
+	you = newMember.user.username
+	
+    if (newMember.id === me.id ||					//member is greeter-bot
+		me.voiceChannel !== undefined ||    		//greeter-bot is talking
+        newMember.voiceChannel === undefined || 	//user isn't in voice channel
+        newMember.selfDeaf ||                   	//user is deafened
+        newMember.selfMute ||                   	//user is muted
+        themeSong.indexOf(newMember.id) !== -1) {	//user has played song today
+		return
+	}
+		
+	playMe(you, newMember.voiceChannel, true, true)
+    themeSong.push(newMember.id)
+	console.log(you + " played his/her song!")
 })
 
 client.on('messageReactionAdd', (reaction, user) => {
@@ -153,10 +149,14 @@ client.on('message', message => {
                 break
             //Announce yourself
             case "me":
-                user = params !== "" ? params.toLowerCase() === message.author.username.toLowerCase() ? "congratulations" : params : message.author.username
-                path = "Friends/" + user.toLowerCase() + ".mp3"
-                if (fs.existsSync("./Sounds/" + path)) {
-                    playSong(message.member.voiceChannel, path)
+                user = params !== ""
+                    ? params.toLowerCase() === message.author.username.toLowerCase() 
+                        ? "congratulations"
+                        : params 
+                    : message.author.username
+                
+                if (fs.existsSync("./Sounds/Friends/" + user.toLowerCase() + ".mp3")) {
+                    playMe(user, message.member.voiceChannel)
                 }
                 else {
                     message.reply("Username not found, find a sound clip and give it to Bus!")
@@ -390,6 +390,28 @@ schedule.scheduleJob('0 0 * * *', function() {
     themeSong = []
 })
 
+function playMe(name, voiceChannel, gnomed = false, noKnock = false) {
+	path = ''
+	
+	if (gnomed &&
+		voiceChannel.members.array().length > 1 &&
+		Math.floor(Math.random() * 12) === 0) {
+		path = 'gnomed.mp3'
+	}
+	else {
+		regex = RegExp('^' + name.toLowerCase())
+		files = files.readdirSync('./Sounds/Friends/').filter(file => regex.test(file))
+		
+		if (file.length === 0) {
+			return
+		}
+		
+		path = 'Friends/' + files[Math.floor(Math.random() * files.length)]
+	}
+	
+	playSong(voiceChannel, path, noKnock)
+}
+
 function jam() {
     if (client.voiceConnections.get('143122983974731776') === undefined) {
         client.channels.get('565655168876675088').join().then(connection => {
@@ -437,7 +459,7 @@ function slowRoll(message, min, max, count) {
     boardMessage.react("7️⃣")
  }*/
 
-function playSong(voiceChannel, song, noKnock) {
+function playSong(voiceChannel, song, noKnock = false) {
     if (voiceChannel !== undefined && client.voiceConnections.get(voiceChannel.guild.id) === undefined) {
         //APRIL PRANKS
         d = new Date()
