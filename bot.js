@@ -245,7 +245,7 @@ client.on('message', message => {
                 break
             //Bus is all powerful
             case "say":
-                if (message.author.id === "142444696738856960") client.channels.get("143122983974731776").send(params)
+                if (message.author.id === "142444696738856960") client.channels.get("466065580252725288").send(params)
                 else console.log(message.author.username + " is trying to control me!")
                 break
             //Find out what greeter-bot can do
