@@ -400,7 +400,7 @@ function playMe(name, voiceChannel, gnomed = false, noKnock = false) {
 	}
 	else {
 		regex = RegExp('^' + name.toLowerCase())
-		files = files.readdirSync('./Sounds/Friends/').filter(file => regex.test(file))
+		files = fs.readdirSync('./Sounds/Friends/').filter(file => regex.test(file))
 		
 		if (file.length === 0) {
 			return
