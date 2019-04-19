@@ -121,6 +121,7 @@ client.on('message', message => {
     if (message.content[0] === '!') {
         cmd = message.content.split(/[\s!]+/)[1].toLowerCase()
         params = message.content.substring(cmd.length + 1, message.content.length).trim()
+        quick = false
         switch(cmd) {
             //Kick greeter-bot from voice
             case "begonebot":
