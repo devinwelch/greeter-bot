@@ -273,6 +273,7 @@ client.on('message', message => {
                     })
                 })
                 .catch(console.error);
+                break
             //Find out what greeter-bot can do
             case "help":
                 switch(params.replace('!', '')) {
