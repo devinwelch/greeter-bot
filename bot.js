@@ -18,6 +18,7 @@ caching
 
 const Discord = require('discord.js')
 const client = new Discord.Client()
+const ytdl = require('ytdl-core')
 //const connectFour = require('./connect.js')
 var schedule = require('node-schedule')
 var fs = require('fs')
@@ -249,6 +250,29 @@ client.on('message', message => {
                 if (message.author.id === "142444696738856960") client.channels.get("466065580252725288").send(params)
                 else console.log(message.author.username + " is trying to control me!")
                 break
+            case "sing":
+                voiceChannel = message.member.voiceChannel
+                params = params.split(' ')
+                song = params[0]
+                seeker = params.length > 1 ? params[1] : 0
+                const streamOptions = { seek: seeker, volume: 0.5 }
+                voiceChannel.join()
+                .then(connection => {
+                    playing = true
+                    const stream = ytdl(song, { filter : 'audioonly' })
+                    const dispatcher = connection.playStream(stream, streamOptions)
+                    dispatcher.on("end", () => {
+                        playing = false
+                        voiceChannel.leave()
+                    })
+                    sleep(10000).then(() => {
+                        if(playing) {
+                            dispatcher.end()
+                            voiceChannel.leave()
+                        }
+                    })
+                })
+                .catch(console.error);
             //Find out what greeter-bot can do
             case "help":
                 switch(params.replace('!', '')) {
