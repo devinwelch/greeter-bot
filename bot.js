@@ -256,20 +256,25 @@ client.on('message', message => {
                 song = params[0]
                 seeker = params.length > 1 ? params[1] : 0
                 const streamOptions = { seek: seeker, volume: 0.5 }
+
+                message.delete()
+                .then(msg => console.log(`${msg.author.username} sang ${song}`))
+                .catch(console.error)
+
                 voiceChannel.join()
                 .then(connection => {
                     playing = true
                     const stream = ytdl(song, { filter : 'audioonly' })
-                    const dispatcher = connection.playStream(stream, streamOptions).then(() => {
+                    const dispatcher = connection.playStream(stream, streamOptions)
+                    dispatcher.on("end", () => {
+                        playing = false
+                        voiceChannel.leave()
+                    }).then(() => {
                         sleep(10000)
                         if(playing) {
                             dispatcher.end()
                             voiceChannel.leave()
                         }
-                    })
-                    dispatcher.on("end", () => {
-                        playing = false
-                        voiceChannel.leave()
                     })
                 })
                 .catch(console.error);
