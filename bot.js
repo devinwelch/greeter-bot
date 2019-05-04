@@ -254,12 +254,11 @@ client.on('message', message => {
                 voiceChannel = message.member.voiceChannel
                 params = params.split(' ')
                 song = params[0]
-                seeker = params.length > 1 ? params[1] : 0
-                const streamOptions = { seek: seeker, volume: 0.5 }
+                const streamOptions = { volume: 0.5 }
 
                 voiceChannel.join()
                 .then(connection => {
-                    const stream = ytdl(song, { filter : 'audioonly' })
+                    const stream = ytdl(song, { filter : 'audioonly', begin: params.length > 1 ? params[1] : 0 })
                     const dispatcher = connection.playStream(stream, streamOptions)
                     dispatcher.on("end", () => {
                         voiceChannel.leave()
