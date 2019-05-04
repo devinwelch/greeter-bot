@@ -257,27 +257,21 @@ client.on('message', message => {
                 seeker = params.length > 1 ? params[1] : 0
                 const streamOptions = { seek: seeker, volume: 0.5 }
 
+                voiceChannel.join()
+                .then(connection => {
+                    const stream = ytdl(song, { filter : 'audioonly' })
+                    const dispatcher = connection.playStream(stream, streamOptions)
+                    dispatcher.on("end", () => {
+                        voiceChannel.leave()
+                    })
+                    setTimeout(() => dispatcher.end(), 10000)
+                })
+                .catch(console.error);
+
                 message.delete()
                 .then(msg => console.log(`${msg.author.username} sang ${song}`))
                 .catch(console.error)
 
-                voiceChannel.join()
-                .then(connection => {
-                    playing = true
-                    const stream = ytdl(song, { filter : 'audioonly' })
-                    const dispatcher = connection.playStream(stream, streamOptions)
-                    dispatcher.on("end", () => {
-                        playing = false
-                        voiceChannel.leave()
-                    }).then(() => {
-                        sleep(10000)
-                        if(playing) {
-                            dispatcher.end()
-                            voiceChannel.leave()
-                        }
-                    })
-                })
-                .catch(console.error);
                 break
             //Find out what greeter-bot can do
             case "help":
