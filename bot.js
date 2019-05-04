@@ -260,16 +260,16 @@ client.on('message', message => {
                 .then(connection => {
                     playing = true
                     const stream = ytdl(song, { filter : 'audioonly' })
-                    const dispatcher = connection.playStream(stream, streamOptions)
-                    dispatcher.on("end", () => {
-                        playing = false
-                        voiceChannel.leave()
-                    })
-                    sleep(10000).then(() => {
+                    const dispatcher = connection.playStream(stream, streamOptions).then(() => {
+                        sleep(10000)
                         if(playing) {
                             dispatcher.end()
                             voiceChannel.leave()
                         }
+                    })
+                    dispatcher.on("end", () => {
+                        playing = false
+                        voiceChannel.leave()
                     })
                 })
                 .catch(console.error);
