@@ -166,7 +166,7 @@ client.on('message', message => {
                 break
             //Create a poll with reactions
             case "poll":
-                options = params.split(/[\?]/)
+                options = params.split(/[\?;]/)
                 pollMessage = "New poll, React to cast your ballot!\n**" + options[0].replace(/!poll\s*/, '') + "?**"
                 optionsCounter = 1
 
