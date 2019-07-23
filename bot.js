@@ -74,6 +74,8 @@ client.on('messageReactionAdd', (reaction, user) => {
             }
         }
 
+        console.log(reaction.emoji.id)
+
         //connect four
         /*if (reaction.message.content.startsWith("Connect 4!")) {
             let board = new connectFour.ConnectFour(reaction.message.content)
