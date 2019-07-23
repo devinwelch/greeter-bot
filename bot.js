@@ -67,7 +67,8 @@ client.on('messageReactionAdd', (reaction, user) => {
             }
         }
 
-        if (reaction.emoji.id === "309497209475563521" ){//&& Math.floor(Math.random() * 100 === 0)) {
+        if (reaction.emoji.id === "309497209475563521") {//&& Math.floor(Math.random() * 100 === 0)) {
+            console.log("In here")
             voiceChannel = reaction.message.member.voiceChannel
             if (voiceChannel !== undefined) {
                 playSong(voiceChannel, 'Alert.mp3')
