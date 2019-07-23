@@ -67,6 +67,15 @@ client.on('messageReactionAdd', (reaction, user) => {
             }
         }
 
+        if (reaction.emoji.id === "603047939434086430" &&
+            Math.floor(Math.random() * 100 === 0)) {
+                voiceChannel = reaction.message.member.voiceChannel
+                if (voiceChannel !== undefined) {
+                    playSong(voiceChannel, 'Alert.mp3')
+                }
+            }
+        }
+
         //connect four
         /*if (reaction.message.content.startsWith("Connect 4!")) {
             let board = new connectFour.ConnectFour(reaction.message.content)
@@ -295,7 +304,7 @@ client.on('message', message => {
                         message.channel.send("Play a personalized greeting. If not set up, contact Bus. To play another user's sound:\n```!me [username]```")
                         break
                     case "poll":
-                        message.channel.send("```!poll [question]? [option 1] [option 2] ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.")
+                        message.channel.send("```!poll [question]? [option 1]; [option 2]; ...```\nCreate a poll with up to 4 options (semicolon-separated) to be voted on using reactions.")
                         break
                     case "roll":
                         message.channel.send("```!roll (x)(d)[upper limit]\n!roll (x)(d)[lower limit]-(d)[upper limit]```\nRoll an n-sided die x times 'd' character is optional except for multi-rolls. Examples:```!roll 20\n!roll 3d6\n!roll 5-10```")
