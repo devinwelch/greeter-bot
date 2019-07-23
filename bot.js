@@ -67,12 +67,10 @@ client.on('messageReactionAdd', (reaction, user) => {
             }
         }
 
-        if (reaction.emoji.id === "603047939434086430" &&
-            Math.floor(Math.random() * 100 === 0)) {
-                voiceChannel = reaction.message.member.voiceChannel
-                if (voiceChannel !== undefined) {
-                    playSong(voiceChannel, 'Alert.mp3')
-                }
+        if (reaction.emoji.id === "603047939434086430" && Math.floor(Math.random() * 100 === 0)) {
+            voiceChannel = reaction.message.member.voiceChannel
+            if (voiceChannel !== undefined) {
+                playSong(voiceChannel, 'Alert.mp3')
             }
         }
 
