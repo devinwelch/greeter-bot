@@ -67,16 +67,6 @@ client.on('messageReactionAdd', (reaction, user) => {
             }
         }
 
-        if (reaction.emoji.id === "309497209475563521") {//&& Math.floor(Math.random() * 100 === 0)) {
-            console.log("In here")
-            voiceChannel = reaction.message.member.voiceChannel
-            if (voiceChannel !== undefined) {
-                playSong(voiceChannel, 'Alert.mp3')
-            }
-        }
-
-        console.log(reaction.emoji.id)
-
         //connect four
         /*if (reaction.message.content.startsWith("Connect 4!")) {
             let board = new connectFour.ConnectFour(reaction.message.content)
@@ -107,7 +97,16 @@ client.on('messageReactionAdd', (reaction, user) => {
             }
             reaction.messsage.edit(board.getBoard())
         }*/
-    }   
+    } 
+    
+    else if (reaction.emoji.id === "309497209475563521") {//&& Math.floor(Math.random() * 100 === 0)) {
+        voiceChannel = reaction.message.member.voiceChannel
+        if (voiceChannel !== undefined) {
+            playSong(voiceChannel, 'Alert.mp3')
+        }
+    }
+
+    console.log(reaction.emoji.id)
 })
 
 client.on('message', message => {
