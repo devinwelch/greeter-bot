@@ -406,11 +406,19 @@ schedule.scheduleJob('0 0-3 * * 4', function() {
 
 //Holiday anthem
 schedule.scheduleJob('* 4-23 11 4 *', function() {
-    jam()
+    jam("411.mp3")
 })
 schedule.scheduleJob('* 0-3 12 4 *', function() {
-    jam()
+    jam("411.mp3")
 })
+
+schedule.scheduleJob('* 4-23 21 9 *', function() {
+    jam("921.mp3")
+})
+schedule.scheduleJob('* 0-3 22 9 *', function() {
+    jam("921.mp3")
+})
+
 schedule.scheduleJob('0 4 12 4 *', function() {
     if (client.voiceConnections.get('143122983974731776') !== undefined) {
         client.voiceConnections.get('143122983974731776').disconnect()
@@ -445,11 +453,11 @@ function playMe(name, voiceChannel, gnomed = false, noKnock = false) {
 	playSong(voiceChannel, path, noKnock)
 }
 
-function jam() {
+function jam(songName) {
     if (client.voiceConnections.get('143122983974731776') === undefined) {
         client.channels.get('565655168876675088').join().then(connection => {
             function play(connection) {
-                const dispatcher = connection.playFile("./Sounds/411.mp3")
+                const dispatcher = connection.playFile("./Sounds/" + songName)
                 dispatcher.on('end', () => { 
                     play(connection);
                 });
