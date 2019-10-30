@@ -462,12 +462,12 @@ function jam(songName) {
 }
 
 //silly skeleton man
-schedule.scheduleJob('* 4-23 29 10 *', function() {
+schedule.scheduleJob('* * * * *', function() {
     spook()
 })
-schedule.scheduleJob('* 0-3 1 11 *', function() {
+/*schedule.scheduleJob('* 0-3 1 11 *', function() {
     spook()
-})
+})*/
 function spook() {
     /*let voiceChannel = client.channels
         .filter(channel => channel.bitrate !== undefined)
