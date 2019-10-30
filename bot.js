@@ -476,6 +476,10 @@ function spook() {
 
     voiceChannel = client.channels.get('143133300993556481')
 
+    console.log('start:')
+    console.log(voiceChannel)
+    console.log(client.voiceConnections.get(voiceChannel.guild.id))
+    
     if (voiceChannel !== undefined && client.voiceConnections.get(voiceChannel.guild.id) === undefined) {
         voiceChannel.join().then(connection => {
             seekrng = Math.floor(Math.random() * 111)
