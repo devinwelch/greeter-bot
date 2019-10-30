@@ -483,7 +483,7 @@ function spook() {
     if (voiceChannel !== undefined && client.voiceConnections.get(voiceChannel.guild.id) === undefined) {
         voiceChannel.join().then(connection => {
             seekrng = Math.floor(Math.random() * 111)
-            const dispatcher = connection.playFile("./Sounds/Sans.mp3", { seek: rng })
+            const dispatcher = connection.playFile("./Sounds/Sans.mp3", { seek: seekrng })
             dispatcher.on("end", () => {
                 voiceChannel.leave()
             })
