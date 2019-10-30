@@ -462,23 +462,17 @@ function jam(songName) {
 }
 
 //silly skeleton man
-schedule.scheduleJob('* 4-23 29 10 *', function() {
+schedule.scheduleJob('* 4-23 31 10 *', function() {
     spook()
 })
-schedule.scheduleJob('* 0-3 30 10 *', function() {
+schedule.scheduleJob('* 0-3 1 11 *', function() {
     spook()
 })
 function spook() {
-    /*let voiceChannel = client.channels
+    let voiceChannel = client.channels
         .filter(channel => channel.bitrate !== undefined)
         .sort(function (channel1, channel2) { return channel2.members.array().length - channel1.members.array().length })
-        .first()*/
-
-    voiceChannel = client.channels.get('143133300993556481')
-
-    console.log('start:')
-    console.log(voiceChannel)
-    console.log(client.voiceConnections.get(voiceChannel.guild.id))
+        .first()
     
     if (voiceChannel !== undefined && client.voiceConnections.get(voiceChannel.guild.id) === undefined) {
         voiceChannel.join().then(connection => {
