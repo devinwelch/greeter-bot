@@ -419,12 +419,6 @@ schedule.scheduleJob('* 0-3 22 9 *', function() {
     jam("921.mp3")
 })
 
-schedule.scheduleJob('0 4 12 4 *', function() {
-    if (client.voiceConnections.get('143122983974731776') !== undefined) {
-        client.voiceConnections.get('143122983974731776').disconnect()
-    }
-})
-
 //Reset theme songs
 schedule.scheduleJob('0 0 * * *', function() {
     console.log("Resetting theme songs")
@@ -463,6 +457,34 @@ function jam(songName) {
                 });
             }
             play(connection)
+        }).catch(error => console.log(error))
+    }
+}
+
+//silly skeleton man
+schedule.scheduleJob('* 4-23 29 10 *', function() {
+    spook()
+})
+schedule.scheduleJob('* 0-3 1 11 *', function() {
+    spook()
+})
+function spook() {
+    /*let voiceChannel = client.channels
+        .filter(channel => channel.bitrate !== undefined)
+        .sort(function (channel1, channel2) { return channel2.members.array().length - channel1.members.array().length })
+        .first()*/
+
+    voiceChannel = client.channels.get('143133300993556481')
+
+    if (voiceChannel !== undefined && client.voiceConnections.get(voiceChannel.guild.id) === undefined) {
+        voiceChannel.join().then(connection => {
+            seekrng = Math.floor(Math.random() * 111)
+            const dispatcher = connection.playFile("./Sounds/Sans.mp3", { seek: rng })
+            dispatcher.on("end", () => {
+                voiceChannel.leave()
+            })
+            lengthrng = 1000 * (Math.floor(Math.random() * 11) + 5)
+            setTimeout(() => dispatcher.end(), lengthrng)
         }).catch(error => console.log(error))
     }
 }
