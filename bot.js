@@ -481,7 +481,7 @@ function spook() {
             dispatcher.on("end", () => {
                 voiceChannel.leave()
             })
-            lengthrng = 1000 * (Math.floor(Math.random() * 11) + 5)
+            lengthrng = 1000 * (Math.floor(Math.random() * 6) + 3)
             setTimeout(() => dispatcher.end(), lengthrng)
         }).catch(error => console.log(error))
     }
