@@ -462,10 +462,10 @@ function jam(songName) {
 }
 
 //silly skeleton man
-schedule.scheduleJob('* 4-23 31 10 *', function() {
+schedule.scheduleJob('*/7 4-23 31 10 *', function() {
     spook()
 })
-schedule.scheduleJob('* 0-3 1 11 *', function() {
+schedule.scheduleJob('*/7 0-3 1 11 *', function() {
     spook()
 })
 function spook() {
