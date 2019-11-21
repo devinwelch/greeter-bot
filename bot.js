@@ -397,10 +397,10 @@ client.on('message', message => {
 client.login(process.env.BOT_TOKEN)
 
 //Tell the time
-schedule.scheduleJob('0 4-23 * * 3', function() {
+schedule.scheduleJob('0 5-23 * * 3', function() {
     declareDay()
 })
-schedule.scheduleJob('0 0-3 * * 4', function() {
+schedule.scheduleJob('0 0-4 * * 4', function() {
     declareDay()
 })
 
