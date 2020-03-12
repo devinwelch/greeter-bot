@@ -397,18 +397,15 @@ client.on('message', message => {
 client.login(process.env.BOT_TOKEN)
 
 //Coronavirus!
-schedule.scheduleJob('0 * * * * *', function() { 
+schedule.scheduleJob('0 * * * *', function() { 
     client.channels.filter(channel => channel.bitrate !== undefined).array().forEach(voiceChannel => {
         if (voiceChannel.members.array().some(member => 
             member.roles.array().some(role =>
                 role.id === '687436756559200367'))) {
                     let noninfected = voiceChannel.members.array().filter(member => member.roles.array().every(role =>
                         role.id !== '687436756559200367'))
-                    //console.log('noninfected is ' + noninfected);
-                    if (Math.floor(Math.random() * 1) === 0) {
+                    if (Math.floor(Math.random() * 10) === 0) {
                         r = Math.floor(Math.random() * noninfected.length)
-                        //console.log('noninfected[r] is ' + noninfected[r]);
-                        //console.log('noninfected[r].roles is ' + noninfected[r].roles);
                         noninfected[r].addRole('687436756559200367', 'he got infected!')
                         client.channels.get("466065580252725288").send(noninfected[r].user.username + ' caught the coronavirus! Oh no, stay away!')
                     }
