@@ -402,7 +402,8 @@ schedule.scheduleJob('0 * * * *', function() {
         let noninfected = voiceChannel.members.array().filter(member => member.roles.array().every(role =>
             role.id !== '687436756559200367'))
         infectedCount = voiceChannel.members.array().length - noninfected.length
-        if (Math.floor(Math.random() * 10) < infectedCount) {
+        percentChances = [0, 10, 12, 15, 20, 30, 50, 75, 100]
+        if (Math.floor(Math.random() * 100) < percentChances[Math.min(8, infectedCount)]) {
             r = Math.floor(Math.random() * noninfected.length)
             noninfected[r].addRole('687436756559200367', 'he got infected!')
             client.channels.get("466065580252725288").send(noninfected[r].user.username + ' caught the coronavirus! Yuck, stay away!')
