@@ -399,17 +399,14 @@ client.login(process.env.BOT_TOKEN)
 //Coronavirus!
 schedule.scheduleJob('0 * * * *', function() { 
     client.channels.filter(channel => channel.bitrate !== undefined).array().forEach(voiceChannel => {
-        if (voiceChannel.members.array().some(member => 
-            member.roles.array().some(role =>
-                role.id === '687436756559200367'))) {
-                    let noninfected = voiceChannel.members.array().filter(member => member.roles.array().every(role =>
-                        role.id !== '687436756559200367'))
-                    if (Math.floor(Math.random() * 10) === 0) {
-                        r = Math.floor(Math.random() * noninfected.length)
-                        noninfected[r].addRole('687436756559200367', 'he got infected!')
-                        client.channels.get("466065580252725288").send(noninfected[r].user.username + ' caught the coronavirus! Oh no, stay away!')
-                    }
-                }
+        let noninfected = voiceChannel.members.array().filter(member => member.roles.array().every(role =>
+            role.id !== '687436756559200367'))
+        infectedCount = voiceChannel.members.array().length - noninfected.length
+        if (Math.floor(Math.random() * 10) < infectedCount) {
+            r = Math.floor(Math.random() * noninfected.length)
+            noninfected[r].addRole('687436756559200367', 'he got infected!')
+            client.channels.get("466065580252725288").send(noninfected[r].user.username + ' caught the coronavirus! Yuck, stay away!')
+        }
     });
 })
 
