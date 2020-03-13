@@ -402,7 +402,10 @@ schedule.scheduleJob('0 * * * *', function() {
         let noninfected = voiceChannel.members.array().filter(member => member.roles.array().every(role =>
             role.id !== '687436756559200367'))
         infectedCount = voiceChannel.members.array().length - noninfected.length
+        console.log('infectedCount: ' + infectedCount)
         percentChances = [0, 10, 12, 15, 20, 30, 50, 75, 100]
+        roll = Math.floor(Math.random() * 100)
+        console.log('At ' + new Date().getTime() + ' rolled ' + roll + ' against ' + percentChances[Math.min(8, infectedCount)] + '% odds')
         if (Math.floor(Math.random() * 100) < percentChances[Math.min(8, infectedCount)]) {
             r = Math.floor(Math.random() * noninfected.length)
             noninfected[r].addRole('687436756559200367', 'he got infected!')
