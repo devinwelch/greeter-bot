@@ -399,24 +399,26 @@ client.login(process.env.BOT_TOKEN)
 //Coronavirus!
 schedule.scheduleJob('0 * * * *', function() { 
     client.channels.filter(channel => channel.bitrate !== undefined).array().forEach(voiceChannel => {
-        let noninfected = voiceChannel.members.array().filter(member => member.roles.array().every(role =>
-            role.id !== '687436756559200367'))
-        infectedCount = voiceChannel.members.array().length - noninfected.length
+        let noninfected = voiceChannel.members.array().filter(member => member.roles.array().every(role => role.id !== '687436756559200367'))
         
-        percentChances = [0, 10, 12, 15, 20, 30, 50, 75, 100]
-        chance = percentChances[Math.min(8, infectedCount)]
-        roll = Math.floor(Math.random() * 100)
-
-        if (infectedCount > 0) {
-            console.log('Rolled ' + roll + ' against ' + chance + '% odds')
+        if (noninfected.length > 0) { 
+            infectedCount = voiceChannel.members.array().length - noninfected.length
+            
+            percentChances = [0, 10, 12, 15, 20, 30, 50, 75, 100]
+            chance = percentChances[Math.min(8, infectedCount)]
+            roll = Math.floor(Math.random() * 100)
+    
+            if (infectedCount > 0) {
+                console.log('Rolled ' + roll + ' against ' + chance + '% odds')
+            }
+    
+            if (roll < chance) {
+                r = Math.floor(Math.random() * noninfected.length)
+                noninfected[r].addRole('687436756559200367')
+                client.channels.get("466065580252725288").send(noninfected[r].user.username + ' caught the coronavirus! Yuck, stay away!')
+            }           
         }
-
-        if (roll < chance) {
-            r = Math.floor(Math.random() * noninfected.length)
-            noninfected[r].addRole('687436756559200367')
-            client.channels.get("466065580252725288").send(noninfected[r].user.username + ' caught the coronavirus! Yuck, stay away!')
-        }
-    });
+    })
 })
 
 //Tell the time
