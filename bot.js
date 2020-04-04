@@ -602,17 +602,20 @@ function getGBPs(user) {
         }
     }
 
-    test = db.get(params, function(err, data) {
+    GBPs = "???"
+
+    db.get(params, function(err, data) {
         if (err) {
             console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
         } else if (data.Item === undefined) {
             establishGBPs(user, 0)
         } else  {
             console.log('Found user:', JSON.stringify(data, null, 2))
+            GBPs = data.Item.GBPs
         }
     })
-    console.log(test)
-    return data.Item.GBPs
+
+    return GBPs
 }
 
 function updateGBPs(user, value) {
