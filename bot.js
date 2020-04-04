@@ -163,8 +163,7 @@ client.on('message', message => {
                 break
             //Find out if you're a good boy
             case "gbp":
-                message.channel.send(getGBPs(message.member.user))
-                //message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user) + " good boy points!")
+                message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user) + " good boy points!")
                 break
             //Announce yourself
             case "me":
@@ -614,6 +613,8 @@ function getGBPs(user) {
             return data.Item.GBPs
         }
     })
+
+    return('???')
 }
 
 function updateGBPs(user, value) {
