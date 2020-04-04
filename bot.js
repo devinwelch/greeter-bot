@@ -579,46 +579,17 @@ function playSong(voiceChannel, song, noKnock = false) {
     }
 }
 
-function updateGBPs(username, id, value) {
-    params = {
-        TableName: 'GBPs',
-        Key: {
-            'Username': username,
-            'ID': id
-        }
+function establishGBPs(user, amount) {
+    params.Item = {
+        'Username': user.username,
+        'ID': user.id,
+        'GBPs': amount
     }
-
-    //find user
-    db.get(params, function(err, data) {
+    db.put(params, function(err, data) {
         if (err) {
-            console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
-        } 
-        //GBPs not calculated yet
-        else if (data.Item === undefined) {
-            params.Item = {
-                'Username': username,
-                'ID': id,
-                'GBPs': 1
-            }
-            db.put(params, function(err, data) {
-                if (err) {
-                    console.error('Unable to add user. Error:', JSON.stringify(err, null, 2))
-                } else {
-                    console.log('User not found. Added:', JSON.stringify(data, null, 2))
-                }
-            })
-        } 
-        //update existing user
-        else {
-            params.UpdateExpression = 'set GBPs = GBPs + :val'
-            params.ExpressionAttributeValues = { ':val': value }
-            db.update(params, function(err, data) {
-                if (err) {
-                    console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2))
-                } else {
-                    console.log('Update succeeded:', JSON.stringify(data, null, 2))
-                }
-            })
+            console.error('Unable to add user. Error:', JSON.stringify(err, null, 2))
+        } else {
+            console.log('User not found. Added:', JSON.stringify(data, null, 2))
         }
     })
 }
@@ -636,9 +607,45 @@ function getGBPs(user) {
     db.get(params, function(err, data) {
         if (err) {
             console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
-        } else {
+        } else if (data.Item === undefined) {
+            establishGBPs(user, 0)
+        } else  {
             console.log('Found user:', JSON.stringify(data, null, 2))
-            return data.Item.GBPs
+            console.log(JSON.parse(data))//test
+            return JSON.parse(data).Item.GBPs
+        }
+    })
+}
+
+function updateGBPs(user, value) {
+    params = {
+        TableName: 'GBPs',
+        Key: {
+            'Username': user.username,
+            'ID': user.id
+        }
+    }
+
+    //find user
+    db.get(params, function(err, data) {
+        if (err) {
+            console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
+        } 
+        //GBPs not calculated yet
+        else if (data.Item === undefined) {
+            establishGBPs(user, value)
+        } 
+        //update existing user
+        else {
+            params.UpdateExpression = 'set GBPs = GBPs + :val'
+            params.ExpressionAttributeValues = { ':val': value }
+            db.update(params, function(err, data) {
+                if (err) {
+                    console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2))
+                } else {
+                    console.log('Update succeeded:', JSON.stringify(data, null, 2))
+                }
+            })
         }
     })
 }
