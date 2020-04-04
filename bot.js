@@ -85,7 +85,7 @@ client.on('messageReactionAdd', (reaction, user) => {
     console.log("Message reaction id: " + reaction.emoji.id)
 
     if (reaction.emoji.id === "283825892176691201") {
-        updateGBPs(reaction.message.member.user.username, reaction.message.member.user.id, 1)
+        updateGBPs(reaction.message.member.user, 1)
     }
 
     //Only consider reactions to greeter-bot
@@ -163,7 +163,8 @@ client.on('message', message => {
                 break
             //Find out if you're a good boy
             case "gbp":
-                message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user) + " good boy points!")
+                message.channel.send(getGBPs(message.member.user))
+                //message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user) + " good boy points!")
                 break
             //Announce yourself
             case "me":
@@ -609,10 +610,7 @@ function getGBPs(user) {
         } else if (data.Item === undefined) {
             establishGBPs(user, 0)
         } else  {
-            //console.log('Found user:', JSON.stringify(data, null, 2))
-            console.log(data)//test
-            console.log(data.Item)
-            console.log(data.Item.GBPs)
+            console.log('Found user:', JSON.stringify(data, null, 2))
             return data.Item.GBPs
         }
     })
