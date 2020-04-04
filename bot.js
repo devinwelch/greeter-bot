@@ -112,7 +112,7 @@ client.on('messageReactionAdd', (reaction, user) => {
     }
 
     //else if (reaction.emoji.id === "695775705123782666") {
-    else if (reaction.emoji.id === "426501394678284289") {
+    else if (reaction.emoji.id === "230559705389334530") {
         updateGBPs(reaction.message.member.id.user.username, reaction.message.member.id, 1)
     }
 
