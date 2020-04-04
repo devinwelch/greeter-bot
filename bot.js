@@ -23,13 +23,18 @@ const ytdl = require('ytdl-core')
 var schedule = require('node-schedule')
 var fs = require('fs')
 
+var AWS = require('aws-sdk')
+AWS.config.update({
+    region: 'us-east-1',
+    endpoint: 'https://dynamodb.us-east-1.amazonaws.com'
+});
+db = new AWS.DynamoDB.DocumentClient()
+
 var themeSong = []
 var swears = []
 
 client.on('ready', () => {
     console.log('I am ready!')
-    //client.user.setActivity('all your chats', { type: 'LISTENING' })
-    //    .catch(console.error)
 })
 
 //play theme song upon entering
@@ -104,6 +109,11 @@ client.on('messageReactionAdd', (reaction, user) => {
         if (voiceChannel !== undefined) {
             playSong(voiceChannel, 'Alert.mp3')
         }
+    }
+
+    //else if (reaction.emoji.id === "695775705123782666") {
+    else if (reaction.emoji.id === "426501394678284289") {
+        updateGBPs(reaction.message.member.id.user.username, reaction.message.member.id, 1)
     }
 
     console.log(reaction.emoji.id)
@@ -569,6 +579,50 @@ function playSong(voiceChannel, song, noKnock = false) {
             })
         }).catch(error => console.log(error))
     }
+}
+
+function updateGBPs(username, id, value) {
+    params = {
+        TableName: 'GBPs',
+        Key: {
+            'Username': username,
+            'ID': id
+        }
+    }
+
+    //find user
+    db.get(params, function(err, data) {
+        if (err) {
+            console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
+        } 
+        //GBPs not calculated yet
+        else if (data.Item === undefined) {
+            params.Item = {
+                'Username': username,
+                'ID': id,
+                'GBPs': 1
+            }
+            db.put(params, function(err, data) {
+                if (err) {
+                    console.error('Unable to add user. Error:', JSON.stringify(err, null, 2))
+                } else {
+                    console.log('User not found. Added:', JSON.stringify(data, null, 2))
+                }
+            })
+        } 
+        //update existing user
+        else {
+            params.UpdateExpression = 'set GBPs = GBPs + :val'
+            params.ExpressionAttributeValues = { ':val': value }
+            db.update(params, function(err, data) {
+                if (err) {
+                    console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2))
+                } else {
+                    console.log('Update succeeded:', JSON.stringify(data, null, 2))
+                }
+            })
+        }
+    })
 }
 
 function sleep(miliseconds) {
