@@ -77,3 +77,37 @@ function placePiece(column) {
 }
 
 module.exports = ConnectFour;
+
+
+
+
+        //connect four
+        /*if (reaction.message.content.startsWith("Connect 4!")) {
+            let board = new connectFour.ConnectFour(reaction.message.content)
+            switch(reaction.emoji.name) {
+                case "one":
+                    board.placePiece(0)
+                    break
+                case "two":
+                    board.placePiece(1)
+                    break
+                case "three":
+                    board.placePiece(2)
+                    break
+                case "four":
+                    board.placePiece(3)
+                    break
+                case "five":
+                    board.placePiece(4)
+                    break
+                case "six":
+                    board.placePiece(5)
+                    break
+                case "seven":
+                    board.placePiece(6)
+                    break
+                default:
+                    break
+            }
+            reaction.messsage.edit(board.getBoard())
+        }*/

@@ -27,7 +27,7 @@ var AWS = require('aws-sdk')
 AWS.config.update({
     region: 'us-east-1',
     endpoint: 'https://dynamodb.us-east-1.amazonaws.com'
-});
+})
 db = new AWS.DynamoDB.DocumentClient()
 
 var themeSong = []
@@ -57,6 +57,8 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 })
 
 client.on('messageReactionAdd', (reaction, user) => {
+    console.log(reaction.emoji.id)
+
     //Only consider reactions to greeter-bot
     if (reaction.message.member.id === client.user.id) {
         //emoji game
@@ -71,37 +73,6 @@ client.on('messageReactionAdd', (reaction, user) => {
                 reaction.message.edit("**Guess the emoji** again (using reactions): " + reaction.message.guild.emojis.random(1).toString())
             }
         }
-
-        //connect four
-        /*if (reaction.message.content.startsWith("Connect 4!")) {
-            let board = new connectFour.ConnectFour(reaction.message.content)
-            switch(reaction.emoji.name) {
-                case "one":
-                    board.placePiece(0)
-                    break
-                case "two":
-                    board.placePiece(1)
-                    break
-                case "three":
-                    board.placePiece(2)
-                    break
-                case "four":
-                    board.placePiece(3)
-                    break
-                case "five":
-                    board.placePiece(4)
-                    break
-                case "six":
-                    board.placePiece(5)
-                    break
-                case "seven":
-                    board.placePiece(6)
-                    break
-                default:
-                    break
-            }
-            reaction.messsage.edit(board.getBoard())
-        }*/
     } 
     
     else if (reaction.emoji.id === "309497209475563521" && Math.floor(Math.random() * 50) === 0) {
@@ -114,10 +85,8 @@ client.on('messageReactionAdd', (reaction, user) => {
     //else if (reaction.emoji.id === "695775705123782666") {
     else if (reaction.emoji.id === "304833606201769984") {
         console.log(reaction.emoji.id)
-        updateGBPs(reaction.message.member.id.user.username, reaction.message.member.id, 1)
+        updateGBPs(user.username, user.id, 1)
     }
-
-    console.log(reaction.emoji.id)
 })
 
 client.on('message', message => {
