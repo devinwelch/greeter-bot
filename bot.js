@@ -109,7 +109,7 @@ client.on('messageReactionAdd', (reaction, user) => {
 
     //else if (reaction.emoji.id === "695775705123782666") {
     else if (reaction.emoji.id === "304833606201769984") {
-        console.log(reaction.emoji.id)
+        console.log('we in here')
         updateGBPs(user.username, user.id, 1)
     }
 })
