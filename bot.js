@@ -83,6 +83,13 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 
 client.on('messageReactionAdd', (reaction, user) => {
     console.log(reaction.emoji.id)
+    console.log("we out here")
+
+    //else if (reaction.emoji.id === "695775705123782666") {
+    if (reaction.emoji.id === "304833606201769984") {
+        console.log('we in here')
+        updateGBPs(user.username, user.id, 1)
+    }
 
     //Only consider reactions to greeter-bot
     if (reaction.message.member.id === client.user.id) {
@@ -106,18 +113,17 @@ client.on('messageReactionAdd', (reaction, user) => {
             playSong(voiceChannel, 'Alert.mp3')
         }
     }
-
-    //else if (reaction.emoji.id === "695775705123782666") {
-    else if (reaction.emoji.id === "304833606201769984") {
-        console.log('we in here')
-        updateGBPs(user.username, user.id, 1)
-    }
 })
 
 client.on('message', message => {
     //Bots don't talk to bots nor links
     if (message.author.bot || message.content.toUpperCase().startsWith('HTTP')) {
         return
+    }
+
+    //testetstesttestestsetstets
+    if (message.content === "+1") {
+        updateGBPs(user.username, user.id, 1)
     }
 
     //Stop spammers in their tracks
