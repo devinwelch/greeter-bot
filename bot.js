@@ -82,17 +82,15 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 })
 
 client.on('messageReactionAdd', (reaction, user) => {
-    console.log(reaction.emoji.id)
-    console.log("we out here")
+    console.log("Message reaction id: " + reaction.emoji.id)
 
-    //else if (reaction.emoji.id === "695775705123782666") {
-    if (reaction.emoji.id === "304833606201769984") {
+    if (reaction.emoji.id === "695775705123782666") {
         console.log('we in here')
-        updateGBPs(user.username, user.id, 1)
+        updateGBPs(reaction.message.member.user.username, reaction.message.member.user.id, 1)
     }
 
     //Only consider reactions to greeter-bot
-    if (reaction.message.member.id === client.user.id) {
+    else if (reaction.message.member.id === client.user.id) {
         //emoji game
         if (reaction.message.content.startsWith("**Guess the emoji**")) {
             newEmoji = reaction.message.guild.emojis.random(1)
@@ -119,11 +117,6 @@ client.on('message', message => {
     //Bots don't talk to bots nor links
     if (message.author.bot || message.content.toUpperCase().startsWith('HTTP')) {
         return
-    }
-
-    //testetstesttestestsetstets
-    if (message.content === "+1") {
-        updateGBPs(user.username, user.id, 1)
     }
 
     //Stop spammers in their tracks
