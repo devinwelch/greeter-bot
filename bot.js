@@ -610,8 +610,8 @@ function getGBPs(user) {
         } else if (data.Item === undefined) {
             establishGBPs(user, 0)
         } else  {
-            console.log('Found user:', JSON.stringify(data, null, 2))
-            console.log(JSON.parse(data))//test
+            //console.log('Found user:', JSON.stringify(data, null, 2))
+            console.log(data)//test
             return JSON.parse(data).Item.GBPs
         }
     })
