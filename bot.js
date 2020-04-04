@@ -60,7 +60,8 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 		
 	playMe(you, newMember.voiceChannel, true, true)
     themeSong.push(newMember.id)
-	console.log(you + " played his/her song!")
+    console.log(you + " played his/her song!")
+    updateGBPs(newMember.user, 3)
 })
 
 client.on('messageReactionAdd', (reaction, user) => {
@@ -109,6 +110,7 @@ client.on('message', message => {
                 filteredMessages[1].content == filteredMessages[0].content &&
                 filteredMessages[0].attachments.array().length === 0) {
                 message.reply("dorse")
+                updateGBPs(message.member.user, -2)
             }
         })
         .catch(console.error)
@@ -143,6 +145,7 @@ client.on('message', message => {
             //Play a beautiful serenade
             case "exposed":
                 playSong(message.member.voiceChannel, 'ExposedHumans.mp3')
+                updateGBPs(message.member.user, -5)
                 break
             //Find out if you're a good boy
             case "gbp":
@@ -276,7 +279,7 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!begone**, **!emoji**, **!exposed**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.")
+                        message.channel.send("Available commands: **!begone**, **!emoji**, **!exposed**, **!gbp**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.")
                         break
                     case "begone":
                         message.channel.send("Kick greeter-bot out of the voice channel. Alias: begonebot")
@@ -286,6 +289,9 @@ client.on('message', message => {
                         break
                     case "exposed":
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.")
+                        break
+                    case "gbp":
+                        message.channel.send("Find out how many good boy points you have! Maybe you can buy some tendies if you get enough...")
                         break
                     case "help":
                         message.channel.send(spongeMock("My name is " + message.author.username + " and I think I'm soooo clever."))
