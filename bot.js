@@ -162,6 +162,10 @@ client.on('message', message => {
             case "exposed":
                 playSong(message.member.voiceChannel, 'ExposedHumans.mp3')
                 break
+            //Find out if you're a good boy
+            case "gbp":
+                message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user) + " good boy points!")
+                break
             //Announce yourself
             case "me":
                 user = params !== ""
@@ -615,6 +619,26 @@ function updateGBPs(username, id, value) {
                     console.log('Update succeeded:', JSON.stringify(data, null, 2))
                 }
             })
+        }
+    })
+}
+
+function getGBPs(user) {
+    params = {
+        TableName: 'GBPs',
+        Key: {
+            'Username': user.username,
+            'ID': user.id
+        }
+    }
+
+    //find user
+    db.get(params, function(err, data) {
+        if (err) {
+            console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
+        } else {
+            console.log('Found user:', JSON.stringify(data, null, 2))
+            return data.Item.GBPs
         }
     })
 }
