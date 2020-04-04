@@ -612,7 +612,8 @@ function getGBPs(user) {
         } else  {
             //console.log('Found user:', JSON.stringify(data, null, 2))
             console.log(data)//test
-            return JSON.parse(data).Item.GBPs
+            console.log(data.Item)
+            return data.Item.GBPs
         }
     })
 }
