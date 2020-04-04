@@ -84,8 +84,7 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 client.on('messageReactionAdd', (reaction, user) => {
     console.log("Message reaction id: " + reaction.emoji.id)
 
-    if (reaction.emoji.id === "695775705123782666") {
-        console.log('we in here')
+    if (reaction.emoji.id === "283825892176691201") {
         updateGBPs(reaction.message.member.user.username, reaction.message.member.user.id, 1)
     }
 
@@ -164,7 +163,7 @@ client.on('message', message => {
                 break
             //Find out if you're a good boy
             case "gbp":
-                message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user).toString() + " good boy points!")
+                message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user) + " good boy points!")
                 break
             //Announce yourself
             case "me":
