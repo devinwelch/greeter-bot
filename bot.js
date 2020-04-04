@@ -164,7 +164,7 @@ client.on('message', message => {
                 break
             //Find out if you're a good boy
             case "gbp":
-                message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user) + " good boy points!")
+                message.channel.send(message.member.user.username + " has " + getGBPs(message.member.user).toString() + " good boy points!")
                 break
             //Announce yourself
             case "me":
@@ -613,6 +613,7 @@ function getGBPs(user) {
             //console.log('Found user:', JSON.stringify(data, null, 2))
             console.log(data)//test
             console.log(data.Item)
+            console.log(data.Item.GBPs)
             return data.Item.GBPs
         }
     })
