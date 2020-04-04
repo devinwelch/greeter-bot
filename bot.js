@@ -1,21 +1,3 @@
-/*TODO:
-
-Ideas
------
-Calculate GBPs
-- for swearing
-!punish
-- loud noise during talk
-connect 4
-
-Code
-----
-String resources
-refactor god class
-caching
-
-*/
-
 const Discord = require('discord.js')
 const client = new Discord.Client()
 const ytdl = require('ytdl-core')
@@ -84,7 +66,8 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 client.on('messageReactionAdd', (reaction, user) => {
     console.log("Message reaction id: " + reaction.emoji.id)
 
-    if (reaction.emoji.id === "283825892176691201") {
+    if (reaction.emoji.id === "283825892176691201" &&
+        reaction.message.member.user.id !== user.id) {
         updateGBPs(reaction.message.member.user, 1)
     }
 
@@ -360,6 +343,7 @@ client.on('message', message => {
             filterText += "Please respect the Lord's day of rest. "
         }
         message.reply(filterText + message.guild.emojis.random(1).toString())
+        updateGBPs(message.member.user, -1)
     }
 
     //The never-ending debate
