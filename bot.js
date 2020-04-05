@@ -147,6 +147,10 @@ client.on('message', message => {
                 playSong(message.member.voiceChannel, 'ExposedHumans.mp3')
                 updateGBPs(message.member.user, -5)
                 break
+            //Bot-sanctioned gambling
+            case "gamble":
+                gamble(message.channel, message.member.user, Number(params))
+                break
             //Find out if you're a good boy
             case "gbp":
                 getGBPs(message.channel, message.member.user)
@@ -638,6 +642,58 @@ function updateGBPs(user, value) {
             })
         }
     })
+}
+
+function gamble(channel, user, wager) {
+    params = {
+        TableName: 'GBPs',
+        Key: {
+            'Username': user.username,
+            'ID': user.id
+        }
+    }
+
+    wager = Math.floor(wager)
+
+    db.get(params, function(err, data) {
+        if (err) {
+            console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
+            channel.send("Error, can't find user")
+        } else if (data.Item === undefined) {
+            establishGBPs(user, 0)
+            channel.send("You're broke!")
+        } else  if (wager > data.Item.GBPs) {
+            channel.send("Ez there sport, you only have " + data.Item.GBPs + " GBPs!")
+        }  else  if (wager < 1) {
+            channel.send("Get your dirty money out of here.")
+        } else {
+            roll = Math.floor(Math.random() * 100) + 1
+            channel.send("Higher than 55 wins. " + user.username + " rolled: ")
+                .then(message => function(message, roll, user, wager) {
+                    resultMessage = ""
+                    if (roll > 55) {
+                        resultMessage = "\nYou win " + wager + " GBPs!"
+                        updateGBPs(user, wager)
+                        updateGBPs(client.user, (0 - wager))
+                    } else {
+                        resultMessage = "\nYou lose " + wager + " GBPs."
+                        updateGBPs(user, (0 - wager))
+                        updateGBPs(client.user, wager)
+                    }
+                    sleep(5000)
+                    message.edit(message.content + roll + resultMessage)
+                })
+                .catch(console.error)
+        }
+    })
+}
+
+function slowGamble(message, count) {
+    sleep(1000)
+    if (count-- === 0) return
+
+    message.edit(message.content + rollMessage)
+        .then(thisMessage => slowRoll(thisMessage, min, max, count))
 }
 
 function sleep(miliseconds) {
