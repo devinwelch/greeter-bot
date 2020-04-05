@@ -668,26 +668,32 @@ function gamble(channel, user, wager) {
             channel.send("Get your dirty money out of here.")
         } else {
             roll = Math.floor(Math.random() * 100) + 1
+            resultMessage = ""
+
+            if (roll === 100) {
+                rolio = Math.floor(Math.random() * 4) + 2
+                resultMessage = "\nYou win big! " + rolio + "x multiplier!"
+                updateGBPs(user, rolio * wager)
+                updateGBPs(client.user, (0 - (rolio * wager)))
+            } else if (roll > 55) {
+                resultMessage = "\nYou win " + wager + " GBPs!"
+                updateGBPs(user, wager)
+                updateGBPs(client.user, (0 - wager))
+            } else {
+                resultMessage = "\nYou lose " + wager + " GBPs."
+                updateGBPs(user, (0 - wager))
+                updateGBPs(client.user, wager)
+    }
             channel.send("Higher than 55 wins. " + user.username + " rolled: ")
-                .then(message => gambler(message, roll, user, wager))
+                .then(message => gambler(message, roll, resultMessage))
                 .catch(console.error)
         }
     })
 }
 
-function gambler(message, roll, user, wager) {
-    resultMessage = ""
-    if (roll > 55) {
-        resultMessage = "\nYou win " + wager + " GBPs!"
-        updateGBPs(user, wager)
-        updateGBPs(client.user, (0 - wager))
-    } else {
-        resultMessage = "\nYou lose " + wager + " GBPs."
-        updateGBPs(user, (0 - wager))
-        updateGBPs(client.user, wager)
-    }
+function gambler(message, roll, result) {
     sleep(5000)
-    message.edit(message.content + roll + resultMessage)
+    message.edit(message.content + roll + result)
 }
 
 function sleep(miliseconds) {
