@@ -669,31 +669,25 @@ function gamble(channel, user, wager) {
         } else {
             roll = Math.floor(Math.random() * 100) + 1
             channel.send("Higher than 55 wins. " + user.username + " rolled: ")
-                .then(message => function(message, roll, user, wager) {
-                    resultMessage = ""
-                    if (roll > 55) {
-                        resultMessage = "\nYou win " + wager + " GBPs!"
-                        updateGBPs(user, wager)
-                        updateGBPs(client.user, (0 - wager))
-                    } else {
-                        resultMessage = "\nYou lose " + wager + " GBPs."
-                        updateGBPs(user, (0 - wager))
-                        updateGBPs(client.user, wager)
-                    }
-                    sleep(5000)
-                    message.edit(message.content + roll + resultMessage)
-                })
+                .then(message => gambler(message, roll, user, wager))
                 .catch(console.error)
         }
     })
 }
 
-function slowGamble(message, count) {
-    sleep(1000)
-    if (count-- === 0) return
-
-    message.edit(message.content + rollMessage)
-        .then(thisMessage => slowRoll(thisMessage, min, max, count))
+function gambler(message, roll, user, wager) {
+    resultMessage = ""
+    if (roll > 55) {
+        resultMessage = "\nYou win " + wager + " GBPs!"
+        updateGBPs(user, wager)
+        updateGBPs(client.user, (0 - wager))
+    } else {
+        resultMessage = "\nYou lose " + wager + " GBPs."
+        updateGBPs(user, (0 - wager))
+        updateGBPs(client.user, wager)
+    }
+    sleep(5000)
+    message.edit(message.content + roll + resultMessage)
 }
 
 function sleep(miliseconds) {
