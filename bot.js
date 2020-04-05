@@ -684,7 +684,7 @@ function gamble(channel, user, wager) {
                 updateGBPs(user, (0 - wager))
                 updateGBPs(client.user, wager)
     }
-            channel.send("Higher than 55 wins. " + user.username + " rolled: " + roll + result)
+            channel.send("Higher than 55 wins. " + user.username + " rolled: " + roll + resultMessage)
                 //.then(message => gambler(message, roll, resultMessage))
                 //.catch(console.error)
         }
