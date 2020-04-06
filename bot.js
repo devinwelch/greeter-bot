@@ -669,24 +669,57 @@ function gamble(channel, user, wager) {
         } else {
             roll = Math.floor(Math.random() * 100) + 1
             resultMessage = ""
+            var win = 0
 
             if (roll === 100) {
                 rolio = Math.floor(Math.random() * 4) + 2
                 resultMessage = "\nYou win big! " + rolio + "x multiplier!"
-                updateGBPs(user, rolio * wager)
-                updateGBPs(client.user, (0 - (rolio * wager)))
+                win = rolio * wager
             } else if (roll > 55) {
                 resultMessage = "\nYou win " + wager + " GBPs!"
-                updateGBPs(user, wager)
-                updateGBPs(client.user, (0 - wager))
+                win = wager
             } else {
                 resultMessage = "\nYou lose " + wager + " GBPs."
-                updateGBPs(user, (0 - wager))
-                updateGBPs(client.user, wager)
-    }
-            channel.send("Higher than 55 wins. " + user.username + " rolled: " + roll + resultMessage)
-                //.then(message => gambler(message, roll, resultMessage))
-                //.catch(console.error)
+                win = 0 - wager
+            }
+            
+            channel.send("Higher than 55 wins. " + user.username + " rolled: ")
+                .then(message => gambler(message, roll, resultMessage))
+                .catch(console.error)
+
+            user_params = {
+                TableName: 'GBPs',
+                Key: {
+                    'Username': user.username,
+                    'ID': user.id
+                }, 
+                UpdateExpression = 'set GBPs = GBPs + :val',
+                ExpressionAttributeValues = { ':val': win }
+            }
+            bot_params = {
+                TableName: 'GBPs',
+                Key: {
+                    'Username': client.user.username,
+                    'ID': client.user.id
+                },
+                UpdateExpression = 'set GBPs = GBPs - :val',
+                ExpressionAttributeValues = { ':val': win }
+            }
+            db.update(user_params, function(err, data) {
+                if (err) {
+                    console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2))
+                    channel.message("JK, unable to update points. Get scammed!")
+                } else {
+                    console.log('Update succeeded:', JSON.stringify(data, null, 2))
+                }
+            })
+            db.update(bot_params, function(err, data) {
+                if (err) {
+                    console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2))
+                } else {
+                    console.log('Update succeeded:', JSON.stringify(data, null, 2))
+                }
+            })
         }
     })
 }
