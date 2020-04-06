@@ -283,7 +283,7 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!begone**, **!emoji**, **!exposed**, **!gbp**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.")
+                        message.channel.send("Available commands: **!begone**, **!emoji**, **!exposed**, **!gamble**, **!gbp**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.")
                         break
                     case "begone":
                         message.channel.send("Kick greeter-bot out of the voice channel. Alias: begonebot")
@@ -293,6 +293,9 @@ client.on('message', message => {
                         break
                     case "exposed":
                         message.channel.send("Play a beautiful serenade in the voice channel the user is currently in.")
+                        break
+                    case "gamble":
+                        message.channel.send("```!gamble [amount]```\nGamble with your GBPs. Roll 1-100, higher than 55 wins! Hit 100 for jackpot. Don't try any funny business...")
                         break
                     case "gbp":
                         message.channel.send("Find out how many good boy points you have! Maybe you can buy some tendies if you get enough...")
