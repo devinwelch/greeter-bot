@@ -693,8 +693,8 @@ function gamble(channel, user, wager) {
                     'Username': user.username,
                     'ID': user.id
                 }, 
-                UpdateExpression = 'set GBPs = GBPs + :val',
-                ExpressionAttributeValues = { ':val': win }
+                UpdateExpression: 'set GBPs = GBPs + :val',
+                ExpressionAttributeValues: { ':val': win }
             }
             bot_params = {
                 TableName: 'GBPs',
@@ -702,8 +702,8 @@ function gamble(channel, user, wager) {
                     'Username': client.user.username,
                     'ID': client.user.id
                 },
-                UpdateExpression = 'set GBPs = GBPs - :val',
-                ExpressionAttributeValues = { ':val': win }
+                UpdateExpression: 'set GBPs = GBPs - :val',
+                ExpressionAttributeValues: { ':val': win }
             }
             db.update(user_params, function(err, data) {
                 if (err) {
