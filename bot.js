@@ -578,7 +578,7 @@ function playSong(voiceChannel, song, noKnock = false) {
 function giveNanners(messageID, reactorID, user, value) {
     params = {
         TableName: 'Reactions',
-        Item = {
+        Item: {
         'MessageID': messageID,
         'ReactorID': reactorID
         }
