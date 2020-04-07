@@ -581,6 +581,10 @@ function giveNanners(messageID, reactorID, user, value) {
         Item: {
         'MessageID': messageID,
         'ReactorID': reactorID
+        },
+        Key: {
+        'MessageID': messageID,
+        'ReactorID': reactorID
         }
     }
     
