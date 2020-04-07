@@ -69,7 +69,7 @@ client.on('messageReactionAdd', (reaction, user) => {
 
     if (reaction.emoji.id === "283825892176691201" &&
         reaction.message.member.user.id !== user.id) {
-        updateGBPs(reaction.message.member.user, 1)
+        giveNanners(reaction.message.id, user.id, reaction.message.member.user, 1)
     }
 
     //Only consider reactions to greeter-bot
@@ -575,11 +575,43 @@ function playSong(voiceChannel, song, noKnock = false) {
     }
 }
 
+function giveNanners(messageID, reactorID, user, value) {
+    params = {
+        TableName: 'Reactions',
+        Item = {
+        'MessageID': messageID,
+        'ReactorID': reactorID
+        }
+    }
+    
+    //check if user already gave nanners
+    db.get(params, function(err, data) {
+        if (err) {
+            console.error('Unable to query message. Error:', JSON.stringify(err, null, 2))
+        } else if (data.Item === undefined) {
+            //user has not already given nanners
+            db.put(params, function(err, data) {
+                if (err) {
+                    console.error('Unable to give nanners. Error:', JSON.stringify(err, null, 2))
+                } else {
+                    console.log('Nanners given:', JSON.stringify(data, null, 2))
+                    updateGBPs(user, value)
+                }
+            })
+        } else  {
+            console.log('User already gave nanners:', JSON.stringify(data, null, 2))
+        }
+    })
+}
+
 function establishGBPs(user, amount) {
-    params.Item = {
+    params = {
+        TableName: 'GBPs',
+        Item = {
         'Username': user.username,
         'ID': user.id,
         'GBPs': amount
+        }
     }
     db.put(params, function(err, data) {
         if (err) {
