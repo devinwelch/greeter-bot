@@ -607,7 +607,7 @@ function giveNanners(messageID, reactorID, user, value) {
 function establishGBPs(user, amount) {
     params = {
         TableName: 'GBPs',
-        Item = {
+        Item: {
         'Username': user.username,
         'ID': user.id,
         'GBPs': amount
