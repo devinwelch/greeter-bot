@@ -134,7 +134,7 @@ client.on('message', message => {
                 switch(params) {
                     case null:
                     case "":
-                        message.channel.send("In stock: **antidote**(10GBP). Use:\n```!buy [item]``` purchase.")
+                        message.channel.send("In stock: **antidote**(10GBP). Use:*!buy [item]* to purchase.")
                         break
                     case "antidote":
                         buyAntidote(message.member, message.channel)
@@ -298,10 +298,13 @@ client.on('message', message => {
                 switch(params.replace('!', '')) {
                     case null:
                     case "":
-                        message.channel.send("Available commands: **!begone**, **!emoji**, **!exposed**, **!gamble**, **!gbp**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.")
+                        message.channel.send("Available commands: **!begone**, **!buy**, **!emoji**, **!exposed**, **!gamble**, **!gbp**, **!me**, **!poll**, **!roll**, and **!rollfast**. Use:\n```!help [command name]``` to find out more about a specific command.")
                         break
                     case "begone":
                         message.channel.send("Kick greeter-bot out of the voice channel. Alias: begonebot")
+                        break
+                    case "buy":
+                        message.channel.send("Spend your good boy points on **useful** items!")
                         break
                     case "emoji":
                         message.channel.send("Add reactions to guess the next random emoji. Will only select server-specific emojis. Winner *should* be announced after successful guess!")
