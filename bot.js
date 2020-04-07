@@ -129,7 +129,22 @@ client.on('message', message => {
                     channel.leave()
                 }
                 break
-            //Play games with your buddies
+            //GBP store
+            case "buy":
+                switch(params) {
+                    case null:
+                    case "":
+                        message.channel.send("In stock: **antidote**(10GBP). Use:\n```!buy [item]``` purchase.")
+                        break
+                    case "antidote":
+                        buyAntidote(message.member, message.channel)
+                        break
+                    default:
+                        message.channel.send("Item not found. Use:```!buy``` for list of available items.")
+                        break
+                }
+                break
+            //Play games with your buddies // abandoned project for now
             case "challenge":
             case "connect":
                 break
@@ -144,7 +159,7 @@ client.on('message', message => {
                 break
             //Play a beautiful serenade
             case "exposed":
-                playSong(message.member.voiceChannel, 'ExposedHumans.mp3')
+                playSong(message.member.voiceChannel, 'Exposed.mp3')
                 updateGBPs(message.member.user, -5)
                 break
             //Bot-sanctioned gambling
@@ -573,6 +588,40 @@ function playSong(voiceChannel, song, noKnock = false) {
             })
         }).catch(error => console.log(error))
     }
+}
+
+function buyAntidote(member, channel) {
+    params = {
+        TableName: 'GBPs',
+        Key: {
+            'Username': member.user.username,
+            'ID': member.user.id
+        }
+    }
+
+    db.get(params, function(err, data) {
+        if (err) {
+            console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
+            channel.send("Error, can't find user")
+        } else if (data.Item === undefined || data.Item.GBPS < 10) {
+            channel.send("You can't afford this.")
+        } else {
+            params.UpdateExpression = 'set GBPs = GBPs - :val'
+            params.ExpressionAttributeValues = { ':val': 10 }
+            db.update(params, function(err, data) {
+                if (err) {
+                    console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2))
+                    channel.message("Sorry, shop's closed.")
+                } else {
+                    console.log('Update succeeded:', JSON.stringify(data, null, 2))
+                    channel.message(member.user.username + " has been cured of coronavirus! Stay safe...")
+                    if (member.roles.has('687436756559200367')) {
+                        member.removeRole('687436756559200367').then(console.log).catch(console.error)
+                    }
+                }
+            })
+        }
+    })
 }
 
 function giveNanners(messageID, reactorID, user, value) {
