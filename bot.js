@@ -164,7 +164,7 @@ client.on('message', message => {
                 break
             //Bot-sanctioned gambling
             case "gamble":
-                if (params.isNaN()) {
+                if (isNaN(params)) {
                     message.channel.send("Please don't do this to me")
                     break
                 }
