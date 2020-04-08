@@ -747,7 +747,7 @@ function gamble(channel, user, wager) {
             'ID': user.id
         }
     }
-    wager = Math.floor(Nuwager)
+    wager = Math.floor(wager)
     
     db.get(params, function(err, data) {
         if (err) {
