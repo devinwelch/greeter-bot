@@ -164,6 +164,10 @@ client.on('message', message => {
                 break
             //Bot-sanctioned gambling
             case "gamble":
+                if (params.isNaN()) {
+                    message.channel.send("Please don't do this to me")
+                    break
+                }
                 gamble(message.channel, message.member.user, Number(params))
                 break
             //Find out if you're a good boy
@@ -743,9 +747,8 @@ function gamble(channel, user, wager) {
             'ID': user.id
         }
     }
-
-    wager = Math.floor(wager)
-
+    wager = Math.floor(Nuwager)
+    
     db.get(params, function(err, data) {
         if (err) {
             console.error('Unable to find user. Error:', JSON.stringify(err, null, 2))
