@@ -620,7 +620,7 @@ function buyAntidote(member, channel) {
                     console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2))
                     channel.send("Sorry, shop's closed.")
                 } else {
-                    console.log('Update succeeded:', JSON.stringify(data, null, 2))
+                    console.log(member.user.username + ' successfully bought an antidote.')
                     channel.send(member.user.username + " has been cured of coronavirus! Stay safe...")
                     if (member.roles.has('687436756559200367')) {
                         member.removeRole('687436756559200367').then(console.log).catch(console.error)
