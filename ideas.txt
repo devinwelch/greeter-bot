@@ -1,0 +1,8 @@
+!donate/give
+!duel
+"fucking embarassing"
+!loan
+    max = (max GBPs achieved by user) + (current GBPs) || 0
+    automatically reclaim 110% of loan at midnight
+    only one loan out at a time
+banks heists, of course
