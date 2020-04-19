@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Discord = require('discord.js');
 const AWS = require('aws-sdk');
 const schedule = require('node-schedule');

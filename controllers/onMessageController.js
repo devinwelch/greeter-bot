@@ -137,7 +137,6 @@ let self = module.exports = {
     },
 
     isNotChristian(client, message) {
-        console.log(client.swears);
         for(var i = 0; i < client.swears.length; i++) {
             if (message.content.toLowerCase().indexOf(client.swears[i]) !== -1) {
                 return true;

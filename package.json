@@ -1,16 +1,17 @@
 {
   "name": "greeter-bot",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Devin Welch",
   "description": "TDLB4LIFE's meme-bot for Hooligan House",
   "main": "index.js",
   "scripts": {
-	"start": "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "@discordjs/opus": "^0.1.0",
     "aws-sdk": "^2.656.0",
     "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
@@ -21,8 +22,8 @@
     "ytdl-core": "^2.0.1"
   },
   "engines": {
-	"node": "12.16.1",
-        "npm": "6.13.4"
+    "node": "12.16.1",
+    "npm": "6.13.4"
   },
   "repository": {
     "type": "git",
