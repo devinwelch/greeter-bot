@@ -7,7 +7,7 @@ module.exports = {
     usage: '<amount> <username/tag>',
     execute(client, config, db, message, args) {
         let amount = args.trim().split(' ', 1)[0];
-        const username = args.slice(amount.length + 1).trim();
+        const username = args.slice(amount.length + 1).trim().toLowerCase();
 
         let tag = false;
         if (/.+#\d{4}/.test(username)) {
@@ -25,9 +25,9 @@ module.exports = {
         }
         
         const users = tag
-            ? message.guild.members.cache.filter(mbr => mbr.user.tag === username)
+            ? message.guild.members.cache.filter(mbr => mbr.user.tag.toLowerCase() === username)
                 .map(function(m) { return m.user; })
-            : message.guild.members.cache.filter(mbr => mbr.user.username === username)
+            : message.guild.members.cache.filter(mbr => mbr.user.username.toLowerCase() === username)
                 .map(function(m) { return m.user; });
 
         if (!users.length) {

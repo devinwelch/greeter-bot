@@ -69,7 +69,7 @@ schedule.scheduleJob({ minute: 0, dayOfWeek: 3, tz: config.timezone }, function(
 });
 
 //Holiday anthem
-schedule.scheduleJob({ date: 11, month: 3, tz: config.timezone, second:[0,30] }, function () { //TODO: make this shit work
+schedule.scheduleJob({ date: 11, month: 3, tz: config.timezone }, function () {
     jam(client, '411.mp3');
 });
 schedule.scheduleJob({ date: 21, month: 8, tz: config.timezone }, function () {

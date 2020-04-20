@@ -29,10 +29,8 @@ let self = module.exports = {
     },
 
     jam(client, songName) {
-        /*if (!client.voice.connections.get('143122983974731776')) { //Hooligan house
-            client.channels.cache.get('565655168876675088').join().then(connection => {*/ //Holiday bangers
-        if (!client.voice.connections.get('700777226832183386')) {
-            client.channels.cache.get('700777226832183390').join().then(connection => { //test server
+        if (!client.voice.connections.get('143122983974731776')) { //Hooligan house
+            client.channels.cache.get('565655168876675088').join().then(connection => { //Holiday bangers
                 function play(connection) {
                     const dispatcher = connection.play(`./Sounds/${songName}`);
                     dispatcher.on('finish', () => { 
@@ -93,11 +91,12 @@ let self = module.exports = {
     },
 
     infect(client) {
+        const coronaID = '687436756559200367';
         client.channels.cache.filter(channel => channel.type === 'voice').array().forEach(voiceChannel => {
-            const noninfected = voiceChannel.members.filter(member => member.roles.cache.every(role => role.id !== '687436756559200367'));
+            const noninfected = voiceChannel.members.filter(member => member.roles.cache.every(role => role.id !== coronaID));
             
-            if (noninfected.length) { 
-                const infectedCount = voiceChannel.members.size - noninfected.length;
+            if (noninfected.size) { 
+                const infectedCount = voiceChannel.members.size - noninfected.size;
                 const percentChances = [0, 10, 12, 15, 20, 30, 50, 75, 100];
 
                 const chance = percentChances[Math.min(8, infectedCount)];
@@ -108,10 +107,10 @@ let self = module.exports = {
                 }
         
                 if (roll < chance) {
-                    const r = Math.floor(Math.random() * noninfected.length);
-                    noninfected[r].addRole('687436756559200367');
-                    client.channels.cache.get('466065580252725288').send(`${noninfected[r].user.username} caught the coronavirus! Yuck, stay away!'`);
-                }           
+                    const victim = noninfected.random(1)[0];
+                    victim.roles.add(coronaID);
+                    client.channels.cache.get('466065580252725288').send(`${victim.user.username} caught the coronavirus! Yuck, stay away!`);
+                }
             }
         });
     },
