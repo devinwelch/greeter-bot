@@ -5,7 +5,7 @@ module.exports = {
     usage: '<question>? <option 1>; <option 2>; [option 3]; ...',
     execute(client, config, db, message, args) {
         if (!/.+\?(.+){1,8};.+/.test(args)) {
-            return message.channel.send(`Invalid format. Please use \`${config.prefix}${this.name} ${this.usage}\``);
+            return message.reply(`Invalid format. Please use \`${config.prefix}${this.name} ${this.usage}\``);
         }
 
         const question = args.split('?')[0];

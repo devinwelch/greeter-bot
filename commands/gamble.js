@@ -9,7 +9,7 @@ module.exports = {
         const user = message.author;
 
         if (isNaN(args) && args !== 'max' && args !== 'all') {
-            return message.channel.send("Please don't do this to me");
+            return message.reply("Please don't do this to me");
         }
 
         const params = {
@@ -33,10 +33,10 @@ module.exports = {
                 const wager = args === 'max' || args === 'all' ? data.Item.GBPs : Math.floor(args);
 
                 if (wager > data.Item.GBPs) {
-                    message.channel.send(`Ez there sport, you only have ${data.Item.GBPs} GBPs!`);
+                    message.reply(`Ez there sport, you only have ${data.Item.GBPs} GBPs!`);
                 }
                 else if (wager < 1) {
-                    message.channel.send('Get your dirty money out of here.');
+                    message.reply('Get your dirty money out of here.');
                 }
                 else {
                     const roll = Math.floor(Math.random() * 100) + 1; //1-100

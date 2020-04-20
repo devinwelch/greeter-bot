@@ -24,12 +24,12 @@ module.exports = {
         let GBPs;
         db.get(params, function(err, data) {
             if (err) {
-                console.error(`Error. Unable to find search for ${user.username}`);
+                console.error(`Error. Unable to search for ${user.username}`);
                 GBPs = '???';
             } else if (!data.Item) {
                 establishGBPs(db, user, 0);
                 GBPs = 0;
-            } else  {
+            } else {
                 GBPs = data.Item.GBPs;
             }
             channel.send(`${multiple ? user.tag : user.username} has ${GBPs} good boy points!`);

@@ -9,7 +9,7 @@ module.exports = {
         let quick = false;
 
         if (!/(d?|\d+d)\d+(-\d+)?/.test(args)) {
-            return message.channel.send(`Invalid format. Please use \`${config.prefix}${this.name} ${this.usage}\``);
+            return message.reply(`Invalid format. Please use \`${config.prefix}${this.name} ${this.usage}\``);
         }
 
         let numberOfRolls = 1;
