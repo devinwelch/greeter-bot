@@ -14,10 +14,7 @@ module.exports = {
 
         const params = {
             TableName: 'GBPs',
-            Key: {
-                'Username': user.username,
-                'ID': user.id
-            }
+            Key: { 'UserID': user.id }
         };
         
         db.get(params, function(err, data) {

@@ -23,10 +23,7 @@ module.exports = {
     buyAntidote(db, member, channel) {
         const params = {
             TableName: 'GBPs',
-            Key: {
-                'Username': member.user.username,
-                'ID': member.user.id
-            }
+            Key: { 'UserID': member.user.id }
         };
     
         db.get(params, function(err, data) {

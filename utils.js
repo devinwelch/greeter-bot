@@ -124,9 +124,10 @@ let self = module.exports = {
         const params = {
             TableName: 'GBPs',
             Item: {
-            'Username': user.username,
-            'ID': user.id,
-            'GBPs': amount
+                'UserID': user.id,
+                'Username': user.username,
+                'GBPs': amount,
+                'HighScore': amount
             }
         };
         db.put(params, function(err) {
@@ -139,18 +140,15 @@ let self = module.exports = {
     },
 
     updateGBPs(db, user, amount) {
-        const params = {
+        const gbpParams = {
             TableName: 'GBPs',
-            Key: {
-                'Username': user.username,
-                'ID': user.id
-            }
+            Key: { 'UserID': user.id }
         };
     
         //find user
-        db.get(params, function(err, data) {
+        db.get(gbpParams, function(err, data) {
             if (err) {
-                console.error(`Error. Unable to add ${user.username}`);
+                console.error(`Error. Unable to query ${user.username}`);
             } 
             //GBPs not calculated yet
             else if (!data.Item) {
@@ -158,16 +156,62 @@ let self = module.exports = {
             } 
             //update existing user
             else {
-                params.UpdateExpression = 'set GBPs = GBPs + :amt';
-                params.ExpressionAttributeValues = { ':amt': amount };
-                db.update(params, function(err) {
+                const loanParams = {
+                    TableName: 'Loans',
+                    Key: { 'UserID': user.id }
+                };
+
+                db.get(loanParams, function(err, loanData) {
                     if (err) {
-                        console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2));
+                        return console.error(`Error. Unable to search Loans for ${user.username}`);
+                    }
+                    const loan = loanData.Item ? loanData.Item.Amount : 0;
+                    if (isNaN(data.Item.HighScore)) {
+                        data.Item.HighScore = 0;
+                    }
+                    const high = Math.max(Number(data.Item.HighScore), data.Item.GBPs + amount - loan);
+
+                    gbpParams.UpdateExpression = 'set Username = :u, GBPs = GBPs + :amt, HighScore = :h';
+                    gbpParams.ExpressionAttributeValues = { 
+                        ':amt': amount,
+                        ':h': high,
+                        ':u': user.username.toLowerCase()
+                    };
+                    db.update(gbpParams, function(err) {
+                        if (err) {
+                            console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2));
+                        } else {
+                            console.log(`Gave ${user.username} ${amount} GBPs`);
+                        }
+                    });
+                });   
+            }
+        });
+    }, 
+    collectLoans(client, db) {
+        db.scan({ TableName: 'Loans' }, function(err, loanData) {
+            loanData.Items.forEach(function(loan) {
+                const loanAmount = Math.ceil(loan.Amount * 1.1);
+                const user = { 
+                    id: loan.UserID,
+                    username: loan.Username 
+                };
+
+                var params = {
+                    TableName: 'Loans',
+                    Key:{ 'UserID': loan.UserID }
+                };
+                
+                db.delete(params, function(err) {
+                    if (err) {
+                        console.error('Unable to delete item. Error:', JSON.stringify(err, null, 2));
                     } else {
-                        console.log(`Gave ${user.username} ${amount} GBPs`);
+                        self.updateGBPs(db, user, -loanAmount);
+                        self.updateGBPs(db, client.user, loanAmount);
+                        client.channels.cache.get('697239921144103035').send(`Reclaimed ${loanAmount} GBPs from ${user.username}`);
                     }
                 });
-            }
+            });
         });
     }
 };

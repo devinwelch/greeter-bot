@@ -8,7 +8,7 @@ const config = require('./config.json');
 const onVoice = require('./controllers/onVoiceController.js');
 const onReaction = require('./controllers/onReactionController.js');
 const onMessage = require('./controllers/onMessageController.js');
-const { declareDay, jam, spook, infect } = require('./utils.js');
+const { declareDay, jam, spook, infect, collectLoans } = require('./utils.js');
 
 const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] });
 
@@ -84,10 +84,11 @@ schedule.scheduleJob('*/13 0-3 1 11 *', function () {
     spook(client);
 });
 
-//Reset theme songs
+//Midnight
 schedule.scheduleJob({ minute: 0, hour: 0, tz: config.timezone }, function () {
     console.log('Resetting theme songs');
     client.themeSongs = [];
+    collectLoans(client, db);
 });
 
 //Coronavirus!

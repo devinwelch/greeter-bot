@@ -6,7 +6,7 @@ module.exports = {
     usage: '[user]',
     execute(client, config, db, message, args) {
         const users = args.length 
-            ? message.guild.members.cache.filter(mbr => mbr.user.username === args)
+            ? message.guild.members.cache.filter(mbr => mbr.user.username.toLowerCase() === args.toLowerCase())
                 .map(function(m) { return m.user; })
             : [message.author];
 
@@ -15,10 +15,7 @@ module.exports = {
     getGBPs(db, user, channel, multiple) {
         const params = {
             TableName: 'GBPs',
-            Key: {
-                'Username': user.username,
-                'ID': user.id
-            }
+            Key: { 'UserID': user.id }
         };
 
         let GBPs;
