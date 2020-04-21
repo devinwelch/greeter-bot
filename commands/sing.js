@@ -8,7 +8,7 @@ module.exports = {
         const voiceChannel = message.member.voice.channel;
         args = args.split(' ');
         const song = args[0];
-        const streamOptions = { seek: args.length > 1 ? args[1] : 0, volume: 0.5 }; //TODO: seek and destroy
+        const streamOptions = { seek: args.length > 1 ? args[1] : 0, volume: 0.5 };
 
         if (message.member.voice.channel) {
             voiceChannel.join()
