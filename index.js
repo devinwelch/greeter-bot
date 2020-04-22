@@ -10,7 +10,10 @@ const onReaction = require('./controllers/onReactionController.js');
 const onMessage = require('./controllers/onMessageController.js');
 const { declareDay, jam, spook, infect, collectLoans } = require('./utils.js');
 
-const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] });
+const client = new Discord.Client({
+    partials: ['MESSAGE', 'REACTION'],
+    presence: { activity: { name: 'all you degens' }}
+});
 
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
