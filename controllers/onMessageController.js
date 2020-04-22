@@ -6,6 +6,21 @@ let self = module.exports = {
         if (message.author.bot || message.content.toUpperCase().startsWith('HTTP')) {
             return;
         }
+        //Banana crown for the elite
+        else if (/.*:BananaCrown:.*/.test(message.content)) {
+            const params = {
+                TableName: 'GBPs',
+                Key: { 'UserID': message.author.id }
+            };
+            db.get(params, function(err, data) {
+                if (err) { 
+                    console.log('heavy lies the crown');
+                }
+                else if (data.Item.GBPs < 1000) {
+                    return message.delete().catch(console.error);
+                }
+            });
+        }
 
         //Stop spammers in their tracks
         message.channel.messages.fetch({limit: 4})
