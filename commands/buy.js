@@ -33,11 +33,12 @@ module.exports = {
             } else if (!data.Item || data.Item.GBPs < 100) {
                 channel.send("You can't afford this.");
             } else {
+                const coronaID = '687436756559200367';
                 updateGBPs(db, member.user, -100);
                 console.log(`${member.user.username} bought an antidote.`);
                 channel.send(`${member.user.username} has been cured of coronavirus! Stay safe...`);
-                if (member.roles.cache.has('687436756559200367')) {
-                    member.remove('687436756559200367').then(console.log).catch(console.error);
+                if (member.roles.cache.has(coronaID)) {
+                    member.roles.remove(coronaID).then(console.log).catch(console.error);
                 }
             }
         });

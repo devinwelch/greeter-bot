@@ -1,4 +1,7 @@
 !leaderboard
 !duel
+    whip
+    75% 1-30
+    25% 0
 "fucking embarassing"
 banks heists, of course
