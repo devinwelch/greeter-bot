@@ -93,6 +93,10 @@ schedule.scheduleJob({ minute: 0, hour: 0, tz: config.timezone }, function () {
     console.log('Resetting theme songs');
     client.themeSongs = [];
     collectLoans(client, db);
+});
+
+//Bail out!
+schedule.scheduleJob({ minute: 0, hour: 17, tz: config.timezone }, function () {
     giveaway(client, db);
 });
 
