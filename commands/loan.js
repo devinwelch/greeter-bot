@@ -103,6 +103,6 @@ Use no arguments to check the status of your loan or see how much you qualify fo
         if (isNaN(data.Item.HighScore)) {
             data.Item.HighScore = 0;
         }
-        return Math.max((data.Item.GBPs + data.Item.HighScore) / 2, 0);
+        return Math.max(Math.ceil((data.Item.GBPs + data.Item.HighScore) / 2), 0);
     }
 };
