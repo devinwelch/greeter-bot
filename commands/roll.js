@@ -43,7 +43,7 @@ module.exports = {
         if (count-- === 0) return;
     
         const roll = Math.floor(Math.random() * (max - min + 1)) + min;
-        let newRoll = `**${roll}**`;
+        let newRoll = ` **${roll}**`;
         if (count !== 0) newRoll += ',  ';
     
         message.edit(message.content + newRoll)

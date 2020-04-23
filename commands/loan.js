@@ -77,7 +77,8 @@ Use no arguments to check the status of your loan or see how much you qualify fo
                     db.get(loanParams, function(err, data) {
                         if (err) {
                             console.error('Unable to query loan. Error:', JSON.stringify(err, null, 2));
-                        } else if (!data.Item) {
+                        } 
+                        else if (!data.Item) {
                             db.put(loanParams, function(err) {
                                 if (err) {
                                     console.error('Unable to establish loan. Error:', JSON.stringify(err, null, 2));
@@ -89,7 +90,8 @@ Use no arguments to check the status of your loan or see how much you qualify fo
                                     message.reply('Done, but you better have my money by midnight...');
                                 }
                             });
-                        } else  {
+                        } 
+                        else  {
                             message.reply(`You already have a loan for ${data.Item.Amount}`);
                         }
                     });
@@ -101,6 +103,6 @@ Use no arguments to check the status of your loan or see how much you qualify fo
         if (isNaN(data.Item.HighScore)) {
             data.Item.HighScore = 0;
         }
-        return Math.max(data.Item.GBPs + data.Item.HighScore, 0);
+        return Math.max((data.Item.GBPs + data.Item.HighScore) / 2, 0);
     }
 };

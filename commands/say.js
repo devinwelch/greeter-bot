@@ -4,8 +4,8 @@ module.exports = {
     usage: '<comment>',
     hideFromHelp: true,
     execute(client, config, db, message, args) {
-        if (message.author.id === '142444696738856960') {
-            client.channels.get('466065580252725288').send(args);
+        if (message.author.id === config.ids.bus) {
+            client.channels.get(config.ids.mainChat).send(args);
         }
         else {
             console.log(`${message.author.username} is trying to control me!`);

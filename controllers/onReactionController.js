@@ -1,7 +1,7 @@
 const { updateGBPs } = require('../utils.js');
 
 let self = module.exports = {
-    execute(client, db, reaction, user) {
+    execute(client, config, db, reaction, user) {
         console.log(`${user.username} reacted with "${reaction.emoji.name}":${reaction.emoji.id}.`);
 
         if (reaction.message.member.id === client.user.id) {
@@ -21,12 +21,12 @@ let self = module.exports = {
             }
         }
         
-        else if (reaction.emoji.id === '283825892176691201' &&
+        else if (reaction.emoji.id === config.ids.nanners &&
             reaction.message.author.id !== user.id) {
             self.giveNanners(db, reaction.message.id, user.id, reaction.message.author, 1);
         }
         
-        else if (reaction.emoji.id === '309497209475563521' && Math.floor(Math.random() * 50) === 0) {
+        else if (reaction.emoji.id === config.ids.brownie && Math.floor(Math.random() * 50) === 0) {
             const voiceChannel = reaction.message.member.voice.channel;
             if (voiceChannel) {
                 client.utils.playSong(client, voiceChannel, 'Alert.mp3');
@@ -38,12 +38,12 @@ let self = module.exports = {
         const params = {
             TableName: 'Reactions',
             Item: {
-            'MessageID': messageID,
-            'ReactorID': reactorID
+                'MessageID': messageID,
+                'ReactorID': reactorID
             },
             Key: {
-            'MessageID': messageID,
-            'ReactorID': reactorID
+                'MessageID': messageID,
+                'ReactorID': reactorID
             }
         };
         

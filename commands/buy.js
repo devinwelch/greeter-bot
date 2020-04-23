@@ -12,7 +12,7 @@ module.exports = {
                 message.channel.send('In stock: **antidote**(100 GBPs). Use:`!buy [item]` to purchase.');
                 break;
             case 'antidote':
-                this.buyAntidote(db, message.member, message.channel);
+                this.buyAntidote(config, db, message.member, message.channel);
                 break;
             default:
                 message.channel.send('Item not found. Use:`!buy` for list of available items.');
@@ -20,7 +20,7 @@ module.exports = {
         }
     },
 
-    buyAntidote(db, member, channel) {
+    buyAntidote(config, db, member, channel) {
         const params = {
             TableName: 'GBPs',
             Key: { 'UserID': member.user.id }
@@ -33,12 +33,11 @@ module.exports = {
             } else if (!data.Item || data.Item.GBPs < 100) {
                 channel.send("You can't afford this.");
             } else {
-                const coronaID = '687436756559200367';
                 updateGBPs(db, member.user, -100);
                 console.log(`${member.user.username} bought an antidote.`);
                 channel.send(`${member.user.username} has been cured of coronavirus! Stay safe...`);
-                if (member.roles.cache.has(coronaID)) {
-                    member.roles.remove(coronaID).then(console.log).catch(console.error);
+                if (member.roles.cache.has(config.ids.corona)) {
+                    member.roles.remove(config.ids.corona).then(console.log).catch(console.error);
                 }
             }
         });

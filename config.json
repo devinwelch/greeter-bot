@@ -4,5 +4,17 @@
     "db": {
         "region": "us-east-1",
         "endpoint": "https://dynamodb.us-east-1.amazonaws.com"
+    },
+    "ids": {
+        "hooliganHouse": "143122983974731776",
+        "holidayBangers": "565655168876675088",
+        "corona": "687436756559200367",
+        "mainChat": "466065580252725288",
+        "exchange": "697239921144103035",
+        "bus": "142444696738856960",
+        "brownie": "309497209475563521",
+        "doable": "238107539789578240",
+        "ree": "241629835166744576",
+        "nanners": "283825892176691201"
     }
 }

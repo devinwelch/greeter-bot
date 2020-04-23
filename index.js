@@ -8,7 +8,7 @@ const config = require('./config.json');
 const onVoice = require('./controllers/onVoiceController.js');
 const onReaction = require('./controllers/onReactionController.js');
 const onMessage = require('./controllers/onMessageController.js');
-const { declareDay, jam, spook, infect, collectLoans } = require('./utils.js');
+const { declareDay, jam, spook, infect, collectLoans, giveaway } = require('./utils.js');
 
 const client = new Discord.Client({
     partials: ['MESSAGE', 'REACTION'],
@@ -31,6 +31,7 @@ const db = new AWS.DynamoDB.DocumentClient();
 client.on('ready', () => {
     client.swears = fs.readFileSync('./swears.txt').toString().split(',');
     client.themeSongs = [];
+    //client.rolls = [];
     console.log('I am ready!');
 });
 
@@ -48,7 +49,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
         if (reaction.partial) {
             await reaction.fetch();
         }
-        onReaction.execute(client, db, reaction, user);
+        onReaction.execute(client, config, db, reaction, user);
     }
     catch (error) {
         console.error;
@@ -92,9 +93,11 @@ schedule.scheduleJob({ minute: 0, hour: 0, tz: config.timezone }, function () {
     console.log('Resetting theme songs');
     client.themeSongs = [];
     collectLoans(client, db);
+    giveaway(client, db);
 });
 
-//Coronavirus!
+//Hourly
 schedule.scheduleJob({ minute: 0 }, function () {
+    //client.rolls = [];
     infect(client);
 });

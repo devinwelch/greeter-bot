@@ -15,6 +15,6 @@ module.exports = {
         playMe(client, newState.channel, newState.member.user.username, true, true);
         client.themeSongs.push(newState.id);
         console.log(`${newState.member.user.username} entered the chat!`);
-        updateGBPs(db, newState.member.user, 3);
+        updateGBPs(db, newState.member.user, 10);
     }
 };

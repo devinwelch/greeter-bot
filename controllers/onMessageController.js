@@ -47,7 +47,7 @@ let self = module.exports = {
                 message.guild.members.fetch({ query: commandName, limit: 1})
                     .then(member => {
                         if (member) {
-                            message.react('309497209475563521')
+                            message.react(config.ids.brownie)
                                 .catch(console.error);
                         }
                     })
@@ -103,7 +103,7 @@ let self = module.exports = {
         //Enforce some positivity
         else if (self.isQuestion(message.content)) {
             playSong(client, message.member.voice.channel, 'Doable.mp3');
-            message.react('238107539789578240');
+            message.react(config.ids.doable);
         }
 
         //Man's not hot
@@ -124,7 +124,7 @@ let self = module.exports = {
         else if (Math.floor(Math.random() * 20) === 0) {
             if (Math.floor(Math.random() * 4) === 0 && message.member.voice.channel) {
                 playSong(client, message.member.voice.channel, 'Ree.mp3');
-                message.react(client.emojis.get('241629835166744576'))
+                message.react(client.emojis.get(config.ids.ree))
                     .catch(console.error);
             }
             else {   

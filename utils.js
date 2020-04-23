@@ -1,3 +1,4 @@
+const config = require('./config.json');
 const fs = require('fs');
 
 let self = module.exports = {
@@ -29,8 +30,8 @@ let self = module.exports = {
     },
 
     jam(client, songName) {
-        if (!client.voice.connections.get('143122983974731776')) { //Hooligan house
-            client.channels.cache.get('565655168876675088').join().then(connection => { //Holiday bangers
+        if (!client.voice.connections.get(config.ids.hooliganHouse)) {
+            client.channels.cache.get(config.ids.holidayBangers).join().then(connection => {
                 function play(connection) {
                     const dispatcher = connection.play(`./Sounds/${songName}`);
                     dispatcher.on('finish', () => { 
@@ -91,9 +92,8 @@ let self = module.exports = {
     },
 
     infect(client) {
-        const coronaID = '687436756559200367';
         client.channels.cache.filter(channel => channel.type === 'voice').array().forEach(voiceChannel => {
-            const noninfected = voiceChannel.members.filter(member => member.roles.cache.every(role => role.id !== coronaID));
+            const noninfected = voiceChannel.members.filter(member => member.roles.cache.every(role => role.id !== config.ids.corona));
             
             if (noninfected.size) { 
                 const infectedCount = voiceChannel.members.size - noninfected.size;
@@ -108,8 +108,8 @@ let self = module.exports = {
         
                 if (roll < chance) {
                     const victim = noninfected.random(1)[0];
-                    victim.roles.add(coronaID);
-                    client.channels.cache.get('466065580252725288').send(`${victim.user.username} caught the coronavirus! Yuck, stay away!`);
+                    victim.roles.add(config.ids.corona);
+                    client.channels.cache.get(config.ids.mainChat).send(`${victim.user.username} caught the coronavirus! Yuck, stay away!`);
                 }
             }
         });
@@ -125,7 +125,7 @@ let self = module.exports = {
             TableName: 'GBPs',
             Item: {
                 'UserID': user.id,
-                'Username': user.username,
+                'Username': user.username.toLowerCase(),
                 'GBPs': amount,
                 'HighScore': amount
             }
@@ -208,10 +208,22 @@ let self = module.exports = {
                     } else {
                         self.updateGBPs(db, user, -loanAmount);
                         self.updateGBPs(db, client.user, loanAmount);
-                        client.channels.cache.get('697239921144103035').send(`Reclaimed ${loanAmount} GBPs from ${user.username}`);
+                        client.channels.cache.get(config.ids.exchange).send(`Reclaimed ${loanAmount} GBPs from ${user.username}`);
                     }
                 });
             });
         });
+    },
+    giveaway(client, db) {
+        const members = client.guilds.cache.get(config.ids.hooliganHouse).members.cache;
+        
+        const jackpot = members.size;
+        const winner = members.random(1)[0].user;
+        self.updateGBPs(db, winner, jackpot);
+
+        client.guilds.cache
+            .get(config.ids.hooliganHouse).channels.cache
+            .get(config.ids.exchange)
+            .send(`${winner.tag} wins the daily lotto: ${jackpot} GBPs!`);
     }
 };
