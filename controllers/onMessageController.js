@@ -124,8 +124,7 @@ let self = module.exports = {
         else if (Math.floor(Math.random() * 20) === 0) {
             if (Math.floor(Math.random() * 4) === 0 && message.member.voice.channel) {
                 playSong(client, message.member.voice.channel, 'Ree.mp3');
-                message.react(client.emojis.get(config.ids.ree))
-                    .catch(console.error);
+                message.react(config.ids.ree).catch(console.error);
             }
             else {   
                 message.channel.send(self.spongeMock(message.content));
