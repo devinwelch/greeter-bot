@@ -1,4 +1,3 @@
-!leaderboard
 !duel
     whip
     75% 1-30

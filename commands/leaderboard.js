@@ -1,5 +1,6 @@
 module.exports = {
     name: 'leaderboard',
+    alias: 'rank',
     description: 'See list of goodest boys on the server',
     execute(client, config, db, message, args) {
         db.scan({ TableName: 'GBPs'}, function(err, data) {
