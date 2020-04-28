@@ -54,7 +54,7 @@ const self = module.exports = {
                         message.reply(`${target.username} can't match that bet!`);
                     }
                     else {
-                        message.channel.send(`${target.username}! ${message.author.username} challenges you to a duel for ${wager} GBPs! React here: :yeehaw: to accept, :babababaaaBABA: to decline.`)
+                        message.channel.send(`${target.username}! ${message.author.username} challenges you to a duel for ${wager} GBPs! React here: ${client.emojis.cache.get(config.ids.yeehaw)} to accept, ${client.emojis.cache.get(config.ids.baba)} to decline.`)
                         .then(msg => { 
                             msg.react(config.ids.yeehaw);
                             msg.react(config.ids.baba);
@@ -62,7 +62,7 @@ const self = module.exports = {
                             const filter = (reaction, user) => (reaction.emoji.id === config.ids.yeehaw && user.id === target.id) ||
                                 (reaction.emoji.id === config.ids.baba && (user.id === target.id || user.id === message.author.id));
 
-                            const collector = msg.createReactionCollector(filter, { time: 30000, max: 1 });
+                            const collector = msg.createReactionCollector(filter, { time: 60000, max: 1 });
 
                             collector.on('collect', reaction => {
                                 if (reaction.emoji.id === config.ids.yeehaw) {
