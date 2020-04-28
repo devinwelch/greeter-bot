@@ -108,7 +108,7 @@ schedule.scheduleJob({ minute: 0 }, function() {
 });
 
 //Bailout
-schedule.scheduleJob({ minute: 0, hour: 18, tz: config.timezone }, function() {
+schedule.scheduleJob({ year: 2020, date: 28, month: 3, minute: 0, hour: 18, tz: config.timezone }, function() {
     client.channels.cache.get(config.ids.mainChat).send(`@everyone\nMy fellow hooligans,\n\nIt is with great displeasure for me to address you today. It seems that degenerative behavior is at an all time high - maybe this is due to panic surrounding the coronavirus role plaguing our server, or perhaps it is true nature revealed. For a real long time I've always pondered *why do good girls like bad boys*? They can't even afford to buy antidotes. My only hope is that you look toward your fellow good boys and emulate all you see. Join chat for the camaraderie. Lend a sticker to those who are down. Take for example, <@703027755566104686> - a pure soul that has donated the majority of this wealth and has *never* abused the system. We can all strive to be better; I hope that this stimulus package motivates you to be the good boy you've always dreamed of being. May we all be flush with tendies. With this, I am depositing 1200 GBPs into all recent taxpayer's account (i.e. has GBPs on record) **out of my own pocket**. Those still negative will start out with a fresh slate. This stint of generosity will be short-lived, so be careful how you invest it. May bot have mercy on your souls. :BananaCrown:\n\nRegards,\n<@${client.user.id}>`);
 
     db.scan({ TableName : 'GBPs' }, function(err, data) {
