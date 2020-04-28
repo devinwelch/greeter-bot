@@ -1,7 +1,8 @@
 !duel
-    whip
-    75% 1-30
-    25% 0
+    weapons
+    potions
+    side bet
+    corona debuff
 "fucking embarassing"
 banks heists, of course
 small hourlies
