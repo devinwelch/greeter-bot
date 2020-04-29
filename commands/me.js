@@ -13,7 +13,7 @@ module.exports = {
                 : args 
             : message.author.username;
     
-        if (fs.existsSync(`./Sounds/Friends/${user}.mp3`)) {
+        if (fs.existsSync(`./Sounds/Friends/${user}1.mp3`)) {
             playMe(client, message.member.voice.channel, user);
         }
         else {
