@@ -21,7 +21,7 @@ const self = module.exports = {
                 message.reply('Added you to the club.');
             }
             else if (!args.length) {
-                const emojiID = data.Item.Equipped === 'random' ? config.ids.random : items[data.Item.Equipped];
+                const emojiID = data.Item.Equipped === 'random' ? config.ids.random : items[data.Item.Equipped].id;
                 message.reply(`You have ${data.Item.Equipped} equipped. ${client.emojis.cache.get(emojiID)}`);
             }
             else if (args !== 'random' && !data.Item.Inventory[args]) {
