@@ -1,0 +1,68 @@
+{
+    "antidote": {
+        "name": "antidote",
+        "cost": 50,
+        "description": "Use to cure the coronavirus"
+    },
+    "bow": {
+        "name": "bow",
+        "cost": 100,
+        "description": "Dmg: 5-25.  Always goes first!",
+        "weapon": true,
+        "low": 5,
+        "high": 25,
+        "speed": 2,
+        "hits": 1
+    },
+    "daggers": {
+        "name": "daggers",
+        "cost": 100,
+        "description": "Dmg: 1-15.  Twin daggers hit twice per turn!",
+        "weapon": true,
+        "low": 1,
+        "high": 15,
+        "speed": 1,
+        "hits": 2
+    },
+    "fists": {
+        "name": "fists",
+        "cost": 0,
+        "description": "Dmg: 1-30.  Basic weapon for all users.",
+        "weapon": true,
+        "low": 1,
+        "high": 30,
+        "speed": 1,
+        "hits": 1
+    },
+    "scythe": {
+        "name": "scythe",
+        "cost": 100,
+        "description": "Dmg: 5-20.  5% chance to insta-kill!",
+        "weapon": true,
+        "low": 5,
+        "high": 20,
+        "speed": 1,
+        "hits": 1,
+        "insta": true
+    },
+    "sword": {
+        "name": "sword",
+        "cost": 100,
+        "description": "Dmg: 12-20. Consistent!",
+        "weapon": true,
+        "low": 12,
+        "high": 20,
+        "speed": 1,
+        "hits": 1
+    },
+    "warhammer": {
+        "name": "warhammer",
+        "cost": 100,
+        "description": "Dmg: 15-55. Very slow; only hits every other turn. Can 2-shot!",
+        "weapon": true,
+        "low": 15,
+        "high": 55,
+        "speed": -1,
+        "hits": 1
+    }
+}

@@ -23,6 +23,9 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
+client.swears = fs.readFileSync('./swears.txt').toString().split(',');
+client.themeSongs = [];
+
 AWS.config.update({
     region: config.db.region,
     endpoint: config.db.endpoint
@@ -30,9 +33,6 @@ AWS.config.update({
 const db = new AWS.DynamoDB.DocumentClient();
 
 client.on('ready', () => {
-    client.swears = fs.readFileSync('./swears.txt').toString().split(',');
-    client.themeSongs = [];
-    //client.rolls = [];
     console.log('I am ready!');
 });
 
@@ -103,7 +103,6 @@ schedule.scheduleJob({ minute: 0, hour: 17, tz: config.timezone }, function() {
 
 //Hourly
 schedule.scheduleJob({ minute: 0 }, function() {
-    //client.rolls = [];
     infect(client);
 });
 

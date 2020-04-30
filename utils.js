@@ -127,7 +127,9 @@ let self = module.exports = {
                 'UserID': user.id,
                 'Username': user.username.toLowerCase(),
                 'GBPs': amount,
-                'HighScore': amount
+                'HighScore': amount,
+                'Inventory': { 'fists': true, 'random': true },
+                'Equipped': 'fists'
             }
         };
         db.put(params, function(err) {

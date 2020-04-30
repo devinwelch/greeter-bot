@@ -1,44 +1,71 @@
+const items = require('./items.json');
 const { updateGBPs } = require('../utils.js');
 
-module.exports = {
+const self = module.exports = {
     name: 'buy',
     description: 'Spend your good boy points on **useful** items!',
+    aliases: ['shop'],
     usage: '[item]',
     execute(client, config, db, message, args) {
-        //TODO: This is trash and I need to refactor so that the shop can scale easily
-        switch(args) {
-            case null:
-            case '':
-                message.channel.send('In stock: **antidote**(100 GBPs). Use:`!buy [item]` to purchase.');
-                break;
-            case 'antidote':
-                this.buyAntidote(config, db, message.member, message.channel);
-                break;
-            default:
-                message.channel.send('Item not found. Use:`!buy` for list of available items.');
-                break;
+        if (!args.length) {
+            const reply = ['```Item\t\t\tCost\t\tDescription',
+                              '----\t\t\t----\t\t-----------'];
+            
+            for (var i of Object.keys(items)) {
+                i = items[i];
+                i.name += ' '.repeat(Math.max(16 - i.name.length, 0));
+                reply.push(`•${i.name}${i.cost}${' '.repeat(Math.max(3 - i.cost.toString().length, 0))} GBPs\t${i.description}`);
+            }
+            reply.push('```');
+
+            return message.channel.send(reply, {split: true});
+        }
+
+        const item = items[args];
+        if (item) {
+            const params = {
+                TableName: 'GBPs',
+                Key: { 'UserID': message.author.id }
+            };
+        
+            db.get(params, function(err, data) {
+                if (err) {
+                    console.error('Unable to search for user. Error:', JSON.stringify(err, null, 2));
+                    message.reply("Shop's closed!");
+                } 
+                else if (!data.Item || data.Item.GBPs < item.cost) {
+                    message.reply("You can't afford this.");
+                } 
+                else if (data.Item.Inventory[item.name]) {
+                    message.reply('You already have this!');
+                }
+                else {
+                    self.buy(db, message, item);
+                }
+            });
+        }
+        else {
+            message.reply('Item not found.');
         }
     },
-
-    buyAntidote(config, db, member, channel) {
+    buy(db, message, item) {
         const params = {
             TableName: 'GBPs',
-            Key: { 'UserID': member.user.id }
+            Key: { 'UserID': message.author.id },
+            UpdateExpression: `set Inventory.${item.name} = :b`,
+            ExpressionAttributeValues:{ ':b': true }
         };
-    
-        db.get(params, function(err, data) {
+
+        db.update(params, function(err) {
             if (err) {
-                console.error('Unable to find user. Error:', JSON.stringify(err, null, 2));
-                channel.send("Error, can't find user");
-            } else if (!data.Item || data.Item.GBPs < 100) {
-                channel.send("You can't afford this.");
-            } else {
-                updateGBPs(db, member.user, -100);
-                console.log(`${member.user.username} bought an antidote.`);
-                channel.send(`${member.user.username} has been cured of coronavirus! Stay safe...`);
-                if (member.roles.cache.has(config.ids.corona)) {
-                    member.roles.remove(config.ids.corona).then(console.log).catch(console.error);
-                }
+                console.log(JSON.stringify(err, null, 2));
+                console.log(`Could not give ${item.name} to ${message.author.username}: `, JSON.stringify(err, null, 2));
+                message.reply('An error occured. Tell bus.');
+            }
+            else {
+                console.log(`${message.author.username} bought ${item.name}`);
+                message.reply(`Thank you for purchasing: ${item.name}`);
+                updateGBPs(db, message.author, -item.cost);
             }
         });
     }
