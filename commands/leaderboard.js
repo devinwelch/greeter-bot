@@ -24,7 +24,7 @@ module.exports = {
 
                 if (sorted.some(e => e.UserID === message.author.id)) {
                     const rank = sorted.indexOf(sorted.find(e => e.UserID === message.author.id)) + 1;
-                    let judgment;
+                    let judgment = '';
                     if (rank === 69) {
                         judgment = '*Nice*.';
                     }
