@@ -5,7 +5,7 @@ const self = module.exports = {
     name: 'use',
     description: 'Use an item from inventory or equip a weapon for duels.',
     aliases: ['equip'],
-    usage: '[item]',
+    usage: '[item|random]',
     execute(client, config, db, message, args) {
         const params = { 
             TableName: 'GBPs',
