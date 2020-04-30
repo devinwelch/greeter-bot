@@ -21,7 +21,8 @@ const self = module.exports = {
                 message.reply('Added you to the club.');
             }
             else if (!args.length) {
-                message.reply(`You have ${data.Item.Equipped} equipped. ${client.emojis.cache.find(e => e.name === data.Item.Equipped)}`);
+                const emojiID = data.Item.Equipped === 'random' ? config.ids.random : items[data.Item.Equipped];
+                message.reply(`You have ${data.Item.Equipped} equipped. ${client.emojis.cache.get(emojiID)}`);
             }
             else if (args !== 'random' && !data.Item.Inventory[args]) {
                 message.reply('You do not have that item!');

@@ -106,7 +106,7 @@ const self = module.exports = {
     },
     duel(db, channel, challenger, target, wager) {
         channel.send(`${target.username} accepted ${challenger.username}'s challenge! ${wager} GBPs are on the line.\n`);
-        channel.send(`**${challenger.username}\tHP: ${challenger.hp}\t${channel.guild.emojis.cache.find(e => e.name === challenger.weapon.name)}\n${target.username}\tHP: ${target.hp}\t${channel.guild.emojis.cache.find(e => e.name === target.weapon.name)}**`)
+        channel.send(`**${challenger.username}\tHP: ${challenger.hp}\t${channel.guild.emojis.cache.get(challenger.weapon.id)}\n${target.username}\tHP: ${target.hp}\t${channel.guild.emojis.cache.get(target.weapon.id)}**`)
         .then(m => {
             //faster weapon goes first, if not then 50/50 random
             const challengerTurn = challenger.weapon.speed > target.weapon.speed
