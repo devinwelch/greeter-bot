@@ -3,21 +3,21 @@ const items = require('./items.json');
 
 const self = module.exports = {
     name: 'duel',
-    description: 'Wager GBPs against another member in an epic battle! (invitation times out after 1 minute)',
+    description: 'Duel against another player using equipped weapons. Add a wager to bet GBPs!',
     aliases: ['challenge'],
-    usage: '<wager> <@user>',
+    usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
         //config.ids.yeehaw = '700795024551444661'; //testing only
         //config.ids.baba = '700795091501056111';
 
-        if (!/\d+ .+/.test(args) || !message.mentions.members.size) {
-            return message.reply(`Please use the format: \`${config.prefix}${this.name} \`${this.usage}`);
+        if (!message.mentions.members.size) {
+            message.reply('Please @ a user!');
         }
 
-        const wager = Math.floor(args.trim().split(' ', 1)[0]);
+        const wager = /\d+ .+/.test(args) ? Math.floor(args.trim().split(' ', 1)[0]) : 0;
         const target = message.mentions.members.first(1)[0].user;
 
-        if (wager < 1) {
+        if (wager < 0) {
             return message.reply('Make it a real challenge.');
         }
         else if (target.id === message.author.id) {
@@ -37,7 +37,7 @@ const self = module.exports = {
                 establishGBPs(db, message.author, 0);
                 message.reply('Get money.');
             }
-            else if (data1.Item.GBPs < wager) {
+            else if (data1.Item.GBPs < wager && wager > 0) {
                 message.reply(`Hang on there, slick! You only have ${data1.Item.GBPs} GBPs!`);
             }
             else {
@@ -54,11 +54,11 @@ const self = module.exports = {
                         establishGBPs(db, target, 0);
                         message.reply(`${target.username} can't match that bet!`);
                     }
-                    else if (data2.Item.GBPs < wager) {
+                    else if (data2.Item.GBPs < wager && wager > 0) {
                         message.reply(`${target.username} can't match that bet!`);
                     }
                     else {
-                        message.channel.send(`${target.username}! ${message.author.username} challenges you to a duel for ${wager} GBPs! React here: ${client.emojis.cache.get(config.ids.yeehaw)} to accept, ${client.emojis.cache.get(config.ids.baba)} to decline.`)
+                        message.channel.send(`${target.username}! ${message.author.username} challenges you to a duel for ${wager ? `${wager} GBPs` : 'fun'}! React here: ${client.emojis.cache.get(config.ids.yeehaw)} to accept, ${client.emojis.cache.get(config.ids.baba)} to decline.`)
                         .then(msg => { 
                             msg.react(config.ids.yeehaw);
                             msg.react(config.ids.baba);
@@ -98,14 +98,14 @@ const self = module.exports = {
     },
     getWeapon(data) {
         if (data.Item.Equipped === 'random') {
-            const inventory = Object.keys(data.Item.Inventory).filter(key => data.Item.Inventory[key] &&items[key] && items[key].weapon);
+            const inventory = Object.keys(data.Item.Inventory).filter(key => data.Item.Inventory[key] && items[key] && items[key].weapon);
             return items[inventory[Math.floor(Math.random() * inventory.length)]];
         }
         
         return items[data.Item.Equipped];
     },
     duel(db, channel, challenger, target, wager) {
-        channel.send(`${target.username} accepted ${challenger.username}'s challenge! ${wager} GBPs are on the line.\n`);
+        channel.send(`${target.username} accepted ${challenger.username}'s challenge! ${wager ? wager : 'No'} GBPs are on the line.\n`);
         channel.send(`**${challenger.username}\tHP: ${challenger.hp}\t${channel.guild.emojis.cache.get(challenger.weapon.id)}\n${target.username}\tHP: ${target.hp}\t${channel.guild.emojis.cache.get(target.weapon.id)}**`)
         .then(m => {
             //faster weapon goes first, if not then 50/50 random
@@ -125,63 +125,70 @@ const self = module.exports = {
             message.content += `\n${challengerTurn ? challenger.username : target.username} rolled initiative.`;
         }
         else if (challenger.hp < 1) {
-            message.edit(message.content + `\n${target.username} has slain ${challenger.username}!`);
-            updateGBPs(db, challenger, -wager);
-            updateGBPs(db, target, wager);
-            return;
+            return self.getResults(db, target, challenger, wager, message);
         }
         else if (target.hp < 1) {
-            message.edit(message.content + `\n${challenger.username} has slain ${target.username}!`);
-            updateGBPs(db, challenger, wager);
-            updateGBPs(db, target, -wager);
-            return;
+            return self.getResults(db, challenger, target, wager, message);
         }
 
-        sleep(2000);
+        sleep(1500);
 
         const cPrev = challenger.hp;
         const tPrev = target.hp;
-        let move = '';
-
-        if (challengerTurn) {
-            for (var i = 0; i < challenger.weapon.hits; i++) {
-                const hit = self.getDamage(challenger, challenger.weapon);
-                if (!hit) {
-                    move = `\n${challenger.username} is winding up...`;
-                    break;
-                }
-                target.hp -= hit;
-                move += `\n${challenger.username} hit for ${hit} dmg!`;
-            }
-        }
-        else {
-            for (var j = 0; j < target.weapon.hits; j++) {
-                const hit = self.getDamage(target, target.weapon);
-                if (!hit) {
-                    move = `\n${target.username} is winding up...`;
-                    break;
-                }
-                challenger.hp -= hit;
-                move += `\n${target.username} hit for ${hit} dmg!`;
-            }
-        }
+        let turn = challengerTurn ? self.getTurn(challenger, target) : self.getTurn(target, challenger);
         challengerTurn = !challengerTurn;
 
         message.edit(
             message.content
                 .replace(`${challenger.username}\tHP: ${cPrev}`,`${challenger.username}\tHP: ${challenger.hp}`)
                 .replace(`${target.username}\tHP: ${tPrev}`,`${target.username}\tHP: ${target.hp}`)
-            + move)
+            + turn)
         .then(m => self.fight(db, m, challenger, target, wager, challengerTurn));
     },
-    getDamage(user, weapon) {
-        if (weapon.insta && !Math.floor(Math.random() * 20)) {
-            return 100;
+    getTurn(turnPlayer, opponent) {
+        let actions = '';
+        for (var i = 0; i < turnPlayer.weapon.hits; i++) {
+            actions += this.getAction(turnPlayer, opponent);
         }
-        const hit = user.cooldown ? 0 : Math.floor(Math.random() * (weapon.high + 1 - weapon.low)) + weapon.low;
-        if (weapon.speed < 0) {
-            user.cooldown = !user.cooldown;
+
+        return actions;
+    },
+    getAction(turnPlayer, opponent) {
+        const weapon = turnPlayer.weapon;
+        let action;
+
+        if (weapon.insta && Math.floor(Math.random() * 100) < 7) { //7% chance of insta-kill
+            if (weapon.cursed) {
+                action = `\n${turnPlayer.username} is just another victim of the bad girl's curse!`;
+                turnPlayer.hp = 0;
+            }
+            else {
+                action = `\n${turnPlayer.username} harvested ${opponent.username}'s soul!`;
+                opponent.hp = 0;
+            }
         }
-        return hit;
+        else {
+            if (turnPlayer.cooldown) {
+                action = `\n${turnPlayer.username} is winding up...`;
+            }
+            else {
+                const dmg = Math.floor(Math.random() * (weapon.high + 1 - weapon.low)) + weapon.low;
+                action = `\n${turnPlayer.username} hit for ${dmg} dmg!`;
+                opponent.hp -= dmg;
+            }
+
+            if (weapon.speed < 0) {
+                turnPlayer.cooldown = !turnPlayer.cooldown;
+            }
+        }
+
+        return action;
+    },
+    getResults(db, winner, loser, wager, message) {
+        if (wager) {
+            updateGBPs(db, winner, wager);
+            updateGBPs(db, loser, -wager);
+        }
+        return message.edit(message.content + `\n${winner.username} has slain ${loser.username}!`);
     }
 };
