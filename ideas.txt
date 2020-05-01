@@ -1,5 +1,9 @@
 !duel
     weapons
+        cursed weapons (scythe self kill)
+        musket
+        berserker
+        double edged sword
     potions
     side bet
     corona debuff

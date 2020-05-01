@@ -13,8 +13,7 @@ const self = module.exports = {
             
             for (var i of Object.keys(items)) {
                 i = items[i];
-                i.name += ' '.repeat(Math.max(16 - i.name.length, 0));
-                reply.push(`•${i.name}${i.cost}${' '.repeat(Math.max(3 - i.cost.toString().length, 0))} GBPs\t${i.description}`);
+                reply.push(`•${i.name}${' '.repeat(Math.max(16 - i.name.length, 0))}${i.cost}${' '.repeat(Math.max(3 - i.cost.toString().length, 0))} GBPs\t${i.description}`);
             }
             reply.push('```');
 
