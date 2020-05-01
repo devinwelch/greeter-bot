@@ -73,10 +73,12 @@ const self = module.exports = {
                                     message.author.hp = 100;
                                     message.author.weapon = self.getWeapon(data1);
                                     message.author.cooldown = false;
+                                    message.author.turn = 0;
 
                                     target.hp = 100;
                                     target.weapon = self.getWeapon(data2);
                                     target.cooldown = false;
+                                    target.turn = 0;
 
                                     self.duel(db, message.channel, message.author, target, wager);
                                 }
@@ -115,16 +117,14 @@ const self = module.exports = {
                     ? false
                     : Math.floor(Math.random() * 2) < 1;
 
+            m.content += `\n${challengerTurn ? challenger.username : target.username} rolled initiative.`;
             m.edit(m.content)
             .then(self.fight(db, m, challenger, target, wager, challengerTurn))
             .catch(console.error);
         });
     },
     fight(db, message, challenger, target, wager, challengerTurn) {
-        if (challenger.hp === 100 && target.hp === 100) {
-            message.content += `\n${challengerTurn ? challenger.username : target.username} rolled initiative.`;
-        }
-        else if (challenger.hp < 1) {
+        if (challenger.hp < 1) {
             return self.getResults(db, target, challenger, wager, message);
         }
         else if (target.hp < 1) {
@@ -157,7 +157,14 @@ const self = module.exports = {
         const weapon = turnPlayer.weapon;
         let action;
 
-        if (weapon.insta && Math.floor(Math.random() * 100) < 7) { //7% chance of insta-kill
+        if (weapon.sequence) {
+            if (turnPlayer.turn === weapon.sequence.length - 1) {
+                opponent.hp = 0;
+            }
+            action = `\n${turnPlayer.username}${weapon.sequence[turnPlayer.turn]}`;
+            turnPlayer.turn++;
+        }
+        else if (weapon.insta && Math.floor(Math.random() * 100) < 7) { //7% chance of insta-kill
             if (weapon.cursed) {
                 action = `\n${turnPlayer.username} is just another victim of the bad girl's curse!`;
                 turnPlayer.hp = 0;
@@ -172,7 +179,13 @@ const self = module.exports = {
                 action = `\n${turnPlayer.username} is winding up...`;
             }
             else {
-                const dmg = Math.floor(Math.random() * (weapon.high + 1 - weapon.low)) + weapon.low;
+                let dmg = Math.floor(Math.random() * (weapon.high + 1 - weapon.low)) + weapon.low;
+                if (weapon.zerk) {
+                    dmg += Math.ceil(dmg * (100 - turnPlayer.hp) / 101);
+                    if (opponent.weapon.name === 'kamehameha') {
+                        dmg += 4;
+                    }
+                }
                 action = `\n${turnPlayer.username} hit for ${dmg} dmg!`;
                 opponent.hp -= dmg;
             }
