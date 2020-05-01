@@ -40,7 +40,7 @@
     "scythe": {
         "name": "scythe",
         "cost": 100,
-        "description": "Dmg: 5-20.  5% chance to insta-kill!",
+        "description": "Dmg: 5-20.  7% chance to insta-kill!",
         "weapon": true,
         "low": 5,
         "high": 20,
@@ -74,7 +74,7 @@
     "cursedScythe": {
         "name": "cursedScythe",
         "cost": 99999,
-        "description": "Dmg: 5-20.  5% chance to insta-kill!",
+        "description": "Dmg: 5-20.  7% chance to insta-kill!",
         "weapon": true,
         "low": 5,
         "high": 20,
