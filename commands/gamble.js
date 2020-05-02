@@ -3,7 +3,7 @@ const { establishGBPs, updateGBPs, sleep } = require('../utils.js');
 module.exports = {
     name: 'gamble',
     description: "Gamble with your GBPs. Roll 1-100, higher than 55 wins! Hit 100 for jackpot. Don't try any funny business...",
-    aliasess: ['bet'],
+    aliases: ['bet'],
     usage: '<(amount)|max|all>',
     execute(client, config, db, message, args) {
         const user = message.author;

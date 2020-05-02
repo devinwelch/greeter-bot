@@ -11,7 +11,7 @@ const self = module.exports = {
         //config.ids.baba = '700795091501056111';
 
         if (!message.mentions.members.size) {
-            message.reply('Please @ a user!');
+            return message.reply('Please @ a user!');
         }
 
         const wager = /\d+ .+/.test(args) ? Math.floor(args.trim().split(' ', 1)[0]) : 0;
