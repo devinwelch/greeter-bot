@@ -37,9 +37,6 @@ module.exports = {
                         message.reply(`You don't have enough yet! Come back with ${total} GBPs or I'll take it myself.`);
                     }
                     else {
-                        updateGBPs(db, message.author, -total);
-                        updateGBPs(db, client.user, total);
-
                         db.delete(loanParams, function(err) {
                             if (err) {
                                 console.error('Unable to delete item. Error:', JSON.stringify(err, null, 2));
