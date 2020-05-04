@@ -2,6 +2,7 @@
     weapons
         musket
         double edged sword
+        banana pile that gives bananas whenever you hit
     potions
     side bet
     corona debuff
@@ -9,4 +10,4 @@
 banks heists, of course
 small hourlies
 reset
-leaderboard for duels
+leaderboard for duel
