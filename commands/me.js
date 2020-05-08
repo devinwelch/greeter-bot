@@ -11,7 +11,7 @@ module.exports = {
             ? args === message.author.username.toLowerCase() 
                 ? 'congratulations'
                 : args 
-            : message.author.username;
+            : message.author.username.toLowerCase();
     
         if (fs.existsSync(`./Sounds/Friends/${user}.mp3`)) {
             playMe(client, message.member.voice.channel, user);
