@@ -211,8 +211,8 @@ const self = module.exports = {
             const coronaText = `*...and ${turnPlayer.selfKill ? 'died' : `lost **${coronaDamage}** hp`} to corona*`;
             actions.push(new Action(coronaText, turnPlayer.id, turnPlayer.hp, opponent.id, opponent.hp));
 
-            //2% chane to infect opponent
-            if (!getRandom(5) && !opponent.infected) {
+            //5% chance to infect opponent
+            if (!getRandom(19) && !opponent.infected) {
                 opponent.roles.add(config.ids.corona);
                 opponent.infected = true;
                 const infectText = `${opponent.displayName} **caught corona, ${selectRandom(yuck)}**`;
