@@ -1,4 +1,4 @@
-const { establishGBPs, updateGBPs, sleep } = require('../utils.js');
+const { establishGBPs, updateGBPs, sleep, getRandom } = require('../utils.js');
 
 module.exports = {
     name: 'gamble',
@@ -36,11 +36,11 @@ module.exports = {
                     message.reply('Get your dirty money out of here.');
                 }
                 else {
-                    const roll = Math.floor(Math.random() * 100) + 1; //1-100
+                    const roll = getRandom(1, 100);
                     let resultMessage, win;
 
                     if (roll === 100) {
-                        const bonus = Math.floor(Math.random() * 4) + 2; //2-5
+                        const bonus = getRandom(2, 5);
                         resultMessage = `\nYou win big! ${bonus}x multiplier!`;
                         win = bonus * wager;
                     }

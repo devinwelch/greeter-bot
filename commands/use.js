@@ -64,7 +64,6 @@ const self = module.exports = {
             else {
                 if (message.member.roles.cache.has(config.ids.corona)) {
                     message.member.roles.remove(config.ids.corona)
-                        .then(console.log)
                         .catch(console.error);
                 }
                 message.reply('You have been cured of coronavirus! Stay safe...');

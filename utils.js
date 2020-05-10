@@ -18,12 +18,12 @@ let self = module.exports = {
     
         if (voiceChannel && !client.voice.connections.get(voiceChannel.guild.id)) {
             voiceChannel.join().then(connection => {
-                const seekRNG = Math.floor(Math.random() * 111);
+                const seekRNG = self.getRandom(110);
                 const dispatcher = connection.play('./Sounds/Sans.mp3', { seek: seekRNG });
                 dispatcher.on('finish', () => {
                     voiceChannel.leave();
                 });
-                const lengthRNG = 1000 * (Math.floor(Math.random() * 6) + 3);
+                const lengthRNG = 1000 * self.getRandom(3, 6);
                 setTimeout(() => dispatcher.end(), lengthRNG);
             }).catch(error => console.log(error));
         }
@@ -53,9 +53,9 @@ let self = module.exports = {
             voiceChannel.join().then(connection => {
                 const dispatcher = connection.play(`./Sounds/${song}`);
                 dispatcher.on('finish', () => {
-                    if (!noKnock && Math.floor(Math.random() * 10) === 0) {
+                    if (!noKnock && !self.getRandom(9)) {
                         self.sleep(5000);
-                        const num = Math.floor(Math.random() * 3) + 1;
+                        const num = self.getRandom(1, 3);
                         const knocker = connection.play(`./Sounds/knock'${num.toString()}.mp3`);
                         knocker.on('finish', () => {
                             voiceChannel.leave();
@@ -74,7 +74,7 @@ let self = module.exports = {
         
         if (gnomed &&
             voiceChannel.members.size > 1 &&
-            Math.floor(Math.random() * 12) === 0) {
+            !self.getRandom(15)) {
             path = 'gnomed.mp3';
         }
         else {
@@ -85,7 +85,7 @@ let self = module.exports = {
                 return;
             }
             
-            path = 'Friends/' + files[Math.floor(Math.random() * files.length)];
+            path = 'Friends/' + self.selectRandom(files);
         }
         
         self.playSong(client, voiceChannel, path, noKnock);
@@ -100,7 +100,7 @@ let self = module.exports = {
                 const percentChances = [0, 10, 12, 15, 20, 30, 50, 75, 100];
 
                 const chance = percentChances[Math.min(8, infectedCount)];
-                const roll = Math.floor(Math.random() * 100);
+                const roll = self.getRandom(99);
         
                 if (infectedCount) {
                     console.log(`Rolled ${roll} against ${chance}% odds in channel: ${voiceChannel}`);
@@ -118,6 +118,26 @@ let self = module.exports = {
     sleep(miliseconds) {
         let startTime = new Date().getTime();
         while (startTime + miliseconds >= new Date().getTime());
+    },
+
+    selectRandom(array) {
+        return array[Math.floor(Math.random() * array.length)];
+    },
+
+    getRandom(x, y) {
+        let min;
+        let max;
+
+        if (y) {
+            min = x;
+            max = y;
+        }
+        else {
+            min = 0;
+            max = x;
+        }
+
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
     establishGBPs(db, user, amount) {

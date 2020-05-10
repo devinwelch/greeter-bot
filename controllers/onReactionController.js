@@ -1,4 +1,4 @@
-const { updateGBPs } = require('../utils.js');
+const { updateGBPs, getRandom } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, reaction, user) {
@@ -28,7 +28,7 @@ let self = module.exports = {
             self.giveNanners(db, reaction.message.id, user.id, reaction.message.author, 1);
         }
         
-        else if (reaction.emoji.id === config.ids.brownie && Math.floor(Math.random() * 50) === 0) {
+        else if (reaction.emoji.id === config.ids.brownie && !getRandom(49)) {
             const voiceChannel = reaction.message.member.voice.channel;
             if (voiceChannel) {
                 client.utils.playSong(client, voiceChannel, 'Alert.mp3');

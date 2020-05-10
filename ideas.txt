@@ -1,13 +1,30 @@
 !duel
+    force arena?
     weapons
         musket
         double edged sword
         banana pile that gives bananas whenever you hit
     potions
     side bet
-    corona debuff
+    raid boss
+        rewards split up among contestants
+        small cost to enter, big reward
+        active fighting using reactions/messages on short timer
+        aqua tail/earthquake/dig/rest
+        500hp?
 "fucking embarassing"
 banks heists, of course
 small hourlies
 reset
+    voters determined with loans
+        majority shareholders?
+            percent change based on share?
+        top 3?
+            3 must have > 1000? 5000?
+    1 per week
+    keep items
+    resets at midnight
+    store gbp data for each reset
 leaderboard for duel
+inventory
+schedule jobs instead of sleep?

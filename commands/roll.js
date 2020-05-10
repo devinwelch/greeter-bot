@@ -1,4 +1,4 @@
-const { sleep } = require('../utils.js');
+const { sleep, getRandom } = require('../utils.js');
 
 module.exports = {
     name: 'roll',
@@ -26,7 +26,7 @@ module.exports = {
 
         if (quick) {
             for(var i = 0; i < numberOfRolls; i++) {
-                const roll = Math.floor(Math.random() * (max - min + 1)) + min;
+                const roll = getRandom(min, max);
                 rollMessage += `**${roll}**`;
                 if (i !== numberOfRolls - 1) rollMessage += ',  ';
             }
@@ -42,7 +42,7 @@ module.exports = {
         sleep(2000);
         if (count-- === 0) return;
     
-        const roll = Math.floor(Math.random() * (max - min + 1)) + min;
+        const roll = getRandom(min, max);
         let newRoll = ` **${roll}**`;
         if (count !== 0) newRoll += ',  ';
     

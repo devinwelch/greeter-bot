@@ -1,4 +1,4 @@
-const { playSong, updateGBPs } = require('../utils.js');
+const { playSong, updateGBPs, getRandom } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, message) {
@@ -121,8 +121,8 @@ let self = module.exports = {
         }
 
         //Random chance to make fun of you or scream at you
-        else if (Math.floor(Math.random() * 20) === 0) {
-            if (Math.floor(Math.random() * 4) === 0 && message.member.voice.channel) {
+        else if (!getRandom(19)) {
+            if (!getRandom(3) && message.member.voice.channel) {
                 playSong(client, message.member.voice.channel, 'Ree.mp3');
                 message.react(config.ids.ree).catch(console.error);
             }
