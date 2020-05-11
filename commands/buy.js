@@ -23,7 +23,7 @@ const self = module.exports = {
             return message.channel.send(reply, {split: true});
         }
 
-        const item = items[args.toLower()];
+        const item = items[args.toLowerCase()];
         if (item && !item.hide) {
             const params = {
                 TableName: 'GBPs',
