@@ -5,6 +5,7 @@
 //  would require vote cooldown
 
 //Require minimum economy size before resetting?
+//Wealth gap between 3 & 4?
 
 const self = module.exports = {
     name: 'reset',

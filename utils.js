@@ -237,7 +237,7 @@ let self = module.exports = {
                 }
                 else {
 
-                    db.scan({ TableName: 'GBPs2' }, function(err, gbpData) {
+                    db.scan({ TableName: 'GBPs' }, function(err, gbpData) {
                         if (err) {
                             console.error('Unable get GBP data for reset. Error:', JSON.stringify(err, null, 2));
                         }
@@ -245,7 +245,7 @@ let self = module.exports = {
                             gbpData.Items.forEach(user => {
                                 if (Object.keys(user.Inventory).filter(k => k !== 'fists' && k !== 'random').length) {
                                     const gbpParams = {
-                                        TableName: 'GBPs2',
+                                        TableName: 'GBPs',
                                         Key: { 'UserID': user.UserID },
                                         UpdateExpression: 'set GBPs = :z, HighScore = :z',
                                         ExpressionAttributeValues: { ':z': 0 }
@@ -258,7 +258,7 @@ let self = module.exports = {
                                 }
                                 else {
                                     const deleteGBP = {
-                                        TableName: 'GBPs2',
+                                        TableName: 'GBPs',
                                         Key:{ 'UserID': user.UserID }
                                     };
                                     
@@ -275,14 +275,14 @@ let self = module.exports = {
                         }
                     });
 
-                    db.scan({ TableName: 'Loans2' }, function(err, loanData) {
+                    db.scan({ TableName: 'Loans' }, function(err, loanData) {
                         if (err) {
                             console.error('Unable get Loan data for reset. Error:', JSON.stringify(err, null, 2));
                         }
                         else {
                             loanData.Items.forEach(loan => {
                                 const loanParams = {
-                                    TableName: 'Loans2',
+                                    TableName: 'Loans',
                                     Key:{ 'UserID': loan.UserID }
                                 };
                                 
