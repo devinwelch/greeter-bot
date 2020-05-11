@@ -209,7 +209,95 @@ let self = module.exports = {
                 });   
             }
         });
-    }, 
+    },
+    midnight(client, db) {
+        db.scan({ TableName: 'Resets' }, function (err, data) {
+            if (err) {
+                console.log('Unable to check for resets:', JSON.stringify(err, null, 2));
+            }
+            else if (data.Items.some(e => !e.Executed)) {
+                self.reset(client, db, data);
+            }
+            else {
+                self.collectLoans(client, db);
+            }
+        });
+    },
+    reset(client, db, data) {
+        data.Items.forEach(r =>{
+            const resetParams = {
+                TableName: 'Resets',
+                Key: { 'Date': r.Date },
+                UpdateExpression: 'set Executed = :t',
+                ExpressionAttributeValues: { ':t': true }
+            };
+            db.update(resetParams, function(err) {
+                if (err) {
+                    console.error('Unable to mark resets. Error JSON:', JSON.stringify(err, null, 2));
+                }
+                else {
+
+                    db.scan({ TableName: 'GBPs2' }, function(err, gbpData) {
+                        if (err) {
+                            console.error('Unable get GBP data for reset. Error:', JSON.stringify(err, null, 2));
+                        }
+                        else {
+                            gbpData.Items.forEach(user => {
+                                if (Object.keys(user.Inventory).filter(k => k !== 'fists' && k !== 'random').length) {
+                                    const gbpParams = {
+                                        TableName: 'GBPs2',
+                                        Key: { 'UserID': user.UserID },
+                                        UpdateExpression: 'set GBPs = :z, HighScore = :z',
+                                        ExpressionAttributeValues: { ':z': 0 }
+                                    };
+                                    db.update(gbpParams, function(err) {
+                                        if (err) {
+                                            console.error('Unable to zero user. Error JSON:', JSON.stringify(err, null, 2));
+                                        }
+                                    });
+                                }
+                                else {
+                                    const deleteGBP = {
+                                        TableName: 'GBPs2',
+                                        Key:{ 'UserID': user.UserID }
+                                    };
+                                    
+                                    db.delete(deleteGBP, function(err) {
+                                        if (err) {
+                                            console.error('Unable to delete user. Error:', JSON.stringify(err, null, 2));
+                                        }
+                                    });
+                                }
+                            });
+
+                            console.log('Resetting the economy!');
+                            client.channels.cache.get(config.ids.exchange).send('**From the ashes we are born anew. The GBP economy has been reset. Go forth!**');
+                        }
+                    });
+
+                    db.scan({ TableName: 'Loans2' }, function(err, loanData) {
+                        if (err) {
+                            console.error('Unable get Loan data for reset. Error:', JSON.stringify(err, null, 2));
+                        }
+                        else {
+                            loanData.Items.forEach(loan => {
+                                const loanParams = {
+                                    TableName: 'Loans2',
+                                    Key:{ 'UserID': loan.UserID }
+                                };
+                                
+                                db.delete(loanParams, function(err) {
+                                    if (err) {
+                                        console.error('Unable to delete Loan. Error:', JSON.stringify(err, null, 2));
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
+            });  
+        });
+    },
     collectLoans(client, db) {
         db.scan({ TableName: 'Loans' }, function(err, loanData) {
             loanData.Items.forEach(function(loan) {

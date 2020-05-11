@@ -1,5 +1,4 @@
 !duel
-    force arena?
     weapons
         musket
         double edged sword
@@ -15,16 +14,8 @@
 "fucking embarassing"
 banks heists, of course
 small hourlies
-reset
-    voters determined with loans
-        majority shareholders?
-            percent change based on share?
-        top 3?
-            3 must have > 1000? 5000?
-    1 per week
-    keep items
-    resets at midnight
-    store gbp data for each reset
 leaderboard for duel
 inventory
 schedule jobs instead of sleep?
+connect 4 duel
+banana coin
