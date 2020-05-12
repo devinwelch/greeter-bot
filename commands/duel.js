@@ -76,7 +76,7 @@ const self = module.exports = {
 
                             //await reaction
                             collector.on('collect', reaction => {
-                                //challenger accepts
+                                //target accepts
                                 if (reaction.emoji.id === config.ids.yeehaw) {
                                     self.setup(config, message.member, data1, target, data2);
                                     self.start(config, db, message.channel, message.member, target, wager);
@@ -139,7 +139,7 @@ const self = module.exports = {
                 //pre-load fight
                 const initiativeText = `${challengerTurn ? challenger.displayName : target.displayName} rolled initiative.`;
                 let actions = [new Action(initiativeText, challenger.id, 100, target.id, 100)];
-                actions = actions.concat(self.fight(config, db, m, challenger, target, wager, challengerTurn));
+                actions = actions.concat(self.fight(config, db, challenger, target, wager, challengerTurn));
 
                 //edit message to show duel log
                 self.display(m, actions, challenger, target, true);
@@ -172,8 +172,16 @@ const self = module.exports = {
             .catch(console.error);
         }
     },
-    fight(config, db, message, challenger, target, wager, challengerTurn) {
+    fight(config, db, challenger, target, wager, challengerTurn) {
         let actions = [];
+        const wayOfVikings = challenger.weapon.steel && target.weapon.steel && !getRandom(49);
+
+        if (wayOfVikings) {
+            actions.push(new Action('Sparks fly high when steel meets steel', challenger.id, challenger.hp, target.id, target.hp));
+            actions.push(new Action('And no one can believe', challenger.id, challenger.hp, target.id, target.hp));
+            actions.push(new Action('That these two men are best friends', challenger.id, challenger.hp, target.id, target.hp));
+            actions.push(new Action('Not enemies!', challenger.id, challenger.hp, target.id, target.hp, true));
+        }
 
         //fight til death
         while(challenger.hp > 0 && target.hp > 0) {
@@ -182,6 +190,13 @@ const self = module.exports = {
                 : self.getTurn(config, target, challenger);
             actions = actions.concat(turn);
             challengerTurn = !challengerTurn;
+        }
+
+        if (wayOfVikings) {
+            actions.push(new Action('In this fight of iron wills', challenger.id, challenger.hp, target.id, target.hp));
+            actions.push(new Action('One man takes a knee', challenger.id, challenger.hp, target.id, target.hp));
+            actions.push(new Action('The other goes for the kill', challenger.id, challenger.hp, target.id, target.hp));
+            actions.push(new Action('Like an enemy!', challenger.id, challenger.hp, target.id, target.hp, true));
         }
 
         //re-flip turn counter for clarity

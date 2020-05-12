@@ -15,6 +15,7 @@
         "speed": 1,
         "hits": 1,
         "zerk": true,
+        "steel": true,
         "id": "705895467816583189"
     },
     "bow": {
@@ -39,6 +40,7 @@
         "high": 15,
         "speed": 1,
         "hits": 2,
+        "steel": true,
         "id": "705178070109126727"
     },
     "fists": {
@@ -77,6 +79,7 @@
         "speed": 1,
         "hits": 1,
         "insta": true,
+        "steel": true,
         "id": "705178070684008538"
     },
     "sword": {
@@ -89,6 +92,7 @@
         "high": 20,
         "speed": 1,
         "hits": 1,
+        "steel": true,
         "id": "705178070700523530"
     },
     "warhammer": {
@@ -101,6 +105,7 @@
         "high": 55,
         "speed": -1,
         "hits": 1,
+        "steel": true,
         "id": "705178070658580588"
     },
     "cursedScythe": {
@@ -114,6 +119,7 @@
         "insta": true,
         "cursed": true,
         "hide": true,
+        "steel": true,
         "id": "705895468336676895"
     }
 }
