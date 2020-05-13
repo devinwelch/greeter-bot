@@ -8,11 +8,12 @@ let self = module.exports = {
 
         if (reaction.message.member.id === client.user.id) {
             //emoji game
+            //I should re-do this game with a Collector
             if (reaction.message.content.startsWith('**Guess the emoji**')) {
                 const newEmoji = reaction.message.guild.emojis.cache.random(1)[0];
 
                 if (newEmoji.id === reaction.emoji.id) {
-                    const award = 5;
+                    const award = 10;
                     reaction.message.edit(`**${user.username}** wins ${award} GBPs! ${newEmoji.toString()}`); 
                     updateGBPs(db, user, award);
                 }

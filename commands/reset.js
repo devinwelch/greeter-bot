@@ -21,7 +21,7 @@ const self = module.exports = {
                 const recent = resetData.Items.filter(e => now < new Date(Date.parse(e.Date) + week));
 
                 if (recent.length) {
-                    if (recent.some(e => new Date(e.Date).toDateString() === new Date(Date.now()).toDateString())) {
+                    if (recent.some(e => !e.Executed)) {
                         return message.reply("There is a reset scheduled for tonight! It's anarchy until then!");
                     }
                     else {

@@ -210,8 +210,9 @@ const self = module.exports = {
         return actions;
     },
     getTurn(config, turnPlayer, opponent) {
-        //get damage action per weapon hit
         let actions = [];
+
+        //get damage action per weapon hit
         for (var i = 0; i < turnPlayer.weapon.hits; i++) {
             actions.push(self.getAction(turnPlayer, opponent));
         }
@@ -219,7 +220,6 @@ const self = module.exports = {
         //if player is infected append status effect results after damage
         const yuck = ['yuck!', 'eww!', 'gross!', '\\*coughs\\*'];
         if (turnPlayer.infected && !turnPlayer.cursed) {
-            //take damage (applied first to help axe) 
             const coronaDamage = getRandom(1, 2);
             turnPlayer.hp -= coronaDamage;
             turnPlayer.selfKill = turnPlayer.hp <= 0;
