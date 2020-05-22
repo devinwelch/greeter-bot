@@ -1,9 +1,9 @@
-const { establishGBPs, updateGBPs, sleep, selectRandom, getRandom } = require('../utils.js');
+const { updateGBPs, sleep, selectRandom, getRandom } = require('../utils.js');
 const items = require('./items.json');
 
 const self = module.exports = {
     name: 'duel',
-    description: 'Duel against another player using equipped weapons. Add a wager to bet GBPs!',
+    description: 'Duel against another player using equipped weapons. Add a wager to bet GBPs! Spectators can place side bets before the duel starts.',
     aliases: ['challenge'],
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
@@ -11,15 +11,21 @@ const self = module.exports = {
         // config.ids.yeehaw = '700795024551444661';
         // config.ids.baba   = '700795091501056111';
         // config.ids.corona = '701886367625379938';
+        // config.ids.sanic  = '710952387552084038';
+        // config.ids.ebola  = '710952443210367066';
 
         //input sanitization
         if (!message.mentions.members.size) {
             return message.reply('Please @ a user!');
         }
         const wager = /\d+ .+/.test(args) ? Math.floor(args.trim().split(' ', 1)[0]) : 0;
-        const target = message.mentions.members.first(1)[0];
+        const challenger = message.member;
+        const target = message.mentions.members.first();
+        
         if (target.id === client.user.id) {
             return message.reply('I will not fight you, friend.');
+            //raid instead of duel if challenging greeter-bot
+            //return client.commands.get('raid').execute(client, config, db, message, args);
         }
         else if (target.id === message.author.id) {
             return message.reply('Quit playing with yourself!');
@@ -28,71 +34,215 @@ const self = module.exports = {
             return message.reply('Make it a real challenge.');
         }
 
-        //dynamodb does not allow OR query on primary key so have to do two separate look-ups
-        //get info for challenger
-        const params1 = {
-            TableName: 'GBPs',
-            Key: { UserID: message.author.id }
+        //check GBPs for challenger and target
+        const params = {
+            RequestItems: {
+                'GBPs': {
+                    Keys: [
+                        { UserID: challenger.id },
+                        { UserID: target.id }
+                    ]
+                }
+            }
         };
-        db.get(params1, function(err, data1) {
+
+        db.batchGet(params, function (err, data) {
+            //error in query
             if (err) {
                 console.log(err);
             }
-            else if (!data1.Item) {
-                establishGBPs(db, message.author, 0);
-                message.reply('Get money.');
-            }
-            else if (data1.Item.GBPs < wager && wager > 0) {
-                message.reply(`Hang on there, slick! You only have ${data1.Item.GBPs} GBPs!`);
+            //error in response
+            else if (!data.Responses || !data.Responses.GBPs) {
+                console.log('There was an error getting GBP data for challenger/target');
             }
             else {
-                //get info for target
-                const params2 = {
-                    TableName: 'GBPs',
-                    Key: { UserID: target.id }
-                };
-                db.get(params2, function(err, data2) {
-                    if (err) {
-                        console.log('Could not search GBPs');
+                const challengerData = data.Responses.GBPs.find(d => d.UserID === challenger.id);
+                const targetData = data.Responses.GBPs.find(d => d.UserID === target.id);
+
+                //challenger or target not found
+                if (!challengerData) {
+                    return console.log('Cannot find challenger data');
+                }
+                if (!targetData) {
+                    return console.log('Cannot find target data');
+                }
+
+                //challenger or target cannot match wager
+                if (wager) {
+                    if (challengerData.GBPs < wager) {
+                        return message.reply(`Hang on there, slick! You only have ${challengerData.GBPs} GBPs!`);
                     }
-                    else if (!data2.Item) {
-                        establishGBPs(db, target.user, 0);
-                        message.reply(`${target.displayName} can't match that bet!`);
+                    if (targetData.GBPs < wager) {
+                        return message.reply(`${target.displayName} can't match that bet!`);
                     }
-                    else if (data2.Item.GBPs < wager && wager > 0) {
-                        message.reply(`${target.displayName} can't match that bet!`);
+                }
+
+                //send duel invite
+                self.sendInvite(client, config, db, message.channel, challenger, target, challengerData, targetData, wager);
+            }
+        });
+    },
+    sendInvite(client, config, db, channel, challenger, target, challengerData, targetData, wager) {
+        const invite = [];
+
+        invite.push(`${target.displayName}! ${challenger.displayName} challenges you to a duel for ${wager ? `**${wager} GBPs**` : 'fun'}!`);
+        invite.push('Everyone else, vote who you think will win and optionally bet GBPs!');
+        invite.push('↳*click on poker chips as many times as you want, as long as you can afford it*');
+        invite.push('React here:');
+        invite.push(`${client.emojis.cache.get(config.ids.yeehaw)}- accept duel`);
+        invite.push(`${client.emojis.cache.get(config.ids.baba  )}- decline/cancel`);
+        invite.push(`${client.emojis.cache.get(config.ids.sanic )}- bet on ${challenger.displayName}`);
+        invite.push(`${client.emojis.cache.get(config.ids.ebola )}- bet on ${target.displayName}`);
+
+        channel.send(invite)
+        .then(msg => {
+            try {
+                msg.react(config.ids.yeehaw);
+                msg.react(config.ids.baba);
+                msg.react(config.ids.sanic);
+                msg.react(config.ids.ebola);
+            }
+            catch (err) {
+                console.error(err);
+            }
+            
+            //side bets
+            const bets = { 
+                wager: wager,
+                sideBets: {}
+            };
+            bets[challenger.id] = [];
+            bets[target.id] = [];
+            let firstBet = true;
+
+            //await reactions for up to 60 sec
+            const filter = (reaction, user) => user.id !== client.user.id;
+            const collector = msg.createReactionCollector(filter, { time: 60000 });
+
+            collector.on('collect', (reaction, user) => {
+                //challenger or target
+                if (user.id === challenger.id || user.id === target.id) {
+                    //target accepts
+                    if (reaction.emoji.id === config.ids.yeehaw && user.id === target.id) {
+                        self.cleanUpBets(client, config, db, channel, challenger, target, bets, challengerData, targetData);
+                    }
+                    //duel is canceled
+                    else if (reaction.emoji.id === config.ids.baba) {
+                        collector.stop();
+                    }
+                }
+                //viewer bets on challenger
+                else if (reaction.emoji.id === config.ids.sanic) {
+                    if (!bets[challenger.id].includes(user)) {
+                        bets[challenger.id].push(user);
+                    }
+                    if (bets[target.id].includes(user)) {
+                        const i = bets[target.id].indexOf(user);
+                        bets[target.id].splice(i, 1);
+                    }
+                    if (firstBet) {
+                        firstBet = self.chips(config, msg);
+                    }
+                }
+                //viewer bets on target
+                else if (reaction.emoji.id === config.ids.ebola) {
+                    if (!bets[target.id].includes(user)) {
+                        bets[target.id].push(user);
+                    }
+                    if (bets[challenger.id].includes(user)) {
+                        const i = bets[challenger.id].indexOf(user);
+                        bets[challenger.id].splice(i, 1);
+                    }
+                    if (firstBet) {
+                        firstBet = self.chips(config, msg);
+                    }
+                }
+                //viewer adds wager to bet
+                else if(/chip\d+/.test(reaction.emoji.name)) {
+                    if (bets.sideBets[user.id]) {
+                        bets.sideBets[user.id] += Number(reaction.emoji.name.substring(4));
                     }
                     else {
-                        //send duel invite
-                        message.channel.send(`${target.displayName}! ${message.member.displayName} challenges you to a duel for ${wager ? `${wager} GBPs` : 'fun'}! React here: ${client.emojis.cache.get(config.ids.yeehaw)} to accept, ${client.emojis.cache.get(config.ids.baba)} to decline.`)
-                        .then(msg => { 
-                            msg.react(config.ids.yeehaw);
-                            msg.react(config.ids.baba);
+                        bets.sideBets[user.id] = Number(reaction.emoji.name.substring(4));
+                    }
+                }
+            });
+    
+            //delete invite after accepted/rejected
+            collector.on('end', function() {
+                msg.delete().catch(console.error); 
+            }); 
+        })
+        .catch(console.error);
+    },
+    chips(config, message) {
+        try {
+            message.react(config.ids.c1);
+            message.react(config.ids.c5);
+            message.react(config.ids.c10);
+            message.react(config.ids.c25);
+            message.react(config.ids.c100);
+            message.react(config.ids.c500);
+            message.react(config.ids.c1000);
+            return false;
+        }
+        catch (err) {
+            return true;
+        }
+    },
+    cleanUpBets(client, config, db, channel, challenger, target, bets, challengerData, targetData) {
+        const candt = bets[challenger.id].concat(bets[target.id]);
 
-                            //challenger and target may decline, but only target may accept
-                            const filter = (reaction, user) => (reaction.emoji.id === config.ids.yeehaw && user.id === target.id) ||
-                                (reaction.emoji.id === config.ids.baba && (user.id === target.id || user.id === message.author.id));
-                            const collector = msg.createReactionCollector(filter, { time: 60000, max: 1 });
+        if (!candt.length) {
+            return self.heartOfTheCards(client, config, db, channel, challenger, target, bets, challengerData, targetData);
+        }
 
-                            //await reaction
-                            collector.on('collect', reaction => {
-                                //target accepts
-                                if (reaction.emoji.id === config.ids.yeehaw) {
-                                    self.setup(config, message.member, data1, target, data2);
-                                    self.start(config, db, message.channel, message.member, target, wager);
-                                }
-                            });
-                    
-                            //delete invite after accepted/rejected
-                            collector.on('end', function() { 
-                                msg.delete().catch(console.error); 
-                            }); 
-                        })
-                        .catch(console.error);
+        self.getGBPs(db, candt)
+        .then(data => {
+            if (data && (!data.Responses || !data.Responses.GBPs)) {
+                console.log('There was an error getting GBP data for side bets: ', bets);
+            }
+            else {
+                candt.forEach(b => {
+                    if (!bets.sideBets[b.id] ||                                                      //did not include wager
+                        bets.sideBets[b.id] < 0 ||                                                   //had negative wager
+                        !data.Responses.GBPs.some(d => b.id === d.UserID) ||                         //does not have GBPs
+                        data.Responses.GBPs.find(d => b.id === d.UserID).GBPs < bets.sideBets[b.id]) //can not afford bet
+                    {
+                        bets.sideBets[b.id] = 0;
                     }
                 });
             }
+
+            self.heartOfTheCards(client, config, db, channel, challenger, target, bets, challengerData, targetData);
         });
+    },
+    getGBPs(db, users) {
+        //get data for each bet
+        const params = { RequestItems: { 'GBPs': { Keys: [] } }};
+        users.forEach(user => {
+            params.RequestItems['GBPs'].Keys.push({ UserID: user.id });
+        });
+
+        return db.batchGet(params).promise();   
+    },
+    heartOfTheCards(client, config, db, channel, challenger, target, bets, data1, data2) {
+        //chance to play clip at start of duel
+        const voiceChannel = challenger.voice.channel;
+        if (voiceChannel && voiceChannel === target.voice.channel && !client.voice.connections.get(voiceChannel.guild.id) && !getRandom(9)) {
+            return voiceChannel.join().then(connection => {
+                const dispatcher = connection.play('./Sounds/duel.mp3');
+                dispatcher.on('finish', () => {
+                    voiceChannel.leave(); 
+                    self.setup(config, challenger, data1, target, data2);
+                    self.start(client, config, db, channel, challenger, target, bets);
+                });
+            });
+        }
+        else {
+            self.setup(config, challenger, data1, target, data2);
+            self.start(client, config, db, channel, challenger, target, bets);
+        }
     },
     setup(config, challenger, challengerData, target, targetData) {
         //reset initial stats so they do not persist from prior duels
@@ -116,18 +266,18 @@ const self = module.exports = {
     },
     getWeapon(data) {
         //get random inventory item if 'random' is equipped
-        if (data.Item.Equipped === 'random') {
-            const inventory = Object.keys(data.Item.Inventory).filter(key => data.Item.Inventory[key] && items[key] && items[key].weapon);
+        if (data.Equipped === 'random') {
+            const inventory = Object.keys(data.Inventory).filter(key => data.Inventory[key] && items[key] && items[key].weapon);
             const item = items[selectRandom(inventory)];
             return item;
         }
         
-        return items[data.Item.Equipped];
+        return items[data.Equipped];
     },
-    start(config, db, channel, challenger, target, wager) {
+    start(client, config, db, channel, challenger, target, bets) {
         //send invite acceptance and initial header
-        channel.send(`${target.displayName} accepted ${challenger.displayName}'s challenge! ${wager ? wager : 'No'} GBPs are on the line.`);
-        channel.send(self.getHeader(channel.guild.emojis.cache, challenger, target, 100, 100))
+        channel.send(`${target.displayName} accepted ${challenger.displayName}'s challenge! ${bets.wager ? bets.wager : 'No'} GBPs are on the line.`);
+        channel.send(self.getHeader(client.emojis.cache, challenger, target, 100, 100))
             .then(m => {
                 //faster weapon goes first, if not then random
                 const challengerTurn = challenger.weapon.speed > target.weapon.speed
@@ -139,10 +289,10 @@ const self = module.exports = {
                 //pre-load fight
                 const initiativeText = `${challengerTurn ? challenger.displayName : target.displayName} rolled initiative.`;
                 let actions = [new Action(initiativeText, challenger.id, 100, target.id, 100)];
-                actions = actions.concat(self.fight(config, db, challenger, target, wager, challengerTurn));
+                actions = actions.concat(self.fight(config, db, challenger, target, bets, challengerTurn));
 
                 //edit message to show duel log
-                self.display(m, actions, challenger, target, true);
+                self.display(client, m, actions, challenger, target, true);
             })
             .catch(console.error);
     },
@@ -151,14 +301,14 @@ const self = module.exports = {
         const line2 =   `${tar.displayName}\tHP: ${tarHP}\t${emojiCache.get(tar.weapon.id) || tar.weapon.name}**\n`;
         return line1 + line2;
     },
-    display(message, actions, challenger, target, turn) {
+    display(client, message, actions, challenger, target, turn) {
         if (actions.length) {
             let log = message.content.split('\n').slice(2).join('\n');
 
             const action = actions.shift();
             log = (action.id1 === challenger.id
-                ? self.getHeader(message.channel.guild.emojis.cache, challenger, target, action.hp1, action.hp2)
-                : self.getHeader(message.channel.guild.emojis.cache, challenger, target, action.hp2, action.hp1))
+                ? self.getHeader(client.emojis.cache, challenger, target, action.hp1, action.hp2)
+                : self.getHeader(client.emojis.cache, challenger, target, action.hp2, action.hp1))
                 + log;
             
             log += `\n${'\t'.repeat(turn || action.left ? 0 : 6)}${action.text}`;
@@ -166,15 +316,17 @@ const self = module.exports = {
 
             message.edit(log)
             .then(m => {
-                sleep(action.turnEnd ? 1000 : 250);
-                self.display(m, actions, challenger, target, turn);
+                sleep(action.turnEnd ? 1000 : 500);
+                self.display(client, m, actions, challenger, target, turn);
             })
             .catch(console.error);
         }
     },
-    fight(config, db, challenger, target, wager, challengerTurn) {
+    fight(config, db, challenger, target, bets, challengerTurn) {
         let actions = [];
-        const wayOfVikings = challenger.weapon.steel && target.weapon.steel && !getRandom(49);
+
+        //easter egg
+        const wayOfVikings = challenger.weapon.steel && target.weapon.steel && !getRandom(19);
 
         if (wayOfVikings) {
             actions.push(new Action('Sparks fly high when steel meets steel', challenger.id, challenger.hp, target.id, target.hp));
@@ -203,8 +355,8 @@ const self = module.exports = {
         challengerTurn = !challengerTurn;
         const tie = challenger.hp <= 0 && target.hp <= 0;
         const results = (target.hp <= 0 && challengerTurn) || (target.hp <= 0 && challenger.hp > 0)
-            ? self.getResults(db, challenger, target, wager, tie)
-            : self.getResults(db, target, challenger, wager, tie);
+            ? self.getResults(db, challenger, target, bets, tie)
+            : self.getResults(db, target, challenger, bets, tie);
         actions = actions.concat(results);
 
         return actions;
@@ -288,24 +440,50 @@ const self = module.exports = {
 
         return new Action(text, turnPlayer.id, turnPlayer.hp, opponent.id, opponent.hp);
     },
-    getResults(db, winner, loser, wager, tie = false) {
-        const actions = [];
+    getResults(db, winner, loser, bets, tie = false) {
+        let actions = [];
 
         //do not add execution text if curse/self-kill
         if (!loser.cursed && !loser.selfKill) {
             const winText = winner.weapon.win.replace(':w', winner.displayName).replace(':l', loser.displayName);
             actions.push(new Action(winText, winner.id, winner.hp, loser.id, loser.hp, true));
         }
-        
-        //award GBPs
-        if (wager) {
-            if (tie) {
-                const tieText = 'No GBPs are awarded for a tie.';
-                actions.push(new Action(tieText, winner.id, winner.hp, loser.id, loser.hp, true));
+
+        //tie
+        if (tie) {
+            let tieText = "\nIt's a tie...";
+            if (bets.wager || Object.keys(bets.sideBets).length) {
+                tieText += ' No GBPs are awarded.';
             }
-            else {
-                updateGBPs(db, winner.user, wager);
-                updateGBPs(db, loser.user, -wager);
+            actions.push(new Action(tieText, winner.id, winner.hp, loser.id, loser.hp, true));
+        }
+        //award GBPs
+        else {
+            if (bets.wager) {
+                updateGBPs(db, winner.user, bets.wager);
+                updateGBPs(db, loser.user, -bets.wager);
+            }
+
+            if (bets[winner.id].length) {
+                const wins = [];
+                bets[winner.id].forEach(w => {
+                    if (bets.sideBets[w.id]) {
+                        updateGBPs(db, w, bets.sideBets[w.id]);
+                    }
+                    wins.push(`**${w.username}** *(${bets.sideBets[w.id]})*`);
+                });
+                actions.push(new Action(`\nSide bet winners: ${wins.join(', ')}`, winner.id, winner.hp, loser.id, loser.hp, true));
+            }
+
+            if (bets[loser.id].length) {
+                const losses = [];
+                bets[loser.id].forEach(l => {
+                    if (bets.sideBets[l.id]) {
+                        updateGBPs(db, l, -bets.sideBets[l.id]);
+                    }
+                    losses.push(`**${l.username}** *(${bets.sideBets[l.id]})*`);
+                });
+                actions.push(new Action(`\nSide bet losers: ${losses.join(', ')}`, winner.id, winner.hp, loser.id, loser.hp, true));
             }
         }
 

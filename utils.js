@@ -115,9 +115,9 @@ let self = module.exports = {
         });
     },
 
-    sleep(miliseconds) {
+    sleep(milliseconds) {
         let startTime = new Date().getTime();
-        while (startTime + miliseconds >= new Date().getTime());
+        while (startTime + milliseconds >= new Date().getTime());
     },
 
     selectRandom(array) {
