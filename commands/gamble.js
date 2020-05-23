@@ -1,4 +1,4 @@
-const { establishGBPs, updateGBPs, sleep, getRandom } = require('../utils.js');
+const { establishGBPs, updateGBPs, delay, getRandom } = require('../utils.js');
 
 module.exports = {
     name: 'gamble',
@@ -54,9 +54,10 @@ module.exports = {
                     }
 
                     message.channel.send(`Higher than 55 wins. ${user.username} rolled: `)
-                        .then(function(msg) {
-                            sleep(5000);
-                            msg.edit(msg.content + roll + resultMessage);
+                        .then(msg => {
+                            delay(5000).then(() => {
+                                msg.edit(msg.content + roll + resultMessage);
+                            });
                         }).catch(console.error);
 
                     updateGBPs(db, user, win);

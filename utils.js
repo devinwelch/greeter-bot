@@ -54,11 +54,11 @@ let self = module.exports = {
                 const dispatcher = connection.play(`./Sounds/${song}`);
                 dispatcher.on('finish', () => {
                     if (!noKnock && !self.getRandom(9)) {
-                        self.sleep(5000);
-                        const num = self.getRandom(1, 3);
-                        const knocker = connection.play(`./Sounds/knock'${num.toString()}.mp3`);
-                        knocker.on('finish', () => {
-                            voiceChannel.leave();
+                        self.delay(5000).then(() => {
+                            const knocker = connection.play(`./Sounds/knock${self.getRandom(1, 3).toString()}.mp3`);
+                            knocker.on('finish', () => {
+                                voiceChannel.leave();
+                            });
                         });
                     }
                     else {
@@ -115,9 +115,10 @@ let self = module.exports = {
         });
     },
 
-    sleep(milliseconds) {
-        let startTime = new Date().getTime();
-        while (startTime + milliseconds >= new Date().getTime());
+    delay(t, v) {
+        return new Promise(function(resolve) { 
+            setTimeout(resolve.bind(null, v), t);
+        });
     },
 
     selectRandom(array) {
@@ -223,8 +224,11 @@ let self = module.exports = {
             }
         });
     },
-    reset(client, db, data) {
-        data.Items.forEach(r =>{
+    reset(client, db, data) {                    
+        console.log('Resetting the economy!');
+        client.channels.cache.get(config.ids.exchange).send('**From the ashes we are born anew. The GBP economy has been reset. Go forth!**');
+        
+        data.Items.filter(r => !r.Executed).forEach(r =>{
             const resetParams = {
                 TableName: 'Resets',
                 Key: { 'Date': r.Date },
@@ -236,7 +240,6 @@ let self = module.exports = {
                     console.error('Unable to mark resets. Error JSON:', JSON.stringify(err, null, 2));
                 }
                 else {
-
                     db.scan({ TableName: 'GBPs' }, function(err, gbpData) {
                         if (err) {
                             console.error('Unable get GBP data for reset. Error:', JSON.stringify(err, null, 2));
@@ -269,9 +272,6 @@ let self = module.exports = {
                                     });
                                 }
                             });
-
-                            console.log('Resetting the economy!');
-                            client.channels.cache.get(config.ids.exchange).send('**From the ashes we are born anew. The GBP economy has been reset. Go forth!**');
                         }
                     });
 

@@ -121,5 +121,17 @@
         "hide": true,
         "steel": true,
         "id": "710995166902616074"
+    },
+    "fiddle": {
+        "name": "fiddle",
+        "win": "He told you once, you son of a bitch, :w is the best that's ever been!",
+        "weapon": true,
+        "low": 1,
+        "high": 25,
+        "speed": 1,
+        "hits": 1,
+        "insta": true,
+        "hide": true,
+        "id": "713777145960333405"
     }
 }

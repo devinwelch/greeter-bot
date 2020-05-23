@@ -1,4 +1,4 @@
-const { updateGBPs, sleep, selectRandom, getRandom } = require('../utils.js');
+const { updateGBPs, delay, selectRandom, getRandom } = require('../utils.js');
 const items = require('./items.json');
 
 const self = module.exports = {
@@ -316,8 +316,9 @@ const self = module.exports = {
 
             message.edit(log)
             .then(m => {
-                sleep(action.turnEnd ? 1000 : 500);
-                self.display(client, m, actions, challenger, target, turn);
+                delay(action.turnEnd ? 1500 : 750).then(() => {
+                    self.display(client, m, actions, challenger, target, turn);
+                });
             })
             .catch(console.error);
         }
@@ -483,7 +484,7 @@ const self = module.exports = {
                     }
                     losses.push(`**${l.username}** *(${bets.sideBets[l.id]})*`);
                 });
-                actions.push(new Action(`\nSide bet losers: ${losses.join(', ')}`, winner.id, winner.hp, loser.id, loser.hp, true));
+                actions.push(new Action(`Side bet losers: ${losses.join(', ')}`, winner.id, winner.hp, loser.id, loser.hp, true));
             }
         }
 

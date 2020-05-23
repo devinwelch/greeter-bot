@@ -110,7 +110,7 @@ const self = module.exports = {
             }
             else {
                 console.log('Reset scheduled');
-                channel.send('**The motion passed and the reset will occur at midnight EST. Visit the shop and go wild until tomorrow, then be on your best behavior!**');
+                channel.send('@everyone **The motion passed and the reset will occur at midnight EST. Visit the shop and go wild until tomorrow, then be on your best behavior!**');
             }
         });
     }

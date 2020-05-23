@@ -1,4 +1,4 @@
-const { sleep, getRandom } = require('../utils.js');
+const { delay, getRandom } = require('../utils.js');
 
 module.exports = {
     name: 'roll',
@@ -39,14 +39,15 @@ module.exports = {
         
     },
     slowRoll(message, min, max, count) {
-        sleep(2000);
-        if (count-- === 0) return;
+        delay(1500).then(() => {
+            if (count-- === 0) return;
     
-        const roll = getRandom(min, max);
-        let newRoll = ` **${roll}**`;
-        if (count !== 0) newRoll += ',  ';
-    
-        message.edit(message.content + newRoll)
-            .then(thisMessage => this.slowRoll(thisMessage, min, max, count));
+            const roll = getRandom(min, max);
+            let newRoll = ` **${roll}**`;
+            if (count !== 0) newRoll += ',  ';
+        
+            message.edit(message.content + newRoll)
+                .then(thisMessage => this.slowRoll(thisMessage, min, max, count));
+        });
     }
 };

@@ -4,18 +4,19 @@
         double edged sword
         banana pile that gives bananas whenever you hit
     potions
-    side bet
-    raid boss
-        rewards split up among contestants
-        small cost to enter, big reward
-        active fighting using reactions/messages on short timer
-        aqua tail/earthquake/dig/rest
-        500hp?
 "fucking embarassing"
 banks heists, of course
 small hourlies
 leaderboard for duel
-inventory
-schedule jobs instead of sleep?
 connect 4 duel
 banana coin
+stash
+!pray to rngesus
+randomized loot
+    - weapon with +/- low/min attacks
+!quest
+    CD?
+balance changes
+    loan cap decrease
+    higher interest rate for sequential loans
+    spend a nanner
