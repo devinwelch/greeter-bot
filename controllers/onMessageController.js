@@ -24,17 +24,17 @@ let self = module.exports = {
 
         //Stop spammers in their tracks
         message.channel.messages.fetch({limit: 4})
-            .then(messages => {
-                const filteredMessages = messages.array().filter(msg => msg.author.id === message.author.id);
-                if (filteredMessages.length > 1 &&
-                    filteredMessages[0].content === filteredMessages[1].content &&
-                    !filteredMessages[0].attachments.size &&
-                    !filteredMessages[1].attachments.size) {
-                        message.reply('dorse');
-                        updateGBPs(db, message.author, -2);
-                }
-            })
-            .catch(console.error);
+        .then(messages => {
+            const filteredMessages = messages.array().filter(msg => msg.author.id === message.author.id);
+            if (filteredMessages.length > 1 &&
+                filteredMessages[0].content === filteredMessages[1].content &&
+                !filteredMessages[0].attachments.size &&
+                !filteredMessages[1].attachments.size) {
+                    message.reply('dorse');
+                    updateGBPs(db, message.author, -2);
+            }
+        })
+        .catch(console.error);
 
         //Commands
         if (message.content.startsWith(config.prefix)) {
