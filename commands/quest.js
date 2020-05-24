@@ -408,6 +408,7 @@ async function getResults(client, db, message, challenger, enemy) {
     }
 
     client.user.raiding = false;
+    message.reactions.removeAll();
 }
 
 class Enemy {
