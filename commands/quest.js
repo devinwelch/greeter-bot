@@ -10,8 +10,11 @@ module.exports = {
         //change IDs for test server; should be commented in production
         //config.ids.corona = '701886367625379938';
 
-        if (message.member.busy) {
-            return message.reply('Come back when you have less on your plate.');
+        if (client.user.raiding) {
+            return message.reply('Sorry, I can only handle 1 quest at a time :(');
+        }
+        else {
+            client.user.raiding = true;
         }
 
         //determine random enemy
@@ -28,7 +31,7 @@ module.exports = {
         ];
 
         send.push(`${selectRandom(encounter).replace(':c', enemy.displayName)} ${enemy.icon}`);
-        send.push('**React to with the icon displayed below your weapon to hit, but be quick!**');
+        send.push('**React with the icon displayed below your weapon to hit, but be quick!**');
 
         message.reply(send)
         .then(() => setup(client, config, db, message.channel, message.member, enemy))
@@ -51,7 +54,6 @@ async function setup(client, config, db, channel, challenger, enemy) {
         }
         else {
             //reset initial stats so they do not persist from prior duels
-            challenger.busy = true;
             challenger.hp = 100;
             challenger.turn = 2;
             challenger.cooldown = false;
@@ -405,7 +407,7 @@ async function getResults(client, db, message, challenger, enemy) {
         message.guild.me.voice.channel.leave();
     }
 
-    challenger.busy = false;
+    client.user.raiding = false;
 }
 
 class Enemy {
