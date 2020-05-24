@@ -71,7 +71,7 @@
         "fiddle":   { "emoji": "🎻", "literal": "a fiddle",     "enemy": "😈", "musical": true },
         "gun":      { "emoji": "🔫", "literal": "a gun",        "enemy": "🐌" , "left": true },
         "balloon":  { "emoji": "🎈", "literal": "a balloon",    "enemy": "👦" , "left": true },
-        "rainbow":  { "emoji": "🌈", "literal": "gay",          "enemy": "🐸" , "left": true, "adjective": true },
+        "rainbow":  { "emoji": "🌈", "literal": "gay",          "enemy": "🐸" , "left": true, "adjective": true, "musical": true  },
         "stinky":   { "emoji": "💩", "literal": "stinky",       "enemy": "🦧" , "left": true, "adjective": true, "musical": true },
         "hair":     { "emoji": "💇", "literal": "human hair",   "enemy": "🤖" , "musical": true },
         "vaccine":  { "emoji": "💉", "literal": "a vaccine",    "enemy": "👩‍⚕️"}
