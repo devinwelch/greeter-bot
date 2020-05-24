@@ -23,9 +23,8 @@ const self = module.exports = {
         const target = message.mentions.members.first();
         
         if (target.id === client.user.id) {
-            return message.reply('I will not fight you, friend.');
             //raid instead of duel if challenging greeter-bot
-            //return client.commands.get('raid').execute(client, config, db, message, args);
+            return client.commands.get('raid').execute(client, config, db, message, args);
         }
         else if (target.id === message.author.id) {
             return message.reply('Quit playing with yourself!');
