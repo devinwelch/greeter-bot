@@ -28,7 +28,7 @@
         "scorpion": { "emoji": "🦂", "literal": "a :adj scorpion", "dmg": 0,  "hp": 0 },
         "snake":    { "emoji": "🐍", "literal": "a :adj snake",    "dmg": 0,  "hp": 0 },
         "trex":     { "emoji": "🦖", "literal": "a :adj t-rex",    "dmg": 5,  "hp": 30 },
-        "crab":     { "emoji": "🦀", "literal": "2 :adj crabs",     "dmg": 0,  "hp": 0, "hits": 2 },
+        "crab":     { "emoji": "🦀", "literal": "2 :adj crabs",    "dmg": 0,  "hp": 0, "hits": 2 },
         "shark":    { "emoji": "🦈", "literal": "a :adj shark",    "dmg": 0,  "hp": 0 },
         "gator":    { "emoji": "🐊", "literal": "a :adj gator",    "dmg": 0,  "hp": 0 },
         "gorilla":  { "emoji": "🦍", "literal": "a :adj gorilla",  "dmg": 5,  "hp": 10 },

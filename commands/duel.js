@@ -4,7 +4,6 @@ const items = require('./items.json');
 const self = module.exports = {
     name: 'duel',
     description: 'Duel against another player using equipped weapons. Add a wager to bet GBPs! Spectators can place side bets before the duel starts.',
-    aliases: ['challenge'],
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
         //change IDs for test server; should be commented in production

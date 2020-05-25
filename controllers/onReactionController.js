@@ -2,10 +2,6 @@ const { updateGBPs, getRandom } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, reaction, user) {
-        if (user.id !== client.user.id) {
-            console.log(`${user.username} reacted with '${reaction.emoji.name}':${reaction.emoji.id}`);
-        }
-
         if (reaction.message.member.id === client.user.id) {
             //emoji game
             //I should re-do this game with a Collector

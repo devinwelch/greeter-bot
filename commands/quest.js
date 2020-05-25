@@ -351,8 +351,8 @@ async function getEnemyAction(client, config, message, challenger, enemy) {
 }
 
 async function getResults(client, db, message, challenger, enemy) {
-    const winner = challenger.hp > 0 || challenger.selfKill || challenger.cursed ? challenger : enemy;
-    const loser  = challenger.hp > 0 || challenger.selfKill || challenger.cursed ? enemy : challenger;
+    const winner = challenger.hp > 0 || (challenger.selfKill && enemy.hp <= 0) ? challenger : enemy;
+    const loser  = challenger.hp > 0 || (challenger.selfKill && enemy.hp <= 0) ? enemy : challenger;
 
     //do not add execution text if curse/self-kill
     if (!loser.cursed && !loser.selfKill) {
