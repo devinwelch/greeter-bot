@@ -12,8 +12,8 @@ module.exports = {
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
         //change IDs for test server; should be commented in production
-        // config.ids.yeehaw = '700795024551444661';
-        // config.ids.baba   = '700795091501056111';
+        config.ids.yeehaw = '700795024551444661';
+        config.ids.baba   = '700795091501056111';
 
         //input sanitization
         if (!message.mentions.members.size) {
@@ -239,45 +239,28 @@ class Board {
     }
 
     checkWin() {
-        let count = 0;
-        let piece = '';
-
         //check horizontals
-        for (var y = 0; y < 6; y++) {
-            for (var x = 0; x < 7; x++) {
-                if (piece === this[x][y]) {
-                    count++;
-                    if (count === 4) {
-                        return piece;
-                    }
-                }
-                else if (this[x][y] === blank) {
-                    piece = '';
-                    count = 0;
-                }
-                else {
-                    piece = this[x][y];
-                    count = 1;
+        for (var x = 0; x < 4; x++) {
+            for (var y = 0; y < 6; y++) {
+                if (this[x][y] !== blank &&
+                    this[x][y] === this[x+1][y] &&
+                    this[x][y] === this[x+2][y] &&
+                    this[x][y] === this[x+3][y])
+                {
+                    return this[x][y];
                 }
             }
         }
 
         //check verticals
         for (x = 0; x < 7; x++) {
-            for (y = 0; y < 7; y++) {
-                if (piece === this[x][y]) {
-                    count++;
-                    if (count === 4) {
-                        return piece;
-                    }
-                }
-                else if (this[x][y] === blank) {
-                    piece = '';
-                    count = 0;
-                }
-                else {
-                    piece = this[x][y];
-                    count = 1;
+            for (y = 0; y < 3; y++) {
+                if (this[x][y] !== blank &&
+                    this[x][y] === this[x][y+1] &&
+                    this[x][y] === this[x][y+2] &&
+                    this[x][y] === this[x][y+3])
+                {
+                    return this[x][y];
                 }
             }
         }
