@@ -12,8 +12,8 @@ module.exports = {
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
         //change IDs for test server; should be commented in production
-        config.ids.yeehaw = '700795024551444661';
-        config.ids.baba   = '700795091501056111';
+        // config.ids.yeehaw = '700795024551444661';
+        // config.ids.baba   = '700795091501056111';
 
         //input sanitization
         if (!message.mentions.members.size) {
