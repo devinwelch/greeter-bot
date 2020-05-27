@@ -1,11 +1,12 @@
 //Other concepts for voting:
-//Pure Democracy
-//Shareholder votes
-//Shareholder chance
-//  would require vote cooldown
+//  Pure Democracy
+//  Shareholder votes
+//  Shareholder chance
+//      would require vote cooldown
 
-//Require minimum economy size before resetting?
-//Wealth gap between 3 & 4?
+//TODO: Check that top 3 are not loaned up
+//      Make sure they are still top 3 after vote passes
+//      Use EST for dates
 
 const self = module.exports = {
     name: 'reset',
