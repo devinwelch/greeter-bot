@@ -211,6 +211,7 @@ let self = module.exports = {
             }
         });
     },
+
     midnight(client, db) {
         db.scan({ TableName: 'Resets' }, function (err, data) {
             if (err) {
@@ -224,6 +225,7 @@ let self = module.exports = {
             }
         });
     },
+
     reset(client, db, data) {                    
         console.log('Resetting the economy!');
         client.channels.cache.get(config.ids.exchange).send('**From the ashes we are born anew. The GBP economy has been reset. Go forth!**');
@@ -298,6 +300,7 @@ let self = module.exports = {
             });  
         });
     },
+
     collectLoans(client, db) {
         db.scan({ TableName: 'Loans' }, function(err, loanData) {
             loanData.Items.forEach(function(loan) {
@@ -324,6 +327,7 @@ let self = module.exports = {
             });
         });
     },
+
     giveaway(client, db) {
         const members = client.guilds.cache.get(config.ids.hooliganHouse).members.cache;
         
@@ -335,5 +339,127 @@ let self = module.exports = {
             .get(config.ids.hooliganHouse).channels.cache
             .get(config.ids.exchange)
             .send(`${winner.tag} wins the daily lotto: ${jackpot} GBPs!`);
+    },
+
+    assembleParty(client, config, db, channel, leader, text, wager) {
+        //returns party or false if rejected
+
+        //this is a super dumb way to force an async function
+        return delayGratification();
+        async function delayGratification() {
+            //send invite
+            const invite = await channel.send(text)
+            .then(async function(msg) {
+                self.react(msg, [config.ids.yeehaw, config.ids.sanic]);
+                
+                //anyone may join, but only party leader can start
+                const inviteFilter = (reaction, user) => (user.id !== client.user.id) && (
+                    (reaction.emoji.id === config.ids.yeehaw) || 
+                    (reaction.emoji.id === config.ids.sanic && user.id === leader.id));
+                    
+                //wait 3 mins
+                const inviteCollector = msg.createReactionCollector(inviteFilter, { time: 180000 });
+                
+                //leader closes party
+                inviteCollector.on('collect', reaction => {
+                    if (reaction.emoji.id === config.ids.sanic) {
+                        inviteCollector.stop();
+                    }
+                });
+
+                //assemble party
+                return new Promise(function(resolve) {
+                    inviteCollector.on('end', collected => {
+                        msg.reactions.removeAll();
+                        const p = collected.get(config.ids.yeehaw) ? collected.get(config.ids.yeehaw).users.cache.filter(u => !u.bot).array() : [];
+                        if (!p.includes(leader)) {
+                            p.push(leader);
+                        }
+                        resolve({ party: p, message: msg});
+                    });
+                });
+            })
+            .catch(console.error);
+
+            //get GBP data for party members
+            const data = await self.getGBPs(db, invite.party.map(p => p.id));
+            if (!data.Responses || !data.Responses.GBPs) {
+                invite.message.edit('No users were found.');
+                return false;
+            }
+
+            //filter party to those who can meet wager
+            if (wager) {
+                invite.party = invite.party.filter(p => {
+                    const match = data.Responses.GBPs.find(d => d.UserID === p.id);
+                    if (match) {
+                        return match.GBPs >= wager;
+                    }
+                    return false;
+                });
+            }
+            
+            if (!invite.party.length) {
+                invite.message.edit('No members meet the requirements.');
+                return false;
+            }
+
+            //leader will confirm start
+            const edit = [];
+            edit.push(`${leader.username}, react with ${client.emojis.cache.get(config.ids.yeehaw)} to start or ${client.emojis.cache.get(config.ids.baba)} to cancel.`);
+            edit.push('The party includes the following members:');
+            edit.push(invite.party.join(', '));
+
+            const result = await invite.message.edit(edit)
+            .then(msg => {
+                self.react(msg, [config.ids.yeehaw, config.ids.baba]);
+                
+                //only party leader can start
+                const startFilter = (reaction, user) => user.id === leader.id;
+                    
+                //wait 2 mins
+                const startCollector = msg.createReactionCollector(startFilter, { time: 120000, max: 1 });
+
+                //stop or go
+                return new Promise(function(resolve) {
+                    startCollector.on('collect', reaction => {
+                        msg.reactions.removeAll();
+                        
+                        if (reaction.emoji.id === config.ids.yeehaw) {
+                            resolve({ party: invite.party, data: data });
+                        }
+                        else {
+                            msg.edit(msg.content + '\n\n**Party leader canceled**');
+                            resolve(false);
+                        }
+                    });
+                });
+            })
+            .catch(console.error);
+
+            return result;
+        }
+    },
+
+    react(message, emojis) {
+        try {
+            emojis.forEach(emoji => message.react(emoji));
+            return true;
+        }
+        catch (err) {
+            console.log(err);
+            return false;
+        }
+    },
+
+    getGBPs(db, userIDs) {
+        const params = { RequestItems: { 'GBPs': { Keys: [] } }};
+        userIDs.forEach(id => {
+            params.RequestItems['GBPs'].Keys.push({ UserID: id });
+        });
+
+        
+        return db.batchGet(params).promise();
+        //returns { Responses { GBPS: [{user1}, {user2}, ...] } }
     }
 };

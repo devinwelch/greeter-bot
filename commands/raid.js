@@ -1,4 +1,4 @@
-const { updateGBPs, delay, selectRandom, getRandom } = require('../utils.js');
+const { updateGBPs, delay, selectRandom, getRandom, assembleParty } = require('../utils.js');
 const items = require('./items.json');
 
 //re-uses a lot of code from duel for ease of use and specific balance changes
@@ -6,13 +6,7 @@ const self = module.exports = {
     name: 'raid',
     description: 'Join forces for a PVE raid. Loot pool is 8x wager, split among all party members.',
     usage: '[wager] [@users/here]',
-    execute(client, config, db, message, args) {
-        //change IDs for test server; should be commented in production
-        // config.ids.yeehaw = '700795024551444661';
-        // config.ids.baba   = '700795091501056111';
-        // config.ids.sanic  = '700795091501056111';
-        // config.ids.corona = '701886367625379938';
-        
+    execute(client, config, db, message, args) {        
         //prevent double battling and slow-down
         if (client.user.raiding) {
             return message.reply('The last party just set off. Hop on the next one!');
@@ -25,90 +19,13 @@ const self = module.exports = {
         invite.push(`${message.member.displayName} is going on a quest! Buy-in is **${wager} GBPs**. Invite lasts up to 3 minutes.`);
         invite.push(`React with ${client.emojis.cache.get(config.ids.yeehaw)} to join the party.`);
         invite.push(`Leader, react with ${client.emojis.cache.get(config.ids.sanic)} to get started right away!`);
-        message.channel.send(invite)
-        .then(msg => {
-            msg.react(config.ids.yeehaw);
-            msg.react(config.ids.sanic);
-
-            //anyone may join, but only party leader can start
-            const filter1 = (reaction, user) => ((reaction.emoji.id === config.ids.yeehaw) || 
-                (reaction.emoji.id === config.ids.sanic && user.id === message.member.id)) &&
-                (user.id !== client.user.id);
-            const collector1 = msg.createReactionCollector(filter1, { time: 180000 });
-
-            collector1.on('collect', reaction => {
-                //leader closes party
-                if (reaction.emoji.id === config.ids.sanic) {
-                    collector1.stop();
-                }
-            });
-    
-            collector1.on('end', collected => {
-                //assemble party
-                const party = collected.get(config.ids.yeehaw) 
-                    ? collected.get(config.ids.yeehaw).users.cache.filter(u => !u.bot).array()
-                    : [];
-                if (!party.includes(message.author)) {
-                    party.push(message.author);
-                }
-
-                //remove party members that can't afford buy-in
-                self.getGBPs(db, party)
-                .then((data) => {
-                    if (!data.Responses || !data.Responses.GBPs) {
-                        return message.channel.send('No users were found.');
-                    }
-                    const confirmedParty = [];
-                    data.Responses.GBPs.forEach(user => {
-                        if (user.GBPs >= wager) {
-                            confirmedParty.push(party.find(p => p.id === user.UserID));
-                        }
-                    });
-                    if (!confirmedParty.length) {
-                        return msg.edit('**No members meet the requirements.**');
-                    }
-
-                    //push go/stop to leader
-                    msg.reactions.removeAll()
-                    .then(() => {
-                        const edit = [];
-                        edit.push(`Leader, react with ${client.emojis.cache.get(config.ids.yeehaw)} to start or ${client.emojis.cache.get(config.ids.baba)} to cancel.`);
-                        edit.push('The party includes the following members:');
-                        edit.push(confirmedParty.join(', '));
-                        msg.edit(edit)
-                        .then(() => {
-                            msg.react(config.ids.yeehaw);
-                            msg.react(config.ids.baba);
-
-                            const filter2 = (reaction, user) => user.id === message.member.id;
-                            const collector2 = msg.createReactionCollector(filter2, { time: 120000, max: 1 });
-
-                            collector2.on('collect', reaction => {
-                                //leader starts
-                                if (reaction.emoji.id === config.ids.yeehaw) {
-                                    self.start(client, db, config, message.guild, confirmedParty, data.Responses.GBPs, message.channel, wager);
-                                }
-                                //leader stop
-                                else {
-                                    msg.edit(msg.content + '\n\n**The raid was canceled**');
-                                }
-                            });
-
-                            collector1.on('end', () => {
-                                //do I want to delete this message? Probably
-                            });
-                        })
-                        .catch(console.error);
-                    })
-                    .catch(console.error);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    return message.channel.send('Something went wrong.');
-                });
-            }); 
-        })
-        .catch(console.error);
+        
+        assembleParty(client, config, db, message.channel, message.author, invite, wager)
+        .then(results => {
+            if (results) {
+                self.start(client, db, config, message.guild, results.party, results.data.Responses.GBPs, message.channel, wager);
+            }
+        });                     
     },
     getGBPs(db, party) {
         //get data for each party member prospect

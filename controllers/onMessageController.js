@@ -1,4 +1,4 @@
-const { playSong, updateGBPs, getRandom } = require('../utils.js');
+const { playSong, updateGBPs, getRandom, react } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, message) {
@@ -23,7 +23,7 @@ let self = module.exports = {
         }
 
         //Stop spammers in their tracks
-        message.channel.messages.fetch({limit: 4})
+        message.channel.messages.fetch({ limit: 10 })
         .then(messages => {
             const filteredMessages = messages.array().filter(msg => msg.author.id === message.author.id);
             if (filteredMessages.length > 1 &&
@@ -44,16 +44,7 @@ let self = module.exports = {
                 client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
             if (!command) {
-                message.guild.members.fetch({ query: commandName, limit: 1})
-                    .then(member => {
-                        if (member) {
-                            message.react(config.ids.brownie)
-                                .catch(console.error);
-                        }
-                    })
-                    .catch(console.error);
-
-                return;
+                return react(message, [config.ids.brownie]);
             }
 
             if (command.args && !args.length) {
@@ -61,11 +52,11 @@ let self = module.exports = {
             }
 
             try {
-                command.execute(client, config, db, message, args);
+                return command.execute(client, config, db, message, args);
             }
             catch (error) {
                 console.error(error);
-                message.reply('There was an error trying to execute the command.');
+                return message.reply('There was an error trying to execute the command.');
             }
         }
 
@@ -103,7 +94,7 @@ let self = module.exports = {
         //Enforce some positivity
         else if (self.isQuestion(message.content)) {
             playSong(client, message.member.voice.channel, 'Doable.mp3');
-            message.react(config.ids.doable);
+            react(message, [config.ids.doable]);
         }
 
         //Man's not hot
@@ -124,7 +115,7 @@ let self = module.exports = {
         else if (!getRandom(19)) {
             if (!getRandom(3) && message.member.voice.channel) {
                 playSong(client, message.member.voice.channel, 'Ree.mp3');
-                message.react(config.ids.ree).catch(console.error);
+                react(message, [config.ids.ree]);
             }
             else {   
                 message.channel.send(self.spongeMock(message.content));

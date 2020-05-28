@@ -1,4 +1,4 @@
-const { updateGBPs, delay, selectRandom, getRandom } = require('../utils.js');
+const { updateGBPs, delay, selectRandom, getRandom, react } = require('../utils.js');
 const items = require('./items.json');
 
 const self = module.exports = {
@@ -6,13 +6,6 @@ const self = module.exports = {
     description: 'Duel against another player using equipped weapons. Add a wager to bet GBPs! Spectators can place side bets before the duel starts.',
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
-        //change IDs for test server; should be commented in production
-        // config.ids.yeehaw = '700795024551444661';
-        // config.ids.baba   = '700795091501056111';
-        // config.ids.corona = '701886367625379938';
-        // config.ids.sanic  = '710952387552084038';
-        // config.ids.ebola  = '710952443210367066';
-
         //input sanitization
         if (!message.mentions.members.size) {
             return message.reply('Please @ a user!');
@@ -94,15 +87,7 @@ const self = module.exports = {
 
         channel.send(invite)
         .then(msg => {
-            try {
-                msg.react(config.ids.yeehaw);
-                msg.react(config.ids.baba);
-                msg.react(config.ids.sanic);
-                msg.react(config.ids.ebola);
-            }
-            catch (err) {
-                console.error(err);
-            }
+            react(msg, [config.ids.yeehaw, config.ids.baba, config.ids.sanic, config.ids.ebola]);
             
             //side bets
             const bets = { 
@@ -152,7 +137,7 @@ const self = module.exports = {
                         bets[challenger.id].splice(i, 1);
                     }
                     if (firstBet) {
-                        firstBet = self.chips(config, msg);
+                        firstBet = react(msg, [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000]);
                     }
                 }
                 //viewer adds wager to bet
@@ -172,21 +157,6 @@ const self = module.exports = {
             }); 
         })
         .catch(console.error);
-    },
-    chips(config, message) {
-        try {
-            message.react(config.ids.c1);
-            message.react(config.ids.c5);
-            message.react(config.ids.c10);
-            message.react(config.ids.c25);
-            message.react(config.ids.c100);
-            message.react(config.ids.c500);
-            message.react(config.ids.c1000);
-            return false;
-        }
-        catch (err) {
-            return true;
-        }
     },
     cleanUpBets(client, config, db, channel, challenger, target, bets, challengerData, targetData) {
         const candt = bets[challenger.id].concat(bets[target.id]);

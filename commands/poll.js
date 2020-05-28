@@ -1,3 +1,5 @@
+const { react } = require('../utils.js');
+
 module.exports = {
     name: 'poll',
     description: 'Create a poll with 2-9 options. Separate options with semicolons. Use reactions to vote.',
@@ -34,10 +36,8 @@ module.exports = {
         }
 
         message.channel.send(poll)
-            .then(poll => { 
-                for (var i = 0; i < optionCount; i++) {
-                    poll.react(colors[i]);
-                }
+            .then(poll => {
+                react(poll, colors.slice(0, optionCount));
             })
             .catch(console.error);
     }

@@ -1,4 +1,4 @@
-const { getRandom, updateGBPs } = require('../utils.js');
+const { getRandom, updateGBPs, react } = require('../utils.js');
 
 const columns = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣'];
 const blank  = '⚪';
@@ -11,10 +11,6 @@ module.exports = {
     aliases: ['challenge'],
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
-        //change IDs for test server; should be commented in production
-        // config.ids.yeehaw = '700795024551444661';
-        // config.ids.baba   = '700795091501056111';
-
         //input sanitization
         if (!message.mentions.members.size) {
             return message.reply('Please @ a user!');
@@ -92,13 +88,7 @@ function sendInvite(client, config, db, channel, challenger, target, wager) {
 
     channel.send(invite)
     .then(msg => {
-        try {
-            msg.react(config.ids.yeehaw);
-            msg.react(config.ids.baba);
-        }
-        catch (err) {
-            console.error(err);
-        }
+        react(msg, [config.ids.yeehaw, config.ids.baba]);
         
         //await reactions for up to 60 sec
         const filter = (reaction, user) => user.id !== client.user.id;
@@ -137,12 +127,7 @@ function start(db, channel, challenger, target, wager) {
     channel.send(gameStart)
     .then(msg => {
         //react with column indicators
-        try {
-            columns.forEach(c => msg.react(c));
-        }
-        catch(err) {
-            console.log(err);
-        }
+        react(msg, columns);
 
         const filter = (reaction, user) => columns.includes(reaction.emoji.name) && (user === challenger || user === target);
         const collector = msg.createReactionCollector(filter, { idle: 60000 });

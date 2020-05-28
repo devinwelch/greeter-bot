@@ -21,7 +21,7 @@
         "penguin":  { "emoji": "🐧", "literal": "a :adj penguin",  "dmg": 0,  "hp": 0, "speed": -1 },
         "wolf":     { "emoji": "🐺", "literal": "a :adj wolf",     "dmg": 0,  "hp": 0, "speed": 0.5 },
         "boar":     { "emoji": "🐗", "literal": "a :adj boar",     "dmg": 0,  "hp": 0, "speed": 0.5 },
-        "unicorn":  { "emoji": "🦄", "literal": "a :adj unicorn",  "dmg": 10, "hp": 50, "award": 50, "speed": 0.5 },
+        "unicorn":  { "emoji": "🦄", "literal": "a :adj unicorn",  "dmg": 5, "hp": 50, "award": 50, "speed": 0.5 },
         "bees":     { "emoji": "🐝", "literal": ":adj bees",       "dmg": 0,  "hp": -40, "hits": 5 },
         "snail":    { "emoji": "🐌", "literal": "a :adj snail",    "dmg": 0,  "hp": 0, "speed": -1 },
         "spider":   { "emoji": "🕷", "literal": "a :adj spider",    "dmg": 0,  "hp": 0 },

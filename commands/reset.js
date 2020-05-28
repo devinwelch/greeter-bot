@@ -8,6 +8,8 @@
 //      Make sure they are still top 3 after vote passes
 //      Use EST for dates
 
+const { react } = require('../utils.js');
+
 const self = module.exports = {
     name: 'reset',
     description: 'Start a vote to reset the economy. If top 3 good boys™ concur, all user GBPs are set to 0 at midnight EST. Items are kept. Maximum of 1 reset per week.',
@@ -49,8 +51,7 @@ const self = module.exports = {
 
                         message.channel.send(text)
                             .then(m => {
-                                m.react('🦀');
-                                m.react(config.ids.drops);
+                                react(m, ['🦀', config.ids.drops]);
 
                                 const filter = (reaction, user) => (user.id === gb1.id || user.id === gb2.id || user.id === gb3.id) &&
                                     (reaction.emoji.name === '🦀' || reaction.emoji.id === config.ids.drops);
