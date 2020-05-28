@@ -37,7 +37,7 @@ module.exports = {
         .then(() => setup(client, config, db, message.channel, message.member, enemy))
         .catch(console.error);
 
-        if (enemy.weapon.musical && message.member.voice.channel) {
+        if (enemy.weapon.musical && message.member.voice.channel && !message.member.voice.mute && !message.member.voice.deaf) {
             playSong(client, message.member.voice.channel, `Enemies/${enemy.weapon.literal}.mp3`, true);
         }
     }
