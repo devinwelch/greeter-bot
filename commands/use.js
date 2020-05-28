@@ -46,6 +46,9 @@ const self = module.exports = {
                     case 'antidote':
                         self.useAntidote(config, db, params, message);
                         break;
+                    case 'potion':
+                        self.usePotion(db, params, message);
+                        break;
                     default:
                         message.reply("I don't know what to do with that.");
                 }
@@ -67,6 +70,21 @@ const self = module.exports = {
                         .catch(console.error);
                 }
                 message.reply('You have been cured of coronavirus! Stay safe...');
+            }
+        });       
+    },
+    usePotion(db, params, message) {
+        params.UpdateExpression = 'set Inventory.potion = :f';
+        params.ExpressionAttributeValues = { ':f': false };
+
+        db.update(params, function(err) {
+            if (err) {
+                message.reply('Unable use potion. Please try again later.');
+                console.log(err);
+            }
+            else {
+                message.author.dorseProtection = true;
+                message.reply('Dorse protection activated.');
             }
         });       
     }

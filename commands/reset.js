@@ -66,7 +66,7 @@ const self = module.exports = {
                                         yepCount[user.id] = true;
                                         if ((yepCount[gb1.id] && yepCount[gb2.id] && yepCount[gb3.id])) {
                                             fail = false;
-                                            self.reset(db, gbpData, message.channel);
+                                            self.reset(config, db, gbpData, message.channel);
                                             collector.stop();
                                         }
                                     }
@@ -88,7 +88,7 @@ const self = module.exports = {
             }
         });
     },
-    reset(db, gbpData, channel) {
+    reset(config, db, gbpData, channel) {
         const economy = {};
         gbpData.Items.forEach(e => { 
             economy[e.UserID] = {
@@ -100,7 +100,7 @@ const self = module.exports = {
         const params = {
             TableName: 'Resets',
             Item: {
-                'Date': new Date(Date.now()).toString(),
+                'Date': new Date(Date.now()).toLocaleString('en-US', { timeZone: config.timezone }),
                 'Executed': false,
                 'Economy': economy
             }

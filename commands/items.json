@@ -4,6 +4,11 @@
         "cost": 25,
         "description": "Use to cure the coronavirus"
     },
+    "potion": {
+        "name": "potion",
+        "cost": 10,
+        "description": "Dorse protection potion. Wears off when greeter-bot cycles."
+    },
     "battleaxe": {
         "name": "battleaxe",
         "cost": 100,
