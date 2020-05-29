@@ -1,35 +1,21 @@
-const { establishGBPs } = require('../utils.js');
+const { getGBPs } = require('../utils.js');
 
 module.exports = {
     name: 'gbp',
     description: 'Find out how many good boy points you have! Maybe you can buy some tendies if you have enough...',
     usage: '[user]',
     execute(client, config, db, message, args) {
-        const users = args.length 
-            ? message.guild.members.cache.filter(mbr => mbr.user.username.toLowerCase() === args.toLowerCase())
-                .map(function(m) { return m.user; })
-            : [message.author];
+        const userIDs = args.length 
+            ? message.guild.members.cache.filter(mbr => mbr.displayName.toLowerCase() === args.toLowerCase()).map(m => m.id)
+            : [message.member.id];
 
-        users.forEach(u => this.getGBPs(db, u, message.channel, users.length > 1));
-    },
-    getGBPs(db, user, channel, multiple) {
-        const params = {
-            TableName: 'GBPs',
-            Key: { 'UserID': user.id }
-        };
-
-        let GBPs;
-        db.get(params, function(err, data) {
-            if (err) {
-                console.error(`Error. Unable to search for ${user.username}`);
-                GBPs = '???';
-            } else if (!data.Item) {
-                establishGBPs(db, user, 0);
-                GBPs = 0;
-            } else {
-                GBPs = data.Item.GBPs;
+        getGBPs(db, userIDs)
+        .then(data => {
+            if (!data.Responses || !data.Responses.GBPs) {
+                return;
             }
-            channel.send(`${multiple ? user.tag : user.username} has ${GBPs} good boy points!`);
+
+            data.Responses.GBPs.forEach(user => message.channel.send(`${user.Username} has ${user.GBPs} good boy points and ${user.Stash} stashed away!`));
         });
     }
 };

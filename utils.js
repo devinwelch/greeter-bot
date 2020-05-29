@@ -145,12 +145,14 @@ let self = module.exports = {
         const params = {
             TableName: 'GBPs',
             Item: {
-                'UserID': user.id,
-                'Username': user.username.toLowerCase(),
-                'GBPs': amount,
-                'HighScore': amount,
-                'Inventory': { 'fists': true, 'random': true },
-                'Equipped': 'fists'
+                'UserID'    : user.id,
+                'Username'  : user.username.toLowerCase(),
+                'GBPs'      : amount,
+                'HighScore' : amount,
+                'Stash'     : 0,
+                'Inventory' : { 'fists': true, 'random': true },
+                'Equipped'  : 'fists',
+                'Team'      : 'none'
             }
         };
         db.put(params, function(err) {
@@ -252,7 +254,7 @@ let self = module.exports = {
                                     const gbpParams = {
                                         TableName: 'GBPs',
                                         Key: { 'UserID': user.UserID },
-                                        UpdateExpression: 'set GBPs = :z, HighScore = :z',
+                                        UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z',
                                         ExpressionAttributeValues: { ':z': 0 }
                                     };
                                     db.update(gbpParams, function(err) {
@@ -458,7 +460,6 @@ let self = module.exports = {
             params.RequestItems['GBPs'].Keys.push({ UserID: id });
         });
 
-        
         return db.batchGet(params).promise();
         //returns { Responses { GBPS: [{user1}, {user2}, ...] } }
     }
