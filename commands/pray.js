@@ -13,7 +13,7 @@ module.exports = {
 };
 
 async function pray(db, message) {
-    if (!getRandom(0)) {
+    if (!getRandom(19)) {
         try {
             let data = await getGBPs(db, [message.author.id]);
             if (data.Responses && data.Responses.GBPs) {

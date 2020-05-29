@@ -51,7 +51,7 @@ async function start(client, config, db, message, args) {
         
         message.channel.send(text)
         .then(msg => {
-            react(msg, ['🦀']);//, config.ids.drops]);
+            react(msg, ['🦀', config.ids.drops]);
 
             const gbIDs = goodBoys.map(g => g.id);
 
