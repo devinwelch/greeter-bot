@@ -2,13 +2,14 @@ const { getRandom, getGBPs, react } = require('../utils.js');
 
 module.exports = {
     name: 'pray',
-    description: 'Pray to RNGesus to cleanse you of your GBP debt. Random chance; can be used once per day.',
+    description: "Pray to RNGesus to cleanse you of your GBP debt. Random chance; can be used once per day. You'll be told if it works!",
     execute(client, config, db, message, args) {
-        if (message.author.prayed) {
-             return;
+        if (!client.prayers.includes(message.author.id)) {
+            client.prayers.push(message.author.id);
+            pray(db, message);
         }
 
-        pray(db, message);
+        react(message, ['🙏']);
     }
 };
 
@@ -40,7 +41,4 @@ async function pray(db, message) {
             console.log(err);
         }
     }
-    
-    react(message, ['🙏']);
-    message.author.prayed = true;
 }

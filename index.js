@@ -25,6 +25,7 @@ for (const file of commandFiles) {
 
 client.swears = fs.readFileSync('./swears.txt').toString().split(',');
 client.themeSongs = [];
+client.prayers = [];
 
 AWS.config.update({
     region: config.db.region,
@@ -77,6 +78,7 @@ schedule.scheduleJob({ minute: 0 }, function() {
 schedule.scheduleJob({ minute: 0, hour: 0, tz: config.timezone }, function() {
     console.log('Resetting theme songs');
     client.themeSongs = [];
+    client.prayers = [];
     midnight(client, db);
 });
 
