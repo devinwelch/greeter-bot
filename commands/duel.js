@@ -101,6 +101,7 @@ const self = module.exports = {
             //await reactions for up to 60 sec
             const filter = (reaction, user) => user.id !== client.user.id;
             const collector = msg.createReactionCollector(filter, { time: 60000 });
+            const chips = [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000]
 
             collector.on('collect', (reaction, user) => {
                 //challenger or target
@@ -124,7 +125,7 @@ const self = module.exports = {
                         bets[target.id].splice(i, 1);
                     }
                     if (firstBet) {
-                        firstBet = self.chips(config, msg);
+                        firstBet = react(msg, chips);
                     }
                 }
                 //viewer bets on target
@@ -137,7 +138,7 @@ const self = module.exports = {
                         bets[challenger.id].splice(i, 1);
                     }
                     if (firstBet) {
-                        firstBet = react(msg, [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000]);
+                        firstBet = react(msg, chips);
                     }
                 }
                 //viewer adds wager to bet
