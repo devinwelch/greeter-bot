@@ -1,4 +1,4 @@
-const { updateGBPs, delay, selectRandom, getRandom, assembleParty } = require('../utils.js');
+const { updateGBPs, delay, selectRandom, getRandom, assembleParty, format } = require('../utils.js');
 const items = require('./items.json');
 
 //re-uses a lot of code from duel for ease of use and specific balance changes
@@ -117,15 +117,10 @@ const self = module.exports = {
 
         const header = [];
         party.forEach(user => {
-            header.push(`${emojis.resolve(user.weapon.id)} ` + '`' + self.format(user.username, maxNameLength) + 'HP: ' + self.format(hp[user.id], 4) + '`');
+            header.push(`${emojis.resolve(user.weapon.id)} ` + '`' + format(user.username, maxNameLength) + 'HP: ' + format(hp[user.id], 4) + '`');
         });
 
         return header.join('\n') + '\n';
-    },
-    format(str, max) {
-        //use to format header in tabular style
-        str = str.toString();
-        return str + ' '.repeat(max - str.length);
     },
     display(client, message, actions, party, previousTurn) {
         if (actions.length) {

@@ -349,6 +349,15 @@ let self = module.exports = {
         //this is a super dumb way to force an async function
         return delayGratification();
         async function delayGratification() {
+            //cancel if leader can't afford wager
+            if (wager) {
+                const leaderGBP = await self.getGBPs(db, [leader.id]);
+                if (!leaderGBP.Responses || !leaderGBP.Responses.GBPs || leaderGBP.Responses.GBPs[0].GBPs < wager) {
+                    channel.send(`${leader}, you can't afford that!`);
+                    return false;
+                } 
+            }
+
             //send invite
             const invite = await channel.send(text)
             .then(async function(msg) {
@@ -362,22 +371,28 @@ let self = module.exports = {
                 //wait 3 mins
                 const inviteCollector = msg.createReactionCollector(inviteFilter, { time: 180000 });
                 
+                const party = [];
+
                 //leader closes party
-                inviteCollector.on('collect', reaction => {
+                inviteCollector.on('collect', (reaction, user) => {
                     if (reaction.emoji.id === config.ids.sanic) {
                         inviteCollector.stop();
+                    }
+                    else {
+                        if (!party.includes(user)) {
+                            party.push(user);
+                        }
                     }
                 });
 
                 //assemble party
                 return new Promise(function(resolve) {
-                    inviteCollector.on('end', collected => {
+                    inviteCollector.on('end', () => {
                         msg.reactions.removeAll();
-                        const p = collected.get(config.ids.yeehaw) ? collected.get(config.ids.yeehaw).users.cache.filter(u => !u.bot).array() : [];
-                        if (!p.includes(leader)) {
-                            p.push(leader);
+                        if (!party.includes(leader)) {
+                            party.push(leader);
                         }
-                        resolve({ party: p, message: msg});
+                        resolve({ party: party, message: msg});
                     });
                 });
             })
@@ -462,5 +477,10 @@ let self = module.exports = {
 
         return db.batchGet(params).promise();
         //returns { Responses { GBPS: [{user1}, {user2}, ...] } }
+    },
+
+    format(str, max) {
+        str = str.toString();
+        return str + ' '.repeat(max - str.length);
     }
 };

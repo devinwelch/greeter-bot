@@ -1,4 +1,4 @@
-const { selectRandom, getRandom, delay, playSong, updateGBPs, establishGBPs } = require('../utils.js');
+const { selectRandom, getRandom, delay, playSong, updateGBPs, establishGBPs, format } = require('../utils.js');
 const enemies = require('./enemies.json');
 const items = require('./items.json');
 const quicktime = ['🔴', '🔵', '🟢', '🟡'];
@@ -7,9 +7,6 @@ module.exports = {
     name: 'quest',
     description: 'Fight a random enemy to earn GBP! React in time to land a hit!',
     execute(client, config, db, message, args) {
-        //change IDs for test server; should be commented in production
-        //config.ids.corona = '701886367625379938';
-
         if (client.user.raiding) {
             return message.reply('Sorry, I can only handle 1 quest at a time :(');
         }
@@ -132,12 +129,6 @@ function getHeader(emojis, challenger, enemy, qt='') {
     const line2 = '\n`' + format(enemy.icon, maxNameLength) + 'HP: ' + format(enemy.hp, 4) + '`' + qt;
 
     return line1 + line2;
-}
-
-function format(str, max) {
-    //use to format header in tabular style
-    str = str.toString();
-    return str + ' '.repeat(max - str.length);
 }
 
 async function fight(client, config, db, msg, challenger, enemy, challengerTurn) {
