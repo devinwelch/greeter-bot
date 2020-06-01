@@ -5,9 +5,11 @@ module.exports = {
     description: 'Find out how many good boy points you have! Maybe you can buy some tendies if you have enough...',
     usage: '[user]',
     execute(client, config, db, message, args) {
-        const userIDs = args.length 
-            ? message.guild.members.cache.filter(mbr => mbr.displayName.toLowerCase() === args.toLowerCase()).map(m => m.id)
-            : [message.member.id];
+        const userIDs = message.mentions.members.size
+            ? message.mentions.members.map(u => u.id)
+            : args.length 
+                ? message.guild.members.cache.filter(mbr => mbr.displayName.toLowerCase() === args.toLowerCase()).map(m => m.id)
+                : [message.member.id];
 
         getGBPs(db, userIDs)
         .then(data => {

@@ -6,18 +6,19 @@ module.exports = {
     description: 'Play a personalized greeting. If not set up, contact Bus.',
     usage: '[username]',
     execute(client, config, db, message, args) {
-        args = args.toLowerCase();
-        const user = args.length
-            ? args === message.author.username.toLowerCase() 
+        const user = message.mentions.members.size
+        ? message.mentions.members.first().user.username
+        : args.length
+            ? args.toLowerCase() === message.author.username.toLowerCase() 
                 ? 'congratulations'
-                : args 
+                : args.toLowerCase()
             : message.author.username.toLowerCase();
     
         if (fs.existsSync(`./Sounds/Friends/${user}.mp3`)) {
             playMe(client, message.member.voice.channel, user);
         }
         else {
-            message.reply('Username not found; find a sound clip and give it to Bus!');
+            message.reply('Song not found; find a sound clip and give it to Bus!');
         }
     }
 };
