@@ -198,7 +198,11 @@ const self = module.exports = {
     heartOfTheCards(client, config, db, channel, challenger, target, bets, data1, data2) {
         //chance to play clip at start of duel
         const voiceChannel = challenger.voice.channel;
-        if (voiceChannel && voiceChannel === target.voice.channel && !client.voice.connections.get(voiceChannel.guild.id) && !getRandom(9)) {
+        if (voiceChannel &&
+            voiceChannel === target.voice.channel &&
+            !client.voice.connections.get(voiceChannel.guild.id) &&
+            (!voiceChannel.parent || voiceChannel.parent.id !== config.ids.foil) &&
+            !getRandom(4)) {
             return voiceChannel.join().then(connection => {
                 const dispatcher = connection.play('./Sounds/duel.mp3');
                 dispatcher.on('finish', () => {

@@ -10,7 +10,7 @@ module.exports = {
         const song = args[0];
         const streamOptions = { seek: args.length > 1 ? args[1] : 0, volume: 0.5 };
 
-        if (message.member.voice.channel) {
+        if (message.member.voice.channel && (!voiceChannel.parent || voiceChannel.parent.id !== config.ids.foil)) {
             voiceChannel.join()
             .then(connection => {
                 const stream = ytdl(song, { filter: 'audioonly' });

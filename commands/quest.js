@@ -35,7 +35,8 @@ module.exports = {
         .catch(console.error);
 
         if (enemy.weapon.musical && message.member.voice.channel && !message.member.voice.mute && !message.member.voice.deaf) {
-            playSong(client, message.member.voice.channel, `Enemies/${enemy.weapon.literal}.mp3`, true);
+            const song = enemy.creature.emoji === '💀' ? 'spooky' : enemy.weapon.literal;
+            playSong(client, message.member.voice.channel, `Enemies/${song}.mp3`, true);
         }
     }
 };

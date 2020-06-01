@@ -5,6 +5,7 @@ let self = module.exports = {
     getPopularChannel(client) {
         return client.channels.cache
             .filter(channel => channel.type === 'voice')
+            .filter(channel => !channel.parent || channel.parent.id !== config.ids.foil)
             .sort(function (channel1, channel2) { return channel2.members.size - channel1.members.size; })
             .first();
     },
@@ -44,7 +45,8 @@ let self = module.exports = {
     },
 
     playSong(client, voiceChannel, song, noKnock = false) {
-        if (voiceChannel && !client.voice.connections.get(voiceChannel.guild.id)) {
+        if (voiceChannel && !client.voice.connections.get(voiceChannel.guild.id) &&
+           (!voiceChannel.parent || voiceChannel.parent.id !== config.ids.foil)) {
             //APRIL PRANKS
             const date = new Date();
             if (date.getMonth() === 3 && date.getDate() === 1) {
