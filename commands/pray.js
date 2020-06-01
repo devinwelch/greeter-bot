@@ -23,7 +23,7 @@ async function pray(db, message) {
                     const params = {
                         TableName: 'GBPs',
                         Key: { 'UserID': message.author.id },
-                        UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z',
+                        UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z, Loan = :z',
                         ExpressionAttributeValues: { ':z': 0 }
                     };
                     db.update(params, function(err) {

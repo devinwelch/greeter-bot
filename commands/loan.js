@@ -1,108 +1,66 @@
-const { establishGBPs, updateGBPs } = require('../utils.js');
+const { updateGBPs, getGBPs } = require('../utils.js');
 
-let self = module.exports = {
+module.exports = {
     name: 'loan',
-    description: "Take out a loan from greeter-bot. Be careful, he's a shark; he will collect 110% at midnight(EST).\n\
-Use no arguments to check the status of your loan or see how much you qualify for.",
+    description: "Take out a loan from greeter-bot. Be careful, he's a shark; he will collect 110% at midnight(EST).\n" + 
+                 'Use no arguments to check the status of your loan or see how much you qualify for.',
     usage: '[amount]',
     execute(client, config, db, message, args) {
-        if (!args) {
-            const loanParams = {
-                TableName: 'Loans',
-                Key: { 'UserID': message.author.id }
-            };
+        //return before querying
+        if (args.length) {
+            //force user to use specific number, not 'max'
+            if (isNaN(args)) {
+                return message.reply('Please use a number for your request!');
+            }
+            //don't give 0 or negative loan
+            else if (args < 1) {
+                return message.reply('I oughtta break your legs for that one.');
+            }
+        }
 
-            db.get(loanParams, function(err, loanData) {
-                if (err) {
-                    console.error('Unable to query loan. Error:', JSON.stringify(err, null, 2));
+        getGBPs(db, [message.author.id]).then(data => {
+            if (!data.Responses || !data.Responses.GBPs) {
+                return message.reply('Something went wrong.');
+            }
+            else {
+                data = data.Responses.GBPs[0];
+            }
+
+            args = Math.floor(args);
+
+            //user inquiry
+            if (!args) {
+                //user has 0 loan
+                if (!data.Loan) {
+                    message.reply(`I can lend you up to ${getMaxLoan(data)} GBPs.`);
                 }
-                else if (loanData.Item) {
-                    message.reply(`You have a loan out for ${loanData.Item.Amount} GBPs. I will collect ${Math.ceil(loanData.Item.Amount * 1.1)} tonight...`);
-                }
+                //threaten to reclaim loan amount + 10% interest
                 else {
-                    const gbpParams = {
-                        TableName: 'GBPs',
-                        Key: { 'UserID': message.author.id }
-                    };
-
-                    db.get(gbpParams, function(err, gbpData) {
-                        if (err) {
-                            console.error('Unable to query GBPs. Error:', JSON.stringify(err, null, 2));
-                        }
-                        else if (!gbpData.Item) {
-                            establishGBPs(db, message.author, 0);
-                            message.reply("I don't trust you yet.");
-                        }
-                        else {
-                            message.reply(`I can lend you up to ${self.getMaxLoan(gbpData)} GBPs.`);
-                        }
-                    });
+                    message.reply(`You have a loan out for ${data.Loan} GBPs. I will collect ${Math.ceil(data.Loan * 1.1)} tonight...`);
                 }
-            });
-        }
-        else if (isNaN(args)) {
-            message.reply('Please use a number for your request!');
-        }
-        else if (args < 1) {
-            message.reply('I oughtta break your legs for that one.');
-        }
-        else {
-            const gbpParams = {
-                TableName: 'GBPs',
-                Key: { 'UserID': message.author.id }
-            };
-
-            db.get(gbpParams, function(err, gbpData) {
-                if (err) {
-                    console.error('Unable to query GBPs. Error:', JSON.stringify(err, null, 2));
+            }
+            //loan request
+            else {
+                //user already has loan
+                if (data.Loan) {
+                    message.reply(`You already have a loan for ${data.Loan}`);
                 }
-                else if (!gbpData.Item) {
-                    establishGBPs(db, message.author, 0);
-                    message.reply("I don't trust you yet.");
-                }
-                else if (args > self.getMaxLoan(gbpData)) {
+                //user asked for too much
+                else if (args > getMaxLoan(data)) {
                     message.reply('Denied. Prove your worth before you try to borrow that much.');
                 }
+                //give a loan
                 else {
-                    const loanParams = {
-                        TableName: 'Loans',
-                        Item: { 
-                            'UserID': message.author.id,
-                            'Amount': args, 
-                            'Username': message.author.username
-                        },
-                        Key: { 'UserID': message.author.id }
-                    };
-                    
-                    db.get(loanParams, function(err, data) {
-                        if (err) {
-                            console.error('Unable to query loan. Error:', JSON.stringify(err, null, 2));
-                        } 
-                        else if (!data.Item) {
-                            db.put(loanParams, function(err) {
-                                if (err) {
-                                    console.error('Unable to establish loan. Error:', JSON.stringify(err, null, 2));
-                                } else {
-                                    args = Math.floor(args);
-                                    console.log(`Loan given to ${message.author.username} for ${args} GBPs`);
-                                    updateGBPs(db, message.author, args);
-                                    updateGBPs(db, client.user, -args);
-                                    message.reply('Done, but you better have my money by midnight...');
-                                }
-                            });
-                        } 
-                        else  {
-                            message.reply(`You already have a loan for ${data.Item.Amount}`);
-                        }
-                    });
-                }
-            });  
-        }
-    },
-    getMaxLoan(data) {
-        if (isNaN(data.Item.HighScore)) {
-            data.Item.HighScore = 0;
-        }
-        return Math.max(Math.ceil((data.Item.GBPs + data.Item.HighScore) / 2), 0);
-    }
+                    updateGBPs(db, message.author, args, args);
+                    updateGBPs(db, client.user, -args);
+                    message.reply('Done, but you better have my money by midnight...');
+                } 
+            }
+        });
+    }  
 };
+
+function getMaxLoan(data) {
+    //Average of current GBPs and highest achieved GBPs
+    return Math.max(Math.ceil((data.GBPs + data.HighScore) / 2), 0);
+}

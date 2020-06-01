@@ -152,9 +152,12 @@ let self = module.exports = {
                 'GBPs'      : amount,
                 'HighScore' : amount,
                 'Stash'     : 0,
+                'Loan'      : 0,
                 'Inventory' : { 'fists': true, 'random': true },
                 'Equipped'  : 'fists',
-                'Team'      : 'none'
+                'Team'      : 'none',
+                'Lvl'       : 0,
+                'XP'        : 0
             }
         };
         db.put(params, function(err) {
@@ -166,14 +169,14 @@ let self = module.exports = {
         });
     },
 
-    updateGBPs(db, user, amount) {
-        const gbpParams = {
+    updateGBPs(db, user, amount, loan) {
+        const params = {
             TableName: 'GBPs',
             Key: { 'UserID': user.id }
         };
     
         //find user
-        db.get(gbpParams, function(err, data) {
+        db.get(params, function(err, data) {
             if (err) {
                 console.error(`Error. Unable to query ${user.username}`);
             } 
@@ -183,35 +186,32 @@ let self = module.exports = {
             } 
             //update existing user
             else {
-                const loanParams = {
-                    TableName: 'Loans',
-                    Key: { 'UserID': user.id }
+                const u = data.Item;
+                params.UpdateExpression = 'set Username = :u, GBPs = GBPs + :amt, HighScore = :h';
+                params.ExpressionAttributeValues = { 
+                    ':amt': amount,
+                    ':h': Math.max(u.HighScore, u.GBPs + u.Stash - (loan || u.Loan) + amount),
+                    ':u': user.username.toLowerCase()
                 };
 
-                db.get(loanParams, function(err, loanData) {
-                    if (err) {
-                        return console.error(`Error. Unable to search Loans for ${user.username}`);
-                    }
-                    const loan = loanData.Item ? loanData.Item.Amount : 0;
-                    if (isNaN(data.Item.HighScore)) {
-                        data.Item.HighScore = 0;
-                    }
-                    const high = Math.max(Number(data.Item.HighScore), data.Item.GBPs + amount - loan);
+                //if changing loan data
+                if (!isNaN(loan)) {
+                    params.UpdateExpression += ', Loan = :l';
+                    params.ExpressionAttributeValues[':l'] = loan;
+                }
 
-                    gbpParams.UpdateExpression = 'set Username = :u, GBPs = GBPs + :amt, HighScore = :h';
-                    gbpParams.ExpressionAttributeValues = { 
-                        ':amt': amount,
-                        ':h': high,
-                        ':u': user.username.toLowerCase()
-                    };
-                    db.update(gbpParams, function(err) {
-                        if (err) {
-                            console.error('Unable to update user. Error JSON:', JSON.stringify(err, null, 2));
-                        } else {
+                db.update(params, function(err) {
+                    if (err) {
+                        console.log('Unable to update user. Error JSON:', JSON.stringify(err, null, 2));
+                    } else {
+                        if (loan) {
+                            console.log(`Gave ${user.username} a loan for ${amount} GBPs`);
+                        }
+                        else {
                             console.log(`Gave ${user.username} ${amount} GBPs`);
                         }
-                    });
-                });   
+                    }
+                });
             }
         });
     },
@@ -252,49 +252,15 @@ let self = module.exports = {
                         }
                         else {
                             gbpData.Items.forEach(user => {
-                                if (Object.keys(user.Inventory).filter(k => k !== 'fists' && k !== 'random').length) {
-                                    const gbpParams = {
-                                        TableName: 'GBPs',
-                                        Key: { 'UserID': user.UserID },
-                                        UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z',
-                                        ExpressionAttributeValues: { ':z': 0 }
-                                    };
-                                    db.update(gbpParams, function(err) {
-                                        if (err) {
-                                            console.error('Unable to zero user. Error JSON:', JSON.stringify(err, null, 2));
-                                        }
-                                    });
-                                }
-                                else {
-                                    const deleteGBP = {
-                                        TableName: 'GBPs',
-                                        Key:{ 'UserID': user.UserID }
-                                    };
-                                    
-                                    db.delete(deleteGBP, function(err) {
-                                        if (err) {
-                                            console.error('Unable to delete user. Error:', JSON.stringify(err, null, 2));
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-
-                    db.scan({ TableName: 'Loans' }, function(err, loanData) {
-                        if (err) {
-                            console.error('Unable get Loan data for reset. Error:', JSON.stringify(err, null, 2));
-                        }
-                        else {
-                            loanData.Items.forEach(loan => {
-                                const loanParams = {
-                                    TableName: 'Loans',
-                                    Key:{ 'UserID': loan.UserID }
+                                const gbpParams = {
+                                    TableName: 'GBPs',
+                                    Key: { 'UserID': user.UserID },
+                                    UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z, Loan = :z',
+                                    ExpressionAttributeValues: { ':z': 0 }
                                 };
-                                
-                                db.delete(loanParams, function(err) {
+                                db.update(gbpParams, function(err) {
                                     if (err) {
-                                        console.error('Unable to delete Loan. Error:', JSON.stringify(err, null, 2));
+                                        console.error('Unable to zero user. Error JSON:', JSON.stringify(err, null, 2));
                                     }
                                 });
                             });
@@ -306,28 +272,19 @@ let self = module.exports = {
     },
 
     collectLoans(client, db) {
-        db.scan({ TableName: 'Loans' }, function(err, loanData) {
-            loanData.Items.forEach(function(loan) {
-                const loanAmount = Math.ceil(loan.Amount * 1.1);
+        db.scan({ TableName: 'GBPs' }, function(err, data) {
+            data.Items.filter(d => d.Loan > 0).forEach(d => {
                 const user = { 
-                    id: loan.UserID,
-                    username: loan.Username 
+                    id: d.UserID,
+                    username: d.Username
                 };
-
-                var params = {
-                    TableName: 'Loans',
-                    Key:{ 'UserID': loan.UserID }
-                };
+                const reclaim = -Math.ceil(d.Loan * 1.1);
                 
-                db.delete(params, function(err) {
-                    if (err) {
-                        console.error('Unable to delete item. Error:', JSON.stringify(err, null, 2));
-                    } else {
-                        self.updateGBPs(db, user, -loanAmount);
-                        self.updateGBPs(db, client.user, loanAmount);
-                        client.channels.cache.get(config.ids.exchange).send(`Reclaimed ${loanAmount} GBPs from ${user.username}`);
-                    }
-                });
+                self.updateGBPs(db, user, reclaim, 0);
+                self.updateGBPs(db, client.user, -reclaim);
+
+                console.log(`Reclaimed loan from ${user.username}`);
+                client.channels.cache.get(config.ids.exchange).send(`Reclaimed ${-reclaim} GBPs from ${user.username}`);
             });
         });
     },

@@ -34,12 +34,10 @@ async function start(client, config, db, message, args) {
             }
         }
 
-        const gbpData  = await db.scan({ TableName: 'GBPs'  }).promise();
-        const loanData = await db.scan({ TableName: 'Loans' }).promise();
-
+        const gbpData  = await db.scan({ TableName: 'GBPs' }).promise();
         const goodBoys = gbpData.Items
             .filter(gbp => gbp.Username !== 'greeter-bot')
-            .sort((a, b) => getTotal(b, loanData.Items) - getTotal(a, loanData.Items))
+            .sort((a, b) => getTotal(b) - getTotal(a))
             .map(gbp => message.guild.members.cache.get(gbp.UserID))
             .filter(mbr => mbr)
             .slice(0, 3);
@@ -90,13 +88,8 @@ async function start(client, config, db, message, args) {
     }
 }
 
-function getTotal(user, loanData) {
-    let total = user.GBPs + user.Stash;
-    const loan = loanData.find(l => l.UserID === user.UserID);
-    if (loan) {
-        total -= loan.Amount;
-    }
-    return total;
+function getTotal(user) {
+    return user.GBPs + user.Stash - user.Loan;
 }
 
 function reset(db, gbpData, channel) {
