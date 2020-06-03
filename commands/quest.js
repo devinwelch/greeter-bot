@@ -364,7 +364,7 @@ async function getResults(client, db, message, challenger, enemy) {
                 awardText = 'You win this shiny fiddle made of gold!';
             }
 
-            updateData(db, challenger.user, { gbp: award/*, xp: xp*/, inventory: inventory});
+            updateData(db, challenger.user, { gbps: award/*, xp: xp*/, inventory: inventory});
             await delay(1500).then(() => { display(message, awardText, client.emojis, challenger, enemy, true); });
         }
         //lose a GBP
