@@ -1,4 +1,4 @@
-const { playSong, updateGBPs, getRandom, react } = require('../utils.js');
+const { playSong, getData, updateData, getRandom, react } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, message) {
@@ -8,19 +8,16 @@ let self = module.exports = {
         }
         //Banana crown for the elite
         else if (/.*:BananaCrown:.*/.test(message.content)) {
-            const params = {
-                TableName: 'GBPs',
-                Key: { 'UserID': message.author.id }
-            };
-            db.get(params, function(err, data) {
-                if (err) { 
-                    console.log('heavy lies the crown');
-                }
-                else if (data.Item.GBPs < 1000) {
+            getData(db, message.author.id)
+            .then(data => {
+                if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length || !data.Responses.GBPs[0].GBPs < 1000) {
                     return message.delete().catch(console.error);
                 }
             });
         }
+
+        //xp for participation in chat
+        //updateData(db, message.author, { xp: 5 });
 
         //Stop spammers in their tracks
         if (!message.author.dorseProtection && message.guild.id === config.ids.hooliganHouse) {
@@ -32,7 +29,7 @@ let self = module.exports = {
                     !filteredMessages[0].attachments.size &&
                     !filteredMessages[1].attachments.size) {
                         message.reply('dorse');
-                        updateGBPs(db, message.author, -2);
+                        updateData(db, message.author, { gbps: -2 });
                 }
             })
             .catch(console.error);
@@ -85,7 +82,7 @@ let self = module.exports = {
                 filterText += "Please respect the Lord's day of rest. ";
             }
             message.reply(filterText + message.guild.emojis.cache.random(1).toString());
-            updateGBPs(db, message.author, -1);
+            updateData(db, message.author, { gbps: -1 });
         }
 
         //The never-ending debate

@@ -8,7 +8,7 @@ const config = require('./config.json');
 const onVoice = require('./controllers/onVoiceController.js');
 const onReaction = require('./controllers/onReactionController.js');
 const onMessage = require('./controllers/onMessageController.js');
-const { declareDay, jam, spook, infect, midnight, giveaway } = require('./utils.js');
+const { declareDay, jam, spook, infect, midnight, giveaway/*, giveXP*/ } = require('./utils.js');
 
 const client = new Discord.Client({
     disableEveryone: false,
@@ -32,6 +32,7 @@ AWS.config.update({
     endpoint: config.db.endpoint
 });
 const db = new AWS.DynamoDB.DocumentClient();
+db.xp = fs.readFileSync('./xp.txt').toString().split(',');
 
 client.on('ready', () => {
     console.log('I am ready!');
@@ -72,6 +73,7 @@ client.login(process.env.BOT_TOKEN);
 //Hourly
 schedule.scheduleJob({ minute: 0 }, function() {
     infect(client);
+    //giveXP(client, db);
 });
 
 //Midnight

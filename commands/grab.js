@@ -1,4 +1,4 @@
-const { getGBPs, react } = require('../utils.js');
+const { getData, updateData } = require('../utils.js');
 
 module.exports = {
     name: 'grab',
@@ -15,11 +15,11 @@ module.exports = {
                 return message.reply('why');
             }
 
-            getGBPs(db, [message.author.id])
+            getData(db, message.author.id)
             .then(data => {
                 const cowboy = `Hold on, cowboy, you only have ${data.Responses.GBPs[0].Stash} GBPs stashed away!`;
 
-                if (!data.Responses || !data.Responses.GBPs) {
+                if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
                     return message.reply('Something went wrong.');
                 }
                 else if (!isNaN(args) && data.Responses.GBPs[0].Stash < args) {
@@ -32,22 +32,7 @@ module.exports = {
                     args = Math.floor(args);
                 }
 
-                const params = {
-                    TableName: 'GBPs',
-                    Key: { 'UserID': message.author.id },
-                    UpdateExpression: 'set GBPs = GBPs + :g, Stash = Stash + :s',
-                    ExpressionAttributeValues: { ':g': args, ':s': -args }
-                };
-                db.update(params, function(err) {
-                    if (err) {
-                        console.error('Unable to stash GBPs. Error JSON:', JSON.stringify(err, null, 2));
-                        message.reply('Something went wrong.');
-                    }
-                    else {
-                        console.log(`${message.author.username} grabbed ${args} GBPs`);
-                        react(message, [config.ids.drops]);
-                    }
-                });
+                updateData(db, message.author, { gbps: args, stash: -args, message: message, emoji: config.ids.drops });
             })
             .catch(console.error);
         }

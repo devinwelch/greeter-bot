@@ -1,4 +1,4 @@
-const { playMe, updateGBPs } = require('../utils.js');
+const { playMe, updateData } = require('../utils.js');
 
 module.exports = {
     execute(client, db, oldState, newState) {
@@ -15,6 +15,6 @@ module.exports = {
         playMe(client, newState.channel, newState.member.user.username, true, true);
         client.themeSongs.push(newState.id);
         console.log(`${newState.member.user.username} entered the chat!`);
-        updateGBPs(db, newState.member.user, 10);
+        updateData(db, newState.member.user, { gbps: 10 });
     }
 };

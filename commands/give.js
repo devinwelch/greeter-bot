@@ -1,4 +1,4 @@
-const { updateGBPs, getGBPs } = require('../utils.js');
+const { updateData, getData } = require('../utils.js');
 
 module.exports = {
     name: 'give',
@@ -45,7 +45,7 @@ module.exports = {
             return message.reply("I'm pretty sure that's fraud.");
         }
 
-        getGBPs(db, [message.author.id])
+        getData(db, message.author.id)
         .then(data => {
             if (!data.Responses || !data.Responses.GBPs) {
                 message.reply('Something went wrong.');
@@ -54,8 +54,8 @@ module.exports = {
                 message.reply(`Whoa there, tiger! You only have ${data.Responses.GBPs[0].GBPs} GBPs!`);
             }
             else {
-                updateGBPs(db, message.author, -amount);
-                updateGBPs(db, recipient, amount);
+                updateData(db, message.author, { gbps: -amount });
+                updateData(db, recipient, { gbps: amount });
                 message.reply('You are a kind soul. Bless you.');
             }
         });

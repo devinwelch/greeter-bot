@@ -1,4 +1,4 @@
-const { getGBPs } = require('../utils.js');
+const { getData } = require('../utils.js');
 
 module.exports = {
     name: 'gbp',
@@ -9,9 +9,9 @@ module.exports = {
             ? message.mentions.members.map(u => u.id)
             : args.length 
                 ? message.guild.members.cache.filter(mbr => mbr.displayName.toLowerCase() === args.toLowerCase()).map(m => m.id)
-                : [message.member.id];
+                : message.member.id;
 
-        getGBPs(db, userIDs)
+        getData(db, userIDs)
         .then(data => {
             if (!data.Responses || !data.Responses.GBPs) {
                 return;

@@ -1,4 +1,4 @@
-const { updateGBPs, delay, selectRandom, getRandom, react } = require('../utils.js');
+const { getData, updateData, delay, selectRandom, getRandom, react } = require('../utils.js');
 const items = require('./items.json');
 
 const self = module.exports = {
@@ -26,51 +26,35 @@ const self = module.exports = {
         }
 
         //check GBPs for challenger and target
-        const params = {
-            RequestItems: {
-                'GBPs': {
-                    Keys: [
-                        { UserID: challenger.id },
-                        { UserID: target.id }
-                    ]
+        getData(db, [challenger.id, target.id])
+        .then(data => {
+            if (!data.Responses || !data.Responses.GBPs || data.Responses.GBPs.length !== 2) {
+                return message.reply('Something went wrong.');
+            }
+
+            const challengerData = data.Responses.GBPs.find(d => d.UserID === challenger.id);
+            const targetData = data.Responses.GBPs.find(d => d.UserID === target.id);
+
+            //challenger or target not found
+            if (!challengerData) {
+                return console.log('Cannot find challenger data');
+            }
+            if (!targetData) {
+                return console.log('Cannot find target data');
+            }
+
+            //challenger or target cannot match wager
+            if (wager) {
+                if (challengerData.GBPs < wager) {
+                    return message.reply(`Hang on there, slick! You only have ${challengerData.GBPs} GBPs!`);
+                }
+                if (targetData.GBPs < wager) {
+                    return message.reply(`${target.displayName} can't match that bet!`);
                 }
             }
-        };
 
-        db.batchGet(params, function (err, data) {
-            //error in query
-            if (err) {
-                console.log(err);
-            }
-            //error in response
-            else if (!data.Responses || !data.Responses.GBPs) {
-                console.log('There was an error getting GBP data for challenger/target');
-            }
-            else {
-                const challengerData = data.Responses.GBPs.find(d => d.UserID === challenger.id);
-                const targetData = data.Responses.GBPs.find(d => d.UserID === target.id);
-
-                //challenger or target not found
-                if (!challengerData) {
-                    return console.log('Cannot find challenger data');
-                }
-                if (!targetData) {
-                    return console.log('Cannot find target data');
-                }
-
-                //challenger or target cannot match wager
-                if (wager) {
-                    if (challengerData.GBPs < wager) {
-                        return message.reply(`Hang on there, slick! You only have ${challengerData.GBPs} GBPs!`);
-                    }
-                    if (targetData.GBPs < wager) {
-                        return message.reply(`${target.displayName} can't match that bet!`);
-                    }
-                }
-
-                //send duel invite
-                self.sendInvite(client, config, db, message.channel, challenger, target, challengerData, targetData, wager);
-            }
+            //send duel invite
+            self.sendInvite(client, config, db, message.channel, challenger, target, challengerData, targetData, wager);
         });
     },
     sendInvite(client, config, db, channel, challenger, target, challengerData, targetData, wager) {
@@ -101,7 +85,7 @@ const self = module.exports = {
             //await reactions for up to 60 sec
             const filter = (reaction, user) => user.id !== client.user.id;
             const collector = msg.createReactionCollector(filter, { time: 60000 });
-            const chips = [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000]
+            const chips = [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000];
 
             collector.on('collect', (reaction, user) => {
                 //challenger or target
@@ -166,9 +150,9 @@ const self = module.exports = {
             return self.heartOfTheCards(client, config, db, channel, challenger, target, bets, challengerData, targetData);
         }
 
-        self.getGBPs(db, candt)
+        getData(db, candt.map(u => u.id))
         .then(data => {
-            if (data && (!data.Responses || !data.Responses.GBPs)) {
+            if (!data.Responses || !data.Responses.GBPs) {
                 console.log('There was an error getting GBP data for side bets: ', bets);
             }
             else {
@@ -185,15 +169,6 @@ const self = module.exports = {
 
             self.heartOfTheCards(client, config, db, channel, challenger, target, bets, challengerData, targetData);
         });
-    },
-    getGBPs(db, users) {
-        //get data for each bet
-        const params = { RequestItems: { 'GBPs': { Keys: [] } }};
-        users.forEach(user => {
-            params.RequestItems['GBPs'].Keys.push({ UserID: user.id });
-        });
-
-        return db.batchGet(params).promise();   
     },
     heartOfTheCards(client, config, db, channel, challenger, target, bets, data1, data2) {
         //chance to play clip at start of duel
@@ -433,16 +408,14 @@ const self = module.exports = {
         }
         //award GBPs
         else {
-            if (bets.wager) {
-                updateGBPs(db, winner.user, bets.wager);
-                updateGBPs(db, loser.user, -bets.wager);
-            }
+            updateData(db, winner.user, { gbps: bets.wager/*, xp: 250*/ });
+            updateData(db, loser.user, { gbps: -bets.wager });
 
             if (bets[winner.id].length) {
                 const wins = [];
                 bets[winner.id].forEach(w => {
                     if (bets.sideBets[w.id]) {
-                        updateGBPs(db, w, bets.sideBets[w.id]);
+                        updateData(db, w, { gbps: bets.sideBets[w.id] });
                     }
                     wins.push(`**${w.username}** *(${bets.sideBets[w.id]})*`);
                 });
@@ -453,7 +426,7 @@ const self = module.exports = {
                 const losses = [];
                 bets[loser.id].forEach(l => {
                     if (bets.sideBets[l.id]) {
-                        updateGBPs(db, l, -bets.sideBets[l.id]);
+                        updateData(db, l, { gbps: -bets.sideBets[l.id] });
                     }
                     losses.push(`**${l.username}** *(${bets.sideBets[l.id]})*`);
                 });

@@ -1,4 +1,4 @@
-const { getRandom, updateGBPs, react } = require('../utils.js');
+const { getRandom, getData, updateData, react } = require('../utils.js');
 
 const columns = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣'];
 const blank  = '⚪';
@@ -30,51 +30,28 @@ module.exports = {
         }
 
         //check GBPs for challenger and target
-        const params = {
-            RequestItems: {
-                'GBPs': {
-                    Keys: [
-                        { UserID: challenger.id },
-                        { UserID: target.id }
-                    ]
+        getData(db, [challenger.id, target.id])
+        .then(data => {
+            if (!data.Responses || !data.Responses.GBPs || data.Responses.GBPs.length !== 2) {
+                return message.reply('Something went wrong.');
+            }
+
+            const challengerData = data.Responses.GBPs.find(d => d.UserID === challenger.id);
+            const targetData     = data.Responses.GBPs.find(d => d.UserID === target.id);
+
+            //challenger or target cannot match wager
+            if (wager) {
+                if (challengerData.GBPs < wager) {
+                    return message.reply(`Hang on there, slick! You only have ${challengerData.GBPs} GBPs!`);
+                }
+                if (targetData.GBPs < wager) {
+                    return message.reply(`${target.displayName} can't match that bet!`);
                 }
             }
-        };
 
-        db.batchGet(params, function (err, data) {
-            //error in query
-            if (err) {
-                console.log(err);
-            }
-            //error in response
-            else if (!data.Responses || !data.Responses.GBPs) {
-                console.log('There was an error getting GBP data for challenger/target');
-            }
-            else {
-                const challengerData = data.Responses.GBPs.find(d => d.UserID === challenger.id);
-                const targetData = data.Responses.GBPs.find(d => d.UserID === target.id);
+            //send duel invite
+            sendInvite(client, config, db, message.channel, challenger, target, wager);
 
-                //challenger or target not found
-                if (!challengerData) {
-                    return console.log('Cannot find challenger data');
-                }
-                if (!targetData) {
-                    return console.log('Cannot find target data');
-                }
-
-                //challenger or target cannot match wager
-                if (wager) {
-                    if (challengerData.GBPs < wager) {
-                        return message.reply(`Hang on there, slick! You only have ${challengerData.GBPs} GBPs!`);
-                    }
-                    if (targetData.GBPs < wager) {
-                        return message.reply(`${target.displayName} can't match that bet!`);
-                    }
-                }
-
-                //send duel invite
-                sendInvite(client, config, db, message.channel, challenger, target, wager);
-            }
         });
     }
 };
@@ -164,10 +141,9 @@ function start(db, channel, challenger, target, wager) {
                 board.push(`**${loser.username} took too long to decide; ${winner.username} wins ${wager} GBPs.**`);
                 msg.edit(board);
 
-                if (wager) {
-                    updateGBPs(db, winner, wager);
-                    updateGBPs(db, loser, -wager);
-                }
+                updateData(db, winner, { gbps: wager/*, xp: 150*/ });
+                updateData(db, loser, { gbps: -wager });
+                
             }
         });
     });    
@@ -190,10 +166,8 @@ function getWinner(db, challenger, target, wager, win) {
         loser = challenger;
     }
 
-    if (wager) {
-        updateGBPs(db, winner, wager);
-        updateGBPs(db, loser, -wager);
-    }
+    updateData(db, winner, { gbps: wager, /*xp: 300*/ });
+    updateData(db, loser, { gbps: -wager });
 
     return `**${winner.username} wins ${wager} GBPs from ${loser.username}!**`;
 }

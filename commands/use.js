@@ -1,5 +1,5 @@
 const items = require('./items.json');
-const { establishGBPs } = require('../utils.js');
+const { getData, updateData } = require('../utils.js');
 
 const self = module.exports = {
     name: 'use',
@@ -7,47 +7,33 @@ const self = module.exports = {
     aliases: ['equip'],
     usage: '[item|random]',
     execute(client, config, db, message, args) {
-        const params = { 
-            TableName: 'GBPs',
-            Key: { UserID: message.author.id }
-        };
+        args = args.toLowerCase();
 
-        db.get(params, function(err, data) {
-            if (err) {
-                console.log(err);
+        getData(db, message.author.id)
+        .then(data => {
+            if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
+                return message.reply('Something went wrong.');
             }
-            else if (!data.Item) {
-                establishGBPs(db, message.author, 0);
-                message.reply('Added you to the club.');
+
+            data = data.Responses.GBPs[0];
+
+            if (!args.length) {
+                const emojiID = data.Equipped === 'random' ? config.ids.random : items[data.Equipped].id;
+                message.reply(`You have ${data.Equipped} equipped. ${client.emojis.resolve(emojiID)}`);
             }
-            else if (!args.length) {
-                const emojiID = data.Item.Equipped === 'random' ? config.ids.random : items[data.Item.Equipped].id;
-                message.reply(`You have ${data.Item.Equipped} equipped. ${client.emojis.cache.get(emojiID)}`);
-            }
-            else if (args !== 'random' && !data.Item.Inventory[args]) {
+            else if (!data.Inventory[args]) {
                 message.reply('You do not have that item!');
             }
             else if (args === 'random' || items[args].weapon) {
-                params.UpdateExpression = 'set Equipped = :e';
-                params.ExpressionAttributeValues = { ':e': args };
-
-                db.update(params, function(err) {
-                    if (err) {
-                        message.reply('Unable to equip item. Please try again later.');
-                        console.log(err);
-                    }
-                    else {
-                        message.react('🦾');
-                    }
-                });
+                updateData(db, message.author.id, { equipped: args, message: message, emoji: '🦾' });
             }
             else {
                 switch(args) {
                     case 'antidote':
-                        self.useAntidote(config, db, params, message);
+                        self.useAntidote(config, db, message);
                         break;
                     case 'potion':
-                        self.usePotion(db, params, message);
+                        self.usePotion(db, message);
                         break;
                     default:
                         message.reply("I don't know what to do with that.");
@@ -55,37 +41,20 @@ const self = module.exports = {
             }
         });
     },
-    useAntidote(config, db, params, message) {
-        params.UpdateExpression = 'set Inventory.antidote = :f';
-        params.ExpressionAttributeValues = { ':f': false };
+    useAntidote(config, db, message) {
+        updateData(db, message.author, { inventory: { antidote: false } });
 
-        db.update(params, function(err) {
-            if (err) {
-                message.reply('Unable use antidote. Please try again later.');
-                console.log(err);
-            }
-            else {
-                if (message.member.roles.cache.has(config.ids.corona)) {
-                    message.member.roles.remove(config.ids.corona)
-                        .catch(console.error);
-                }
-                message.reply('You have been cured of coronavirus! Stay safe...');
-            }
-        });       
+        if (message.member.roles.cache.has(config.ids.corona)) {
+            message.member.roles.remove(config.ids.corona)
+                .catch(console.error);
+        }
+
+        message.reply('You have been cured of coronavirus! Stay safe...');
     },
-    usePotion(db, params, message) {
-        params.UpdateExpression = 'set Inventory.potion = :f';
-        params.ExpressionAttributeValues = { ':f': false };
+    usePotion(db, message) {
+        updateData(db, message.author, { inventory: { potion: false } });
 
-        db.update(params, function(err) {
-            if (err) {
-                message.reply('Unable use potion. Please try again later.');
-                console.log(err);
-            }
-            else {
-                message.author.dorseProtection = true;
-                message.reply('Dorse protection activated.');
-            }
-        });       
+        message.author.dorseProtection = true;
+        message.reply('Dorse protection activated.');     
     }
 };

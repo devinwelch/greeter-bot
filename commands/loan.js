@@ -1,4 +1,4 @@
-const { updateGBPs, getGBPs } = require('../utils.js');
+const { updateData, getData } = require('../utils.js');
 
 module.exports = {
     name: 'loan',
@@ -18,14 +18,13 @@ module.exports = {
             }
         }
 
-        getGBPs(db, [message.author.id]).then(data => {
-            if (!data.Responses || !data.Responses.GBPs) {
+        getData(db, message.author.id)
+        .then(data => {
+            if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
                 return message.reply('Something went wrong.');
             }
-            else {
-                data = data.Responses.GBPs[0];
-            }
-
+            
+            data = data.Responses.GBPs[0];
             args = Math.floor(args);
 
             //user inquiry
@@ -51,8 +50,8 @@ module.exports = {
                 }
                 //give a loan
                 else {
-                    updateGBPs(db, message.author, args, args);
-                    updateGBPs(db, client.user, -args);
+                    updateData(db, message.author, { gbps: args, loan: args });
+                    updateData(db, client.user, { gbps: -args });
                     message.reply('Done, but you better have my money by midnight...');
                 } 
             }

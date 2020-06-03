@@ -1,4 +1,4 @@
-const { updateGBPs, getRandom } = require('../utils.js');
+const { updateData, getRandom } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, reaction, user) {
@@ -10,8 +10,10 @@ let self = module.exports = {
 
                 if (newEmoji.id === reaction.emoji.id) {
                     const award = 10;
+                    //const xp = 250;
+                    //reaction.message.edit(`**${user.username}** wins ${award} GBPs and ${xp} xp! ${newEmoji.toString()}`); 
                     reaction.message.edit(`**${user.username}** wins ${award} GBPs! ${newEmoji.toString()}`); 
-                    updateGBPs(db, user, award);
+                    updateData(db, user, { gbps: award/*, xp: xp*/ });
                 }
                 else {
                     reaction.message.reactions.removeAll();
@@ -22,7 +24,7 @@ let self = module.exports = {
         
         else if (reaction.emoji.id === config.ids.nanners &&
             reaction.message.author.id !== user.id) {
-            self.giveNanners(db, reaction.message.id, user.id, reaction.message.author, 1);
+            self.giveNanners(db, reaction, user);
         }
         
         else if (reaction.emoji.id === config.ids.brownie && !getRandom(49)) {
@@ -33,16 +35,16 @@ let self = module.exports = {
         }
     },
 
-    giveNanners(db, messageID, reactorID, user, amount) {
+    giveNanners(db, reaction, user) {
         const params = {
             TableName: 'Reactions',
             Item: {
-                'MessageID': messageID,
-                'ReactorID': reactorID
+                'MessageID': reaction.message.id,
+                'ReactorID': user.id
             },
             Key: {
-                'MessageID': messageID,
-                'ReactorID': reactorID
+                'MessageID': reaction.message.id,
+                'ReactorID': user.id
             }
         };
         
@@ -50,18 +52,19 @@ let self = module.exports = {
         db.get(params, function(err, data) {
             if (err) {
                 console.error('Unable to query message. Error:', JSON.stringify(err, null, 2));
-            } else if (!data.Item) {
+            } 
+            else if (!data.Item) {
                 //user has not already given nanners
                 db.put(params, function(err) {
                     if (err) {
                         console.error('Unable to give nanners. Error:', JSON.stringify(err, null, 2));
-                    } else {
-                        console.log(`Nanners given to ${user.username}`);
-                        updateGBPs(db, user, amount);
+                    }
+                    else {
+                        console.log(`${user.username} gave nanners to ${reaction.message.author.username}`);
+                        updateData(db, reaction.message.author, { gbps: 1 });
+                        //updateData(db, user, { xp: 25 });
                     }
                 });
-            } else  {
-                console.log('User already gave nanners:', JSON.stringify(data, null, 2));
             }
         });
     }

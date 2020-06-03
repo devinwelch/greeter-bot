@@ -1,4 +1,4 @@
-const { selectRandom, getRandom, delay, playSong, updateGBPs, establishGBPs, format } = require('../utils.js');
+const { selectRandom, getRandom, delay, playSong, getData, updateData, format } = require('../utils.js');
 const enemies = require('./enemies.json');
 const items = require('./items.json');
 const quicktime = ['🔴', '🔵', '🟢', '🟡'];
@@ -42,41 +42,34 @@ module.exports = {
 };
 
 async function setup(client, config, db, channel, challenger, enemy) {
-    const params = {
-        TableName: 'GBPs',
-        Key: { UserID: challenger.id }
-    };
-    db.get(params, function(err, data) {
-        if (err) {
-            return console.log(err);
+    getData(db, challenger.id)
+    .then(data => {
+        if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
+            client.raiding = false;
+            return;
+        }
+
+        data = data.Responses.GBPs[0];
+
+        challenger.hp = 100;
+        challenger.turn = 2;
+        challenger.cooldown = false;
+        challenger.selfKill = false;
+        challenger.cursed = false;
+        challenger.burning = false;
+        challenger.infected = challenger.roles.cache.has(config.ids.corona);
+
+        if (data.Equipped === 'random') {
+            //select a random weapon from inventory
+            const inventory = Object.keys(data.Inventory).filter(key => data.Inventory[key] && items[key] && items[key].weapon);
+            challenger.weapon = items[selectRandom(inventory)];
         }
         else {
-            //reset initial stats so they do not persist from prior duels
-            challenger.hp = 100;
-            challenger.turn = 2;
-            challenger.cooldown = false;
-            challenger.selfKill = false;
-            challenger.cursed = false;
-            challenger.burning = false;
-            challenger.infected = challenger.roles.cache.has(config.ids.corona);
-
-            if (!data.Item) {
-                //user not established, start them with fists
-                establishGBPs(db, challenger.user, 0);
-                challenger.weapon = items['fists'];
-            }
-            else if (data.Item.Equipped === 'random') {
-                //select a random weapon from inventory
-                const inventory = Object.keys(data.Item.Inventory).filter(key => data.Item.Inventory[key] && items[key] && items[key].weapon);
-                challenger.weapon = items[selectRandom(inventory)];
-            }
-            else {
-                challenger.weapon = items[data.Item.Equipped];
-            }
-
-            start(client, config, db, channel, challenger, enemy);
+            challenger.weapon = items[data.Equipped];
         }
-    }); 
+
+        start(client, config, db, channel, challenger, enemy);
+    });
 }
 
 async function start(client, config, db, channel, challenger, enemy) {
@@ -359,37 +352,24 @@ async function getResults(client, db, message, challenger, enemy) {
     //award GBPs
     else {
         if (winner === challenger) {
+            //award random GBPs (flat for special creatures)
+            const award = enemy.creature.award || getRandom(1, 3);
+            //const xp = 100 + (enemy.creature.xp || 0);
+            const inventory = {};
+            let awardText = `You win ${award} GBPs!`;// and ${xp} xp!`;
+
             //give challenger the golden fiddle item
             if (enemy.weapon.emoji === '🎻') {
-                const params = {
-                    TableName: 'GBPs',
-                    Key: { 'UserID': challenger.id },
-                    UpdateExpression: 'set Inventory.fiddle = :b',
-                    ExpressionAttributeValues:{ ':b': true }
-                };
-        
-                db.update(params, function(err) {
-                    if (err) {
-                        console.log(`Could not give fiddle to ${challenger.displayName}`, JSON.stringify(err, null, 2));
-                    }
-                    else {
-                        console.log(`Gave ${challenger.displayName} a fiddle`);
-                    }
-                });
-                
-                await delay(1500).then(() => { display(message, 'You win this shiny fiddle made of gold!', client.emojis, challenger, enemy, true); });
+                inventory['fiddle'] = true;
+                awardText = 'You win this shiny fiddle made of gold!';
             }
-            //award random GBPs (flat for special creatures)
-            else {
-                const award = enemy.creature.award || getRandom(1, 3);
-                const awardText = `You win ${award} GBPs!`;
-                updateGBPs(db, challenger.user, award);
-                await delay(1500).then(() => { display(message, awardText, client.emojis, challenger, enemy, true); });
-            }
+
+            updateData(db, challenger.user, { gbp: award/*, xp: xp*/, inventory: inventory});
+            await delay(1500).then(() => { display(message, awardText, client.emojis, challenger, enemy, true); });
         }
         //lose a GBP
         else {
-            updateGBPs(db, challenger.user, -1);
+            updateData(db, challenger.user, { gbps: -1 });
             await delay(1500).then(() => { display(message, 'You lose a GBP.', client.emojis, challenger, enemy, true); });
         }
     }

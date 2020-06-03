@@ -1,4 +1,4 @@
-const { getRandom, getGBPs, react } = require('../utils.js');
+const { getRandom, getData, react } = require('../utils.js');
 
 module.exports = {
     name: 'pray',
@@ -16,7 +16,7 @@ module.exports = {
 async function pray(db, message) {
     if (!getRandom(19)) {
         try {
-            let data = await getGBPs(db, [message.author.id]);
+            let data = await getData(db, message.author.id);
             if (data.Responses && data.Responses.GBPs) {
                 data = data.Responses.GBPs[0];
                 if ((data.GBPs + data.Stash) < 0) {

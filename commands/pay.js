@@ -1,4 +1,4 @@
-const { getGBPs, updateGBPs } = require('../utils.js');
+const { getData, updateData } = require('../utils.js');
 
 module.exports = {
     name: 'pay',
@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['repay', 'payloan'],
     execute(client, config, db, message, args) {
         //get users GBP and loan data
-        getGBPs(db, [message.author.id])
+        getData(db, message.author.id)
         .then(data => {
             if (!data.Responses || !data.Responses.GBPs) {
                 return message.reply('Something went wrong.');
@@ -29,8 +29,8 @@ module.exports = {
                 }
                 //pay back loan
                 else {
-                    updateGBPs(db, message.author, -total, 0);
-                    updateGBPs(db, client.user, total);
+                    updateData(db, message.author, { gbps: -total, loan: 0 });
+                    updateData(db, client.user, { gbps: total });
                     message.reply('Thank you, come again!');
                 }
             }

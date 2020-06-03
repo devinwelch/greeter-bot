@@ -143,77 +143,151 @@ let self = module.exports = {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
-    establishGBPs(db, user, amount) {
+    putData(db, user, options) {
         const params = {
             TableName: 'GBPs',
             Item: {
-                'UserID'    : user.id,
-                'Username'  : user.username.toLowerCase(),
-                'GBPs'      : amount,
-                'HighScore' : amount,
-                'Stash'     : 0,
-                'Loan'      : 0,
-                'Inventory' : { 'fists': true, 'random': true },
-                'Equipped'  : 'fists',
-                'Team'      : 'none',
-                'Lvl'       : 0,
-                'XP'        : 0
+                UserID      : user.id || user,
+                Username    : user.username.toLowerCase() || user,
+                GBPs        : options.gbps || 0,
+                HighScore   : options.gbps || 0,
+                Stash       : 0,
+                Loan        : 0,
+                Inventory   : { 'fists': true, 'random': true },
+                Equipped    : 'fists',
+                Team        : 'none',
+                Lvl         : getLvl(db.xp, options.xp || 1),
+                XP          : options.xp || 0
             }
         };
+
         db.put(params, function(err) {
             if (err) {
-                console.error(`Error. Unable to add ${user.username}`);
-            } else {
-                console.log(`Added ${user.username}`);
+                console.error(`Unable to add ${params.Item.Username}:`, JSON.stringify(err, null, 2));
+            }
+            else {
+                console.log(`Added ${params.Item.Username}:`, JSON.stringify(params.Item, null, 2));
             }
         });
     },
 
-    updateGBPs(db, user, amount, loan) {
+    updateData(db, user, options) {
+        //user can be a (user object) or (user id string)
+        const id = user.id || user;
         const params = {
             TableName: 'GBPs',
-            Key: { 'UserID': user.id }
+            Key: { 'UserID': id }
         };
     
-        //find user
+        //find user data
         db.get(params, function(err, data) {
             if (err) {
-                console.error(`Error. Unable to query ${user.username}`);
+                console.error(`Error. Unable to get data for ${user.username}`);
             } 
-            //GBPs not calculated yet
+            //user not found
             else if (!data.Item) {
-                self.establishGBPs(db, user, amount);
+                self.putData(db, user, options);
             } 
             //update existing user
             else {
-                const u = data.Item;
-                params.UpdateExpression = 'set Username = :u, GBPs = GBPs + :amt, HighScore = :h';
-                params.ExpressionAttributeValues = { 
-                    ':amt': amount,
-                    ':h': Math.max(u.HighScore, u.GBPs + u.Stash - (loan || u.Loan) + amount),
-                    ':u': user.username.toLowerCase()
-                };
+                const expressions = [];
+                const attributes  = {};
+                const d = data.Item;
 
-                //if changing loan data
-                if (!isNaN(loan)) {
-                    params.UpdateExpression += ', Loan = :l';
-                    params.ExpressionAttributeValues[':l'] = loan;
+                if (options.gbps) {
+                    expressions.push('GBPs = GBPs + :gbps');
+                    attributes[':gbps'] = options.gbps;
+
+                    const highscore = d.GBPs + d.Stash - (isNaN(options.loan) ? d.Loan : options.loan) + (options.stash || 0) + options.gbps;
+                    if (highscore > d.HighScore) {
+                        expressions.push('HighScore = :highscore');
+                        attributes[':highscore'] = highscore;
+                    }
                 }
+
+                if (options.stash) {
+                    expressions.push('Stash = Stash + :stash');
+                    attributes[':stash'] = options.stash;
+                }
+
+                if (!isNaN(options.loan)) {
+                    expressions.push('Loan = :loan');
+                    attributes[':loan'] = options.loan;
+                }
+
+                if (options.xp) {
+                    expressions.push('XP = XP + :xp');
+                    attributes[':xp'] = options.xp;
+
+                    const lvl = getLvl(db.xp, d.XP + options.xp);
+                    if (lvl > d.Lvl) {
+                        expressions.push('Lvl = :lvl');
+                        attributes[':lvl'] = lvl;
+                        //announce level up 
+                    }
+                }
+
+                if (options.inventory) {
+                    Object.keys(options.inventory).forEach(i => {
+                        expressions.push(`Inventory.${i} = :${i}`);
+                        attributes[`:${i}`] = options.inventory[i];
+                    });
+                }
+
+                if (options.equipped) {
+                    expressions.push('Equipped = :equipped');
+                    attributes[':equipped'] = options.equipped;
+                }
+
+                if (options.team) {
+                    expressions.push('Team = :team');
+                    attributes[':team'] = options.team;
+                }
+
+                if (user.username && user.username.toLowerCase() !== d.Username) {
+                    expressions.push('Username = :username');
+                    attributes[':username'] = user.username.toLowerCase();
+                }
+
+                //skip if nothing to update
+                if (!Object.keys(attributes).length) {
+                    return;
+                }
+
+                params.UpdateExpression = 'set ' + expressions.join(', ');
+                params.ExpressionAttributeValues = attributes;
 
                 db.update(params, function(err) {
                     if (err) {
                         console.log('Unable to update user. Error JSON:', JSON.stringify(err, null, 2));
-                    } else {
-                        if (loan) {
-                            console.log(`Gave ${user.username} a loan for ${amount} GBPs`);
+                    }
+                    else {
+                        if (attributes[':xp'] >= 100 || Object.keys(attributes).some(a => a !== ':xp')) {
+                            console.log(`Updated ${user.username || user}:`, JSON.stringify(attributes));
                         }
-                        else {
-                            console.log(`Gave ${user.username} ${amount} GBPs`);
+                        
+                        //optional confirmation to user
+                        if (options.message && options.emoji) {
+                            self.react(options.message, [options.emoji]);
                         }
                     }
                 });
             }
         });
+    },
+
+    getData(db, userIDs) {
+        if (!Array.isArray(userIDs)) {
+            userIDs = [userIDs];
+        }
+
+        const params = { RequestItems: { 'GBPs': { Keys: [] } }};
+        userIDs.forEach(id => {
+            params.RequestItems['GBPs'].Keys.push({ UserID: id });
+        });
+
+        return db.batchGet(params).promise();
+        //returns { Responses { GBPS: [{user1}, {user2}, ...] } }
     },
 
     midnight(client, db) {
@@ -278,13 +352,13 @@ let self = module.exports = {
                     id: d.UserID,
                     username: d.Username
                 };
-                const reclaim = -Math.ceil(d.Loan * 1.1);
+                const reclaim = Math.ceil(d.Loan * 1.1);
                 
-                self.updateGBPs(db, user, reclaim, 0);
-                self.updateGBPs(db, client.user, -reclaim);
+                self.updateData(db, user, { gbps: -reclaim, loan: 0 });
+                self.updateData(db, client.user, { gbps: reclaim });
 
                 console.log(`Reclaimed loan from ${user.username}`);
-                client.channels.cache.get(config.ids.exchange).send(`Reclaimed ${-reclaim} GBPs from ${user.username}`);
+                client.channels.cache.get(config.ids.exchange).send(`Reclaimed ${reclaim} GBPs from ${user.username}`);
             });
         });
     },
@@ -294,7 +368,7 @@ let self = module.exports = {
         
         const jackpot = members.size;
         const winner = members.random(1)[0].user;
-        self.updateGBPs(db, winner, jackpot);
+        self.updateData(db, winner, { gbps: jackpot });
 
         client.guilds.cache
             .get(config.ids.hooliganHouse).channels.cache
@@ -304,13 +378,12 @@ let self = module.exports = {
 
     assembleParty(client, config, db, channel, leader, text, wager) {
         //returns party or false if rejected
-
         //this is a super dumb way to force an async function
         return delayGratification();
         async function delayGratification() {
             //cancel if leader can't afford wager
             if (wager) {
-                const leaderGBP = await self.getGBPs(db, [leader.id]);
+                const leaderGBP = await self.getData(db, leader.id);
                 if (!leaderGBP.Responses || !leaderGBP.Responses.GBPs || leaderGBP.Responses.GBPs[0].GBPs < wager) {
                     channel.send(`${leader}, you can't afford that!`);
                     return false;
@@ -358,7 +431,7 @@ let self = module.exports = {
             .catch(console.error);
 
             //get GBP data for party members
-            const data = await self.getGBPs(db, invite.party.map(p => p.id));
+            const data = await self.getData(db, invite.party.map(p => p.id));
             if (!data.Responses || !data.Responses.GBPs) {
                 invite.message.edit('No users were found.');
                 return false;
@@ -428,18 +501,25 @@ let self = module.exports = {
         }
     },
 
-    getGBPs(db, userIDs) {
-        const params = { RequestItems: { 'GBPs': { Keys: [] } }};
-        userIDs.forEach(id => {
-            params.RequestItems['GBPs'].Keys.push({ UserID: id });
-        });
-
-        return db.batchGet(params).promise();
-        //returns { Responses { GBPS: [{user1}, {user2}, ...] } }
-    },
-
     format(str, max) {
         str = str.toString();
         return str + ' '.repeat(max - str.length);
+    },
+
+    giveXP(client, db) {
+        client.channels.cache.filter(channel => channel.type === 'voice').each(channel => {
+            channel.members.filter(m => !m.deaf).filter(m => !m.mute).each(m => self.updateData(db, m.user, { xp: 60 }));
+        });
     }
 };
+
+function getLvl(table, xp) {
+    //level = (last index xp is greater than or equal to) + 1
+    for(var x = 98; x >= 0; x--) {
+        if (xp >= table[x]) {
+            return x + 1;
+        }
+    }
+
+    return false;
+}

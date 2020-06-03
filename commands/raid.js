@@ -1,4 +1,4 @@
-const { updateGBPs, delay, selectRandom, getRandom, assembleParty, format } = require('../utils.js');
+const { updateData, delay, selectRandom, getRandom, assembleParty, format } = require('../utils.js');
 const items = require('./items.json');
 
 //re-uses a lot of code from duel for ease of use and specific balance changes
@@ -26,15 +26,6 @@ const self = module.exports = {
                 self.start(client, db, config, message.guild, results.party, results.data.Responses.GBPs, message.channel, wager);
             }
         });                     
-    },
-    getGBPs(db, party) {
-        //get data for each party member prospect
-        const params = { RequestItems: { 'GBPs': { Keys: [] } }};
-        party.forEach(user => {
-            params.RequestItems['GBPs'].Keys.push({ UserID: user.id });
-        });
-
-        return db.batchGet(params).promise();
     },
     start(client, db, config, guild, party, data, channel, wager) {
         //setup each member
@@ -330,7 +321,7 @@ const self = module.exports = {
             winner = boss;
         }
         else {
-            winner = turnPlayer;
+            winner = turnPlayer.bot ? party.filter(p => !p.bot)[0] : turnPlayer;
         }
         
         //do not add execution text if boss self-killed
@@ -340,23 +331,24 @@ const self = module.exports = {
         }
         
         //award GBPs
-        if (wager) {
-            const players = party.filter(p => !p.bot);
-            if (tie) {
+        const players = party.filter(p => !p.bot);
+        if (tie) {
+            if (wager) {
                 const tieText = 'No GBPs are awarded for a tie.';
                 actions.push(new Action(tieText, turn, party, true));
-            }
-            else if (winner === boss) {
-                players.forEach(p => updateGBPs(db, p, -wager));
-                updateGBPs(db, boss, players.length * wager);
-                console.log('lose');
-            }
-            else {
-                const win = Math.ceil(wager * 8 / players.length);
-                players.forEach(p => updateGBPs(db, p, win));
-                updateGBPs(db, boss, players.length * win);
-                console.log('win');
-            }
+            } 
+        }
+        else if (winner === boss) {
+            players.forEach(p => updateData(db, p, { gbps: -wager }));
+            updateData(db, boss, { gbps: players.length * wager });
+        }
+        else {
+            const win = Math.ceil(wager * 8 / players.length);
+            //const xp  = Math.ceil(2000 / players.length);
+            const awardText = `Each player wins ${win} GBPs!`;// and ${xp} xp!`;
+            players.forEach(p => updateData(db, p, { gbps: win/*, xp: xp*/ }));
+            updateData(db, boss, { gbps: -players.length * win });
+            actions.push(new Action(awardText, turn, party, true));
         }
 
         return actions;
