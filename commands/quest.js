@@ -1,19 +1,13 @@
 const { selectRandom, getRandom, delay, playSong, getData, updateData, format } = require('../utils.js');
 const enemies = require('./enemies.json');
 const items = require('./items.json');
+const { Fighter } = require('../fights.js');
 const quicktime = ['🔴', '🔵', '🟢', '🟡'];
 
 module.exports = {
     name: 'quest',
     description: 'Fight a random enemy to earn GBP! React in time to land a hit!',
     execute(client, config, db, message, args) {
-        if (client.user.raiding) {
-            return message.reply('Sorry, I can only handle 1 quest at a time :(');
-        }
-        else {
-            client.user.raiding = true;
-        }
-
         //determine random enemy
         const enemy = new Enemy();
         const send = [];
@@ -45,30 +39,15 @@ async function setup(client, config, db, channel, challenger, enemy) {
     getData(db, challenger.id)
     .then(data => {
         if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
-            client.raiding = false;
             return;
         }
 
         data = data.Responses.GBPs[0];
 
-        challenger.hp = 100;
-        challenger.turn = 2;
-        challenger.cooldown = false;
-        challenger.selfKill = false;
-        challenger.cursed = false;
-        challenger.burning = false;
-        challenger.infected = challenger.roles.cache.has(config.ids.corona);
+        const fighter = new Fighter(config, challenger, { data: data });
+        fighter.turn = 2;
 
-        if (data.Equipped === 'random') {
-            //select a random weapon from inventory
-            const inventory = Object.keys(data.Inventory).filter(key => data.Inventory[key] && items[key] && items[key].weapon);
-            challenger.weapon = items[selectRandom(inventory)];
-        }
-        else {
-            challenger.weapon = items[data.Equipped];
-        }
-
-        start(client, config, db, channel, challenger, enemy);
+        start(client, config, db, channel, fighter, enemy);
     });
 }
 
@@ -91,7 +70,7 @@ async function start(client, config, db, channel, challenger, enemy) {
             : getRandom(1);
 
         //declare who goes first
-        const initiative = `${challengerTurn ? challenger.displayName : enemy.displayName} rolled initiative.`;
+        const initiative = `${challengerTurn ? challenger.member.displayName : enemy.displayName} rolled initiative.`;
 
         //display edits and begin process
         delay(2500).then(() => {
@@ -117,9 +96,9 @@ async function display(message, text, emojis, challenger, enemy, left, qt) {
 
 function getHeader(emojis, challenger, enemy, qt='') {
     //get status at top of message
-    const maxNameLength = Math.max(challenger.displayName.length, enemy.icon.length) + 2;
+    const maxNameLength = Math.max(challenger.member.displayName.length, enemy.icon.length) + 2;
 
-    const line1 = '`' + format(challenger.displayName, maxNameLength + Math.floor(enemy.icon.length / 4)) + 'HP: ' + format(challenger.hp, 4) + '`' + `${emojis.resolve(challenger.weapon.id)}`;
+    const line1 = '`' + format(challenger.member.displayName, maxNameLength + Math.floor(enemy.icon.length / 4)) + 'HP: ' + format(challenger.hp, 4) + '`' + `${emojis.resolve(challenger.weapon.id)}`;
     const line2 = '\n`' + format(enemy.icon, maxNameLength) + 'HP: ' + format(enemy.hp, 4) + '`' + qt;
 
     return line1 + line2;
@@ -149,7 +128,7 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
         await delay(1500).then(() => { display(message, '', client.emojis, challenger, enemy, challengerTurn, qt); });
 
         //give user only 1.5 seconds to complete quick-time event
-        const filter = (reaction, user) => user.id === challenger.id;
+        const filter = (reaction, user) => user.id === challenger.member.id;
         await message.awaitReactions(filter, { time: 1500, max: 1 })
         .then(async function(collected) {
             //user reacted in time
@@ -158,7 +137,7 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
             }
             //user is too slow or chose incorrect color
             else {
-                const missText = `${challenger.displayName} ${challenger.cooldown || challenger.weapon.sequence ? 'stumbled' : 'missed'}!`;
+                const missText = `${challenger.member.displayName} ${challenger.cooldown || challenger.weapon.sequence ? 'stumbled' : 'missed'}!`;
                 await delay(1500).then(() => { display(message, missText, client.emojis, challenger, enemy, challengerTurn); });
             }
         });
@@ -180,7 +159,7 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
         if (turnPlayer === enemy && !opponent.infected && !getRandom(19)) {
             opponent.roles.add(config.ids.corona);
             opponent.infected = true;
-            const infectText = `${opponent.displayName} **caught corona, ${selectRandom(yuck)}**`;
+            const infectText = `${opponent.member.displayName} **caught corona, ${selectRandom(yuck)}**`;
             await delay(1500).then(() => { display(message, infectText, client.emojis, challenger, enemy, challengerTurn); });
         }
     }
@@ -196,7 +175,7 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
         //burn player
         if (turnPlayer === enemy && !opponent.burning ) {
             opponent.burning = true;
-            const burn = `${opponent.displayName} **caught on fire!**`;
+            const burn = `${opponent.member.displayName} **caught on fire!**`;
             await delay(1500).then(() => { display(message, burn, client.emojis, challenger, enemy, challengerTurn); });
         }
     }
@@ -206,74 +185,19 @@ async function getHits(client, config, message, turnPlayer, opponent, challenger
     //get weapon dmg for each hit
     for (var i = 0; i < turnPlayer.weapon.hits; i++) {
         if (challengerTurn) {
-            await getUserAction(client, message, turnPlayer, opponent);
+            const action = turnPlayer.getUserAction(opponent);
+            if (action.dmg && !opponent.popped && opponent.weapon.emoji === '🎈') {
+                opponent.popped = true;
+                await delay(1500).then(() => { display(message, "*You popped the child's balloon...*", client.emojis, turnPlayer, opponent, true); });
+                await delay(3000).then(() => { display(message, "*Now he's crying!*", client.emojis, turnPlayer, opponent, true); });
+                await delay(4500).then(() => { display(message, '*You should feel ashamed.*', client.emojis, turnPlayer, opponent, true); });
+            }
+            await delay(1500).then(() => { display(message, action.text, client.emojis, turnPlayer, opponent, true); });
         }
         else {
             await getEnemyAction(client, config, message, opponent, turnPlayer);
         }
     }
-}
-
-async function getUserAction(client, message, challenger, enemy) {
-    const weapon = challenger.weapon;
-    let text;
-    let pop = false;
-
-    //skeleton for sequence-style weapons, but just kamehameha for now
-    if (weapon.sequence) {
-        if (challenger.turn === weapon.sequence.length - 1) {
-            enemy.hp = 0;
-            pop = true;
-        }
-        text = challenger.displayName + weapon.sequence[challenger.turn];
-        challenger.turn++;
-    }
-    //7% chance to insta-kill for scythes
-    else if (weapon.insta && getRandom(99) < 7) {
-        if (weapon.cursed) {
-            text = `${challenger.displayName} is just another victim of the bad girl's curse!`;
-            challenger.cursed = true;
-            challenger.hp = 0;
-        }
-        else {
-            text = `${challenger.displayName} called upon dark magicks!`;
-            enemy.hp = 0;
-            pop = true;
-        }
-    }
-    else {
-        if (challenger.cooldown) {
-            text = `${challenger.displayName} is winding up...`;
-        }
-        else {
-            let dmg = getRandom(weapon.low, weapon.high);
-            if (weapon.zerk) {
-                dmg += Math.ceil(dmg * (100 - challenger.hp) / 101);
-
-                //required to balance axe v. ka matchup
-                if (enemy.weapon.name === 'kamehameha') {
-                    dmg += 4;
-                }
-            }
-            text = `${challenger.displayName} hit for **${dmg}** dmg!`;
-            enemy.hp -= dmg;
-            pop = true;
-        }
-
-        //slow weapons pause between turns
-        if (weapon.speed < 0) {
-            challenger.cooldown = !challenger.cooldown;
-        }
-    }
-
-    if (pop && !enemy.popped && enemy.weapon.emoji === '🎈') {
-        enemy.popped = true;
-        await delay(1500).then(() => { display(message, "*You popped the child's balloon...*", client.emojis, challenger, enemy, true); });
-        await delay(3000).then(() => { display(message, "*Now he's crying!*", client.emojis, challenger, enemy, true); });
-        await delay(4500).then(() => { display(message, '*You should feel ashamed.*', client.emojis, challenger, enemy, true); });
-    }
-
-    await delay(1500).then(() => { display(message, text, client.emojis, challenger, enemy, true); });
 }
 
 async function getEnemyAction(client, config, message, challenger, enemy) {
@@ -292,11 +216,11 @@ async function getEnemyAction(client, config, message, challenger, enemy) {
         text = 'The pen is mightier than the sword!';
         challenger.hp = 0;
     }
-    //my goal is to blow up
+    //get vaxxed!
     else if (enemy.weapon.emoji === '💉' && challenger.infected) {
         text = "You've been vaccinated! Your corona is cured!";
-        if (challenger.roles.cache.has(config.ids.corona)) {
-            challenger.roles.remove(config.ids.corona).catch(console.error);
+        if (challenger.member.roles.cache.has(config.ids.corona)) {
+            challenger.member.roles.remove(config.ids.corona).catch(console.error);
         }
         challenger.hp = 0;
     }
@@ -317,8 +241,8 @@ async function getEnemyAction(client, config, message, challenger, enemy) {
     }
     else {
         //doot
-        if (enemy.weapon.emoji === '🎺' && challenger.voice.channel) {
-            playSong(client, challenger.voice.channel, 'Enemies/trumpet.mp3', true);
+        if (enemy.weapon.emoji === '🎺' && challenger.member.voice.channel) {
+            playSong(client, challenger.member.voice.channel, 'Enemies/trumpet.mp3', true);
         }
 
         //basic damage calculation
@@ -341,7 +265,7 @@ async function getResults(client, db, message, challenger, enemy) {
 
     //do not add execution text if curse/self-kill
     if (!loser.cursed && !loser.selfKill) {
-        const winText = winner.weapon.win.replace(':w', winner.displayName).replace(':l', loser.displayName);
+        const winText = winner.weapon.win.replace(':w', winner.member.displayName).replace(':l', loser.member.displayName);
         await delay(1500).then(() => { display(message, winText, client.emojis, challenger, enemy, true); });
     }
 
@@ -364,12 +288,12 @@ async function getResults(client, db, message, challenger, enemy) {
                 awardText = 'You win this shiny fiddle made of gold!';
             }
 
-            updateData(db, challenger.user, { gbps: award/*, xp: xp*/, inventory: inventory});
+            updateData(db, challenger.member.user, { gbps: award/*, xp: xp*/, inventory: inventory});
             await delay(1500).then(() => { display(message, awardText, client.emojis, challenger, enemy, true); });
         }
         //lose a GBP
         else {
-            updateData(db, challenger.user, { gbps: -1 });
+            updateData(db, challenger.member.user, { gbps: -1 });
             await delay(1500).then(() => { display(message, 'You lose a GBP.', client.emojis, challenger, enemy, true); });
         }
     }
@@ -379,7 +303,6 @@ async function getResults(client, db, message, challenger, enemy) {
         message.guild.me.voice.channel.leave();
     }
 
-    client.user.raiding = false;
     message.reactions.removeAll();
 }
 
@@ -388,13 +311,15 @@ class Enemy {
         //random creature
         this.creature = enemies.creatures[selectRandom(Object.keys(enemies.creatures))];
 
+        let modifier;
         //if special item associated with creature, 50% chance to choose it, or select random
         if (Object.values(enemies.special).some(s => s.enemy === this.creature.emoji) && getRandom(1)) {
-            this.weapon = Object.values(enemies.special).find(s => s.enemy === this.creature.emoji);
+            modifier = Object.values(enemies.special).find(s => s.enemy === this.creature.emoji);
         }
         else {
-            this.weapon = enemies.modifiers[selectRandom(Object.keys(enemies.modifiers))];
+            modifier = enemies.modifiers[selectRandom(Object.keys(enemies.modifiers))];
         }
+        this.weapon = Object.assign({}, modifier);
 
         //add adjective or weapon modifier
         this.displayName = this.weapon.adjective
@@ -405,6 +330,8 @@ class Enemy {
         if (this.displayName.split('a ', 2).length === 2 && /^[aeio]/.test(this.displayName.split('a ', 2)[1])) {
             this.displayName = this.displayName.replace('a ', 'an ');
         }
+
+        this.member = { displayName: this.displayName };
 
         //set up stats
         this.cooldown = false;

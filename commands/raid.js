@@ -1,17 +1,12 @@
-const { updateData, delay, selectRandom, getRandom, assembleParty, format } = require('../utils.js');
-const items = require('./items.json');
+const { updateData, getRandom, assembleParty, delay } = require('../utils.js');
+const { Fighter, Action, getHeader, display, getOrder } = require('../fights');
 
 //re-uses a lot of code from duel for ease of use and specific balance changes
 const self = module.exports = {
     name: 'raid',
     description: 'Join forces for a PVE raid. Loot pool is 8x wager, split among all party members.',
     usage: '[wager] [@users/here]',
-    execute(client, config, db, message, args) {        
-        //prevent double battling and slow-down
-        if (client.user.raiding) {
-            return message.reply('The last party just set off. Hop on the next one!');
-        }
-
+    execute(client, config, db, message, args) {
         const wager = /\d+.*/.test(args) ? Math.max(Math.floor(args.trim().split(/\D/, 1)[0]), 0) : 0;
 
         //send invite
@@ -28,340 +23,138 @@ const self = module.exports = {
         });                     
     },
     start(client, db, config, guild, party, data, channel, wager) {
+        let fighterParty = [];
+
         //setup each member
-        const hp = {};
         party.forEach(user => {
-            self.setup(config, guild, user, data.find(d => d.UserID === user.id));
-            hp[user.id] = user.hp;
+            const member = guild.members.resolve(user);
+            const fighter = new Fighter(config, member, { data: data.find(d => d.UserID === user.id) });
+            fighter.turn = getRandom(1);
+            fighterParty.push(fighter);
         });
-        self.setupBoss(config, guild, client.user, party.length);
-        hp[client.user.id] = client.user.hp;
+
+        const bossMember = guild.members.resolve(client.user);
+        const boss = new Fighter(config, bossMember, { boss: true, partySize: party.length });
 
         //add boss to party and randomize order based on weapon speed
-        party = self.getOrder(party, client.user);
+        fighterParty.push(boss);
+        fighterParty = getOrder(fighterParty);
 
         //get battle results then display
-        channel.send(self.getHeader(client.emojis, party, hp))
-        .then(m => {
-            self.display(client, m, self.fight(config, db, guild, party, wager), party, -1);
+        channel.send(getHeader(client, fighterParty))
+        .then(msg => {
+            const fight = self.fight(config, fighterParty);
+            self.getResults(db, wager, fighterParty, fight);
+            delay(3000).then(() => display(client, msg, fight.actions, fighterParty, 0, true));
         });
     },
-    setup(config, guild, user, data) {
-        //reset initial stats so they do not persist from prior duels
-        user.hp = 100;
-        user.cooldown = false;
-        user.selfKill = false;
-        user.cursed = false;
-        user.turn = getRandom(1);
-        user.infected = guild.members.cache.get(user.id).roles.cache.has(config.ids.corona);
-
-        //get random inventory item if 'random' is equipped
-        if (data.Equipped === 'random') {
-            const inventory = Object.keys(data.Inventory).filter(key => data.Inventory[key] && items[key] && items[key].weapon);
-            user.weapon = items[selectRandom(inventory)];
-        }
-        else {
-            user.weapon = items[data.Equipped];
-        }
-    },
-    setupBoss(config, guild, boss, partySize) {
-        //raid boss
-        boss.original = 70 + 80 * partySize;
-        boss.hp = boss.original;
-        boss.raiding = true;
-        boss.cooldown = false;
-        boss.selfKill = false;
-        boss.rested = false;
-        boss.bonus = 1 + .1 * Math.min(partySize, 4);
-        boss.infected = guild.members.cache.get(boss.id).roles.cache.has(config.ids.corona);
-        boss.weapon = { id: config.ids.woop, speed: 1, hits: 1, win: 'The party wiped!' };
-    },
-    getOrder(party, boss) {
-        //add boss to party for order purposes 
-        party.push(boss);
-
-        //get different weapon speeds
-        const speeds = [];
-        party.forEach(user => {
-            if (!speeds.includes(user.weapon.speed)) {
-                speeds.push(user.weapon.speed);
-            }
-        });
-    
-        let order = [];
-
-        //randomize order of player per different weapon speed
-        speeds.sort().reverse().forEach(speed => {
-            const players = party.filter(user => user.weapon.speed === speed);
-            for (var i = players.length - 1; i > 0; i--) {
-                const j = getRandom(i);
-                [players[i], players[j]] = [players[j], players[i]];
-            }
-            order = order.concat(players);
-        });
-        
-        return order;
-    },
-    getHeader(emojis, party, hp) {
-        //get user info for top of duel log
-        const maxNameLength = Math.max(...party.map(u => u.username.length)) + 2;
-
-        const header = [];
-        party.forEach(user => {
-            header.push(`${emojis.resolve(user.weapon.id)} ` + '`' + format(user.username, maxNameLength) + 'HP: ' + format(hp[user.id], 4) + '`');
-        });
-
-        return header.join('\n') + '\n';
-    },
-    display(client, message, actions, party, previousTurn) {
-        if (actions.length) {
-            //replace header with new HPs
-            const action = actions.shift();
-            let log = self.getHeader(client.emojis, party, action.hp);
-
-            if (previousTurn <= action.turn) {
-                log += message.content.split('\n').slice(party.length).join('\n');
-            }
-
-            //add next action
-            log += `\n${'\t'.repeat(action.left? 0 : 2 * action.turn)}${action.text}`;
-
-            //pause and edit message
-            message.edit(log)
-            .then(m => {
-                delay(action.turn === party.length - 1 && action.turnEnd ? 3000 : action.turnEnd ? 1500 : 500).then(() => {
-                    self.display(client, m, actions, party, action.turn);
-                });
-            })
-            .catch(console.error);
-        }
-        else {
-            //free bot for next raid
-            party.find(p => p.bot).raiding = false;
-        }
-    },
-    fight(config, db, guild, party, wager) {
+    fight(config, party) {
         let actions = [];
         let turn = -1;
 
         //go through party order to get players turns until boss or raid party dies
-        while(party.filter(u => !u.bot).some(u => u.hp > 0) && party.find(u => u.bot).hp > 0) {
+        while(
+            party.filter(fighter => !fighter.boss).some(fighter => fighter.hp > 0) &&
+            party.find(fighter => fighter.boss).hp > 0
+        ) {
             turn = ++turn % party.length;
             if (party[turn].hp <= 0) {
                 continue;
             }
-            actions = actions.concat(self.getTurn(config, guild, party, turn));
+            
+            actions = actions.concat(party[turn].getTurn(config, party, turn, party[turn].boss ? getBossAction : undefined));
         }
 
-        const tie = party.every(u => u.hp <= 0);
-        actions = actions.concat(self.getResults(db, party, turn, wager, tie));
-
-        return actions;
+        return {
+            actions: actions,
+            turn: turn
+        };
     },
-    getTurn(config, guild, party, turn) {
-        let actions = [];
-        const turnPlayer = party[turn];
-
-        //get damage action per weapon hit
-        for (var i = 0; i < turnPlayer.weapon.hits; i++) {
-            if (turnPlayer.bot) {
-                actions.push(self.getBossAction(party, turn));
-            }
-            else {
-                actions.push(self.getUserAction(party, turn));
-            }
-        }
-
-        //if player is infected append status effect results after damage
-        if (turnPlayer.infected && !turnPlayer.cursed) {
-            const coronaDamage = getRandom(1, 2);
-            turnPlayer.hp -= coronaDamage;
-            turnPlayer.selfKill = turnPlayer.hp <= 0;
-            const coronaText = `*...and ${turnPlayer.selfKill ? 'died' : `lost **${coronaDamage}** hp`} to corona*`;
-            actions.push(new Action(coronaText, turn, party));
-
-            //5% chance to infect opponent, half for bot
-            if (turnPlayer.bot) {
-                const opps = party.filter(p => !p.infected && !p.bot);
-                opps.forEach(p => {
-                    if (!getRandom(39)) {
-                        actions.push(new Action(self.infect(config, guild, p), turn, party));
-                    }
-                });
-            }
-            else {
-                const boss = party.find(u => u.bot);
-                if (!getRandom(19) && !boss.infected) {
-                    actions.push(new Action(self.infect(config, guild, boss), turn, party));
-                }
-            }
-        }
-
-        actions[actions.length - 1].turnEnd = true;
-        return actions;
-    },
-    getUserAction(party, turn) {
-        const turnPlayer = party[turn];
-        const boss = party.find(u => u.bot);
-        const weapon = turnPlayer.weapon;
-        let text;
-
-        //kamehameha
-        if (weapon.sequence) {
-            let dmg = 0;
-            if (turnPlayer.turn >= weapon.sequence.length) {
-                //make kamehameha viable after blast
-                dmg = turnPlayer.turn * 5;
-            }
-            else if (turnPlayer.turn === weapon.sequence.length - 1) {
-                //nerf from insta-kill
-                dmg = 110;
-            }
-            boss.hp -= dmg;
-            text = turnPlayer.username + weapon.sequence[Math.min(turnPlayer.turn, weapon.sequence.length - 1)]
-                .replace('A', 'A'.repeat(Math.max(turnPlayer.turn - 5, 1)));
-            text += dmg > 0 ? ` (**${dmg}** dmg)` : '';
-            turnPlayer.turn++;
-        }
-        //7% chance to 'insta-kill' for scythes
-        else if (weapon.insta && getRandom(99) < 7) {
-            if (weapon.cursed) {
-                text = `${turnPlayer.username} is just another victim of the bad girl's curse!`;
-                turnPlayer.cursed = true;
-                turnPlayer.hp = 0;
-            }
-            else {
-                //nerf from insta-kill
-                text = `${turnPlayer.username} called upon dark magicks to deal **60** dmg!`;
-                boss.hp -= 60;
-            }
-        }
-        else {
-            if (turnPlayer.cooldown) {
-                text = `${turnPlayer.username} is winding up...`;
-            }
-            else {
-                let dmg = getRandom(weapon.low, weapon.high);
-                if (weapon.zerk) {
-                    dmg += Math.ceil(dmg * (100 - turnPlayer.hp) / 101);
-                }
-                if (weapon.name === 'warhammer') {
-                    dmg -= 3;
-                }
-                text = `${turnPlayer.username} hit for **${dmg}** dmg!`;
-                boss.hp -= dmg;
-            }
-
-            //slow weapons pause between turns
-            if (weapon.speed < 0) {
-                turnPlayer.cooldown = !turnPlayer.cooldown;
-            }
-        }
-
-        return new Action(text, turn, party);
-    },
-    getBossAction(party, turn) {
-        const boss = party[turn];
-        const opps = party.filter(p => !p.bot && p.hp > 0);
-        let text;
-
-        //boss is asleep
-        if (boss.cooldown) {
-            text = `${boss.username} is waking up...`;
-            boss.cooldown = false;
-        }
-        //rest
-        //restore hp up to once per raid
-        else if (boss.hp <= boss.original / 3 && !boss.rested) {
-            const rest = 15 + 40 * (opps.length);
-            text = `${boss.username} used *rest*! He restored **${rest}** hp and fell asleep...`;
-            boss.hp += rest;
-            boss.cooldown = true;
-            boss.rested = true;
-        }
-        //aqua tail
-        //single target dmg
-        else if ((opps.some(p => p.hp <= 25) && opps.every(p => p.hp > 15)) || opps.length === 1) {
-            const dmg = Math.floor(getRandom(20, 30) * boss.bonus);
-            const target = opps.sort(function (p1, p2) { return p1.hp - p2.hp; })[0];
-            text = `${boss.username} used *aqua tail*, hitting *${target.username}* for **${dmg}** dmg!`;
-            target.hp -= dmg;
-        }
-        //surf/earthquake
-        //aoe dmg
-        else {
-            const surf = getRandom(1);
-            const dmgs = [];
-            opps.forEach(p => {
-                const dmg = Math.floor((surf ? getRandom(10, 15) : getRandom(5, 20)) * boss.bonus);
-                p.hp -= dmg;
-                dmgs.push(dmg);
-            });
-            text = `${boss.username} used *${surf ? 'surf' : 'earthquake'}*, hitting for: **${dmgs.join('**/**')}** dmg!`;
-        }
-        
-        return new Action(text, turn, party);
-    },
-    infect(config, guild, player) {
-        //add corona role and return action text
-        const yuck = ['yuck!', 'eww!', 'gross!', '\\*coughs\\*'];
-
-        guild.members.cache.get(player.id).roles.add(config.ids.corona);
-        player.infected =- true;
-
-        return `${player.username} **caught corona, ${selectRandom(yuck)}**`;
-    },
-    getResults(db, party, turn, wager, tie) {
+    getResults(db, wager, party, fight) {
         const actions = [];
-        const turnPlayer = party[turn];
-        const boss = party.find(p => p.bot);
+        const turnPlayer = party[fight.turn];
+        const boss = party.find(p => p.boss);
         let winner;
 
-        if (boss.hp > 0 || (turnPlayer.bot && party.filter(p => !p.bot).every(p => p.hp <= 0))) {
+        if (boss.hp > 0 ||
+            (turnPlayer.boss && party.filter(fighter => !fighter.boss).every(fighter => fighter.hp <= 0)))
+        {
             winner = boss;
         }
         else {
-            winner = turnPlayer.bot ? party.filter(p => !p.bot)[0] : turnPlayer;
+            winner = turnPlayer.boss ? party.filter(fighter => !fighter.boss)[0] : turnPlayer;
         }
         
         //do not add execution text if boss self-killed
         if (winner === boss || !boss.selfKill) {
             const winText = winner.weapon.win.replace(':w', winner.username).replace(':l', boss.username);
-            actions.push(new Action(winText, turn, party, true));
+            actions.push(new Action(winText, 0, party));
         }
         
         //award GBPs
-        const players = party.filter(p => !p.bot);
-        if (tie) {
+        const players = party.filter(fighter => !fighter.boss);
+        if (party.every(fighter => fighter.hp <= 0)) {
             if (wager) {
                 const tieText = 'No GBPs are awarded for a tie.';
-                actions.push(new Action(tieText, turn, party, true));
+                actions.push(new Action(tieText, 0, party));
             } 
         }
         else if (winner === boss) {
-            players.forEach(p => updateData(db, p, { gbps: -wager }));
-            updateData(db, boss, { gbps: players.length * wager });
+            players.forEach(fighter => updateData(db, fighter.member.user, { gbps: -wager }));
+            updateData(db, boss.member.user, { gbps: players.length * wager });
         }
         else {
             const win = Math.ceil(wager * 8 / players.length);
             //const xp  = Math.ceil(2000 / players.length);
             const awardText = `Each player wins ${win} GBPs!`;// and ${xp} xp!`;
-            players.forEach(p => updateData(db, p, { gbps: win/*, xp: xp*/ }));
-            updateData(db, boss, { gbps: -players.length * win });
-            actions.push(new Action(awardText, turn, party, true));
+            players.forEach(fighter => updateData(db, fighter.member.user, { gbps: win/*, xp: xp*/ }));
+            updateData(db, boss.member.user, { gbps: -players.length * win });
+            actions.push(new Action(awardText, 0, party));
         }
 
         return actions;
     }
 };
 
-class Action {
-    constructor(text, turn, party, left = false) {
-        this.text = text;
-        this.turn = turn;
-        this.left = left;
+function getBossAction(party, turn) {
+    const boss = party[turn];
+    const opps = party.filter(fighter => !fighter.boss && fighter.hp > 0);
+    let text;
 
-        this.hp = {};
-        party.forEach(p => this.hp[p.id] = p.hp);
+    //boss is asleep
+    if (boss.cooldown) {
+        text = `${boss.username} is waking up...`;
+        boss.cooldown = false;
     }
+    //rest
+    //restore hp up to once per raid
+    else if (boss.hp <= boss.max / 3 && !boss.rested) {
+        const rest = 15 + 40 * (opps.length);
+        text = `${boss.member.displayName} used *rest*! He restored **${rest}** hp and fell asleep...`;
+        boss.hp += rest;
+        boss.cooldown = true;
+        boss.rested = true;
+    }
+    //aqua tail
+    //single target dmg
+    else if ((opps.some(p => p.hp <= 25) && opps.every(p => p.hp > 15)) || opps.length === 1) {
+        const dmg = Math.floor(getRandom(20, 30) * boss.bonus);
+        const target = opps.sort(function (p1, p2) { return p1.hp - p2.hp; })[0];
+        text = `${boss.member.displayName} used *aqua tail*, hitting *${target.member.displayName}* for **${dmg}** dmg!`;
+        target.hp -= dmg;
+    }
+    //surf/earthquake
+    //aoe dmg
+    else {
+        const surf = getRandom(1);
+        const dmgs = [];
+        opps.forEach(p => {
+            const dmg = Math.floor((surf ? getRandom(10, 15) : getRandom(5, 20)) * boss.bonus);
+            p.hp -= dmg;
+            dmgs.push(dmg);
+        });
+        text = `${boss.member.displayName} used *${surf ? 'surf' : 'earthquake'}*, hitting for: **${dmgs.join('**/**')}** dmg!`;
+    }
+    
+    return text;
 }

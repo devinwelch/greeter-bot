@@ -20,7 +20,7 @@ let self = module.exports = {
         //updateData(db, message.author, { xp: 5 });
 
         //Stop spammers in their tracks
-        if (!message.author.dorseProtection && message.guild.id === config.ids.hooliganHouse) {
+        if (!message.guild || !message.author.dorseProtection && message.guild.id === config.ids.hooliganHouse) {
             message.channel.messages.fetch({ limit: 10 })
             .then(messages => {
                 const filteredMessages = messages.array().filter(msg => msg.author.id === message.author.id);
