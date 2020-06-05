@@ -92,7 +92,7 @@ const self = module.exports = {
                 if (user.id === challenger.id || user.id === target.id) {
                     //target accepts
                     if (reaction.emoji.id === config.ids.yeehaw && user.id === target.id) {
-                        self.cleanUpBets(client, config, db, channel, challenger, target, bets, challengerData, targetData);
+                        self.cleanUpBets(client, db, channel, challenger, target, bets, challengerData, targetData);
                     }
                     //duel is canceled
                     else if (reaction.emoji.id === config.ids.baba) {
@@ -143,11 +143,11 @@ const self = module.exports = {
         })
         .catch(console.error);
     },
-    cleanUpBets(client, config, db, channel, challenger, target, bets, challengerData, targetData) {
+    cleanUpBets(client, db, channel, challenger, target, bets, challengerData, targetData) {
         const candt = bets[challenger.id].concat(bets[target.id]);
 
         if (!candt.length) {
-            return self.setup(client, config, db, channel, challenger, target, bets, challengerData, targetData);
+            return self.setup(client, db, channel, challenger, target, bets, challengerData, targetData);
         }
 
         getData(db, candt.map(u => u.id))
@@ -167,18 +167,18 @@ const self = module.exports = {
                 });
             }
 
-            self.setup(client, config, db, channel, challenger, target, bets, challengerData, targetData);
+            self.setup(client, db, channel, challenger, target, bets, challengerData, targetData);
         });
     },
-    setup(client, config, db, channel, challenger, target, bets, challengerData, targetData) {
+    setup(client, db, channel, challenger, target, bets, challengerData, targetData) {
         //20% chance to play duel theme if both members in voice
         const voiceChannel = challenger.voice.channel;
         if (voiceChannel && voiceChannel === target.voice.channel && !getRandom(4)) {
             playSong(client, voiceChannel, 'duel.mp3');
         }
 
-        challenger = new Fighter(config, challenger, { data: challengerData });
-        target     = new Fighter(config, target    , { data: targetData     });
+        challenger = new Fighter(challenger, { data: challengerData });
+        target = new Fighter(target, { data: targetData });
 
         //buff sequence weapons if opponent is infected
         challenger.turn = target.infected ? getRandom(1) : 0;
@@ -186,9 +186,9 @@ const self = module.exports = {
 
         const party = getOrder([challenger, target]);
 
-        self.start(client, config, db, channel, challenger, target, party, bets);
+        self.start(client, db, channel, challenger, target, party, bets);
     },
-    start(client, config, db, channel, challenger, target, party, bets) {
+    start(client, db, channel, challenger, target, party, bets) {
         //send invite acceptance and initial header
         channel.send(`${target.member.displayName} accepted ${challenger.member.displayName}'s challenge! ${bets.wager ? bets.wager : 'No'} GBPs are on the line.`);
         channel.send(getHeader(client, party))
@@ -196,7 +196,7 @@ const self = module.exports = {
                 //pre-load fight
                 const initiativeText = `${party[0].member.displayName} rolled initiative.`;
                 let actions = [new Action(initiativeText, 0, party)];
-                const fight = self.fight(config, party);
+                const fight = self.fight(party);
                 actions = actions.concat(self.getResults(db, bets, party, fight));
 
                 //edit message to show duel log
@@ -204,7 +204,7 @@ const self = module.exports = {
             })
             .catch(console.error);
     },
-    fight(config, party) {
+    fight(party) {
         let actions = [];
         let turn = -1;
 
@@ -231,7 +231,7 @@ const self = module.exports = {
         //fight til death
         while(party.every(fighter => fighter.hp > 0)) {
             turn = ++turn % party.length;
-            actions = actions.concat(party[turn].getTurn(config, party, turn));
+            actions = actions.concat(party[turn].getTurn(party, turn));
         }
 
         if (wayOfVikings) {

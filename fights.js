@@ -1,10 +1,11 @@
 
 const { selectRandom, getRandom, format, delay } = require('./utils.js');
 const items = require('./commands/items.json');
+const config = require('./config.json');
 
 const self = module.exports;
 self.Fighter = class { 
-    constructor(config, member, options) {
+    constructor(member, options) {
         if (options.boss) {
             //required options: partySize
             this.boss = true;
@@ -35,7 +36,7 @@ self.Fighter = class {
     }
 
     //executes fighter's turn and returns Actions
-    getTurn(config, party, turn, getAction) {
+    getTurn(party, turn, getAction) {
         let actions = [];
         
         //get damage action per weapon hit
@@ -220,7 +221,7 @@ self.getOrder = function(party) {
     return order;
 };
 
-function infect(config, fighter) {
+function infect(fighter) {
     //add corona role and return text
     fighter.member.roles.add(config.ids.corona);
     fighter.infected =- true;

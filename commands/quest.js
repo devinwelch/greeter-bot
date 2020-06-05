@@ -44,7 +44,7 @@ async function setup(client, config, db, channel, challenger, enemy) {
 
         data = data.Responses.GBPs[0];
 
-        const fighter = new Fighter(config, challenger, { data: data });
+        const fighter = new Fighter(challenger, { data: data });
         fighter.turn = 2;
 
         start(client, config, db, channel, fighter, enemy);

@@ -18,23 +18,23 @@ const self = module.exports = {
         assembleParty(client, config, db, message.channel, message.author, invite, wager)
         .then(results => {
             if (results) {
-                self.start(client, db, config, message.guild, results.party, results.data.Responses.GBPs, message.channel, wager);
+                self.start(client, db, message.guild, results.party, results.data.Responses.GBPs, message.channel, wager);
             }
         });                     
     },
-    start(client, db, config, guild, party, data, channel, wager) {
+    start(client, db, guild, party, data, channel, wager) {
         let fighterParty = [];
 
         //setup each member
         party.forEach(user => {
             const member = guild.members.resolve(user);
-            const fighter = new Fighter(config, member, { data: data.find(d => d.UserID === user.id) });
+            const fighter = new Fighter(member, { data: data.find(d => d.UserID === user.id) });
             fighter.turn = getRandom(1);
             fighterParty.push(fighter);
         });
 
         const bossMember = guild.members.resolve(client.user);
-        const boss = new Fighter(config, bossMember, { boss: true, partySize: party.length });
+        const boss = new Fighter(bossMember, { boss: true, partySize: party.length });
 
         //add boss to party and randomize order based on weapon speed
         fighterParty.push(boss);
@@ -43,12 +43,12 @@ const self = module.exports = {
         //get battle results then display
         channel.send(getHeader(client, fighterParty))
         .then(msg => {
-            const fight = self.fight(config, fighterParty);
-            self.getResults(db, wager, fighterParty, fight);
+            const fight = self.fight(fighterParty);
+            fight.actions = fight.actions.concat(self.getResults(db, wager, fighterParty, fight));
             delay(3000).then(() => display(client, msg, fight.actions, fighterParty, 0, true));
         });
     },
-    fight(config, party) {
+    fight(party) {
         let actions = [];
         let turn = -1;
 
@@ -62,7 +62,7 @@ const self = module.exports = {
                 continue;
             }
             
-            actions = actions.concat(party[turn].getTurn(config, party, turn, party[turn].boss ? getBossAction : undefined));
+            actions = actions.concat(party[turn].getTurn(party, turn, party[turn].boss ? getBossAction : undefined));
         }
 
         return {
