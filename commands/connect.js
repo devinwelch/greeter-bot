@@ -141,7 +141,7 @@ function start(db, channel, challenger, target, wager) {
                 board.push(`**${loser.username} took too long to decide; ${winner.username} wins ${wager} GBPs.**`);
                 msg.edit(board);
 
-                updateData(db, winner, { gbps: wager/*, xp: 150*/ });
+                updateData(db, winner, { gbps: wager, xp: 150 });
                 updateData(db, loser, { gbps: -wager });
                 
             }
@@ -166,7 +166,7 @@ function getWinner(db, challenger, target, wager, win) {
         loser = challenger;
     }
 
-    updateData(db, winner, { gbps: wager, /*xp: 300*/ });
+    updateData(db, winner, { gbps: wager, xp: 300 });
     updateData(db, loser, { gbps: -wager });
 
     return `**${winner.username} wins ${wager} GBPs from ${loser.username}!**`;

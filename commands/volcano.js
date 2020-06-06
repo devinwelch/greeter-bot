@@ -134,7 +134,7 @@ function getTime(startTime, songLength, klok) {
 
     }
     //get progressively faster for fights without song
-    return 666 + Math.floor(Math.pow(Math.max(startTime + songLength - now, 0), 0.55));
+    return 666 + Math.floor(Math.pow(Math.max(startTime + songLength - now, 0), 0.5));
 }
 
 async function getReactions(status, message, qt, time, startTime) {
@@ -234,7 +234,7 @@ async function finish(client, db, status, wager, klok, message, startTime) {
 
         status.results.push(`You ${mbr.alive ? 'win' : 'lose'} ${Math.abs(award)} GBPs!`);
         if (award) {
-            updateData(db, mbr.user, { gbps: award/*, xp: mbr.alive ? 500 : 0 */});
+            updateData(db, mbr.user, { gbps: award, xp: mbr.alive ? 500 : 0 });
             updateData(db, client.user, { gbps: -award });
         }
     }
@@ -251,7 +251,7 @@ async function finish(client, db, status, wager, klok, message, startTime) {
 
         if (win) {
             losers.forEach(l => updateData(db, l.user, { gbps: -wager }));
-            winners.forEach(w => updateData(db, w.user, { gbps: win/*, xp: 250*/ }));
+            winners.forEach(w => updateData(db, w.user, { gbps: win, xp: 250 }));
         }
         
         if (winners.every(w => w.alive)) {

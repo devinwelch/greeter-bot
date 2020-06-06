@@ -10,10 +10,9 @@ let self = module.exports = {
 
                 if (newEmoji.id === reaction.emoji.id) {
                     const award = 10;
-                    //const xp = 250;
-                    //reaction.message.edit(`**${user.username}** wins ${award} GBPs and ${xp} xp! ${newEmoji.toString()}`); 
-                    reaction.message.edit(`**${user.username}** wins ${award} GBPs! ${newEmoji.toString()}`); 
-                    updateData(db, user, { gbps: award/*, xp: xp*/ });
+                    const xp = 250;
+                    reaction.message.edit(`**${user.username}** wins ${award} GBPs and ${xp} xp! ${newEmoji.toString()}`); 
+                    updateData(db, user, { gbps: award, xp: xp });
                 }
                 else {
                     reaction.message.reactions.removeAll();

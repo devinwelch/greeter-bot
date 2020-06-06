@@ -31,11 +31,12 @@ module.exports = {
                 message.reply(`Ez there sport, you only have ${data.GBPs} GBPs!`);
             }
             else {
-                const roll = getRandom(1, 100);
+                const low = data.Skills.luck ? 2 * data.Skills.luck : 1;
+                const roll = getRandom(low, 100);
                 let resultMessage, win;
 
                 if (roll === 100) {
-                    const bonus = getRandom(2, 5);
+                    const bonus = Math.max(data.Skills.luck ? data.Skills.luck : 2, getRandom(2, 5));
                     resultMessage = `\nYou win big! ${bonus}x multiplier!`;
                     win = bonus * wager;
                 }
@@ -55,7 +56,7 @@ module.exports = {
                         });
                     }).catch(console.error);
 
-                updateData(db, user, { gbps: win/*, xp: Math.min(Math.abs(win), 1000)*/ });
+                updateData(db, user, { gbps: win, xp: Math.min(Math.abs(win), 1000) });
                 updateData(db, client.user, { gbps: -win });
             }
         });

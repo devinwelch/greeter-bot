@@ -221,8 +221,21 @@ const self = module.exports = {
             'Like an enemy!'
         ];
 
+        //fists bonus
+        for(let i = 0; i < party.length; i++) {
+            const fighter = party[i];
+            if (fighter.weapon.name === 'fists' && fighter.skills.fists) {
+                const opponent = party.find(opponent => opponent.member !== fighter.member);
+                const multiplier = 0.6 + fighter.skills.fists * 0.2;
+                const dmg = Math.round(multiplier * getRandom(fighter.weapon.low, fighter.weapon.high) * fighter.bonus);
+                const text = `${fighter.member.displayName} sucker-punched ${opponent.member.displayName} for **${dmg}** dmg!`;
+                opponent.hp -= dmg;
+                actions.push(new Action(text, i, party));
+            }
+        }
+
         if (wayOfVikings) {
-            for(var i = 0; i < 4; i++) {
+            for(let i = 0; i < 4; i++) {
                 actions.push(new Action(`*${lyrics[i]}*`, 0, party));
             }
             actions[actions.length - 1].turnEnd = true;
@@ -235,7 +248,7 @@ const self = module.exports = {
         }
 
         if (wayOfVikings) {
-            for(i = 4; i < 8; i++) {
+            for(let i = 4; i < 8; i++) {
                 actions.push(new Action(`*${lyrics[i]}*`, 0, party));
             }
             actions[actions.length - 1].turnEnd = true;
@@ -276,7 +289,7 @@ const self = module.exports = {
         }
         //award GBPs
         else {
-            updateData(db, fight.winner.member.user, { gbps: bets.wager/*, xp: 250*/ });
+            updateData(db, fight.winner.member.user, { gbps: bets.wager, xp: 250 });
             updateData(db, fight.loser.member.user, { gbps: -bets.wager });
 
             if (bets[fight.winner.id] && bets[fight.winner.id].length) {

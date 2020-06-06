@@ -157,7 +157,8 @@ let self = module.exports = {
                 Equipped    : 'fists',
                 Team        : 'none',
                 Lvl         : getLvl(db.xp, options.xp || 1),
-                XP          : options.xp || 0
+                XP          : options.xp || 0,
+                Skills      : {}
             }
         };
 
@@ -224,6 +225,19 @@ let self = module.exports = {
                         expressions.push('Lvl = :lvl');
                         attributes[':lvl'] = lvl;
                         //announce level up 
+                    }
+                }
+
+                if (options.skills) {
+                    if (Object.keys(options.skills).length) {
+                        Object.keys(options.skills).forEach(i => {
+                            expressions.push(`Skills.${i} = :${i}`);
+                            attributes[`:${i}`] = options.skills[i];
+                        });
+                    }
+                    else {
+                        expressions.push('Skills = :skills');
+                        attributes[':skills'] = {};
                     }
                 }
 

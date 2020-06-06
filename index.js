@@ -8,7 +8,7 @@ const config = require('./config.json');
 const onVoice = require('./controllers/onVoiceController.js');
 const onReaction = require('./controllers/onReactionController.js');
 const onMessage = require('./controllers/onMessageController.js');
-const { declareDay, jam, spook, infect, midnight, giveaway/*, giveXP*/ } = require('./utils.js');
+const { declareDay, jam, spook, infect, midnight, giveaway, giveXP } = require('./utils.js');
 
 const client = new Discord.Client({
     disableEveryone: false,
@@ -73,7 +73,7 @@ client.login(process.env.BOT_TOKEN);
 //Hourly
 schedule.scheduleJob({ minute: 0 }, function() {
     infect(client);
-    //giveXP(client, db);
+    giveXP(client, db);
 });
 
 //Midnight

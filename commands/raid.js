@@ -52,6 +52,19 @@ const self = module.exports = {
         let actions = [];
         let turn = -1;
 
+        //fists bonus
+        for(let i = 0; i < party.length; i++) {
+            const fighter = party[i];
+            if (fighter.weapon.name === 'fists' && fighter.skills.fists) {
+                const opponent = party.find(opponent => opponent.boss);
+                const multiplier = 0.6 + fighter.skills.fists * 0.2;
+                const dmg = Math.round(multiplier * getRandom(fighter.weapon.low, fighter.weapon.high) * fighter.bonus);
+                const text = `${fighter.member.displayName} sucker-punched ${opponent.member.displayName} for **${dmg}** dmg!`;
+                opponent.hp -= dmg;
+                actions.push(new Action(text, 0, party));
+            }
+        }
+
         //go through party order to get players turns until boss or raid party dies
         while(
             party.filter(fighter => !fighter.boss).some(fighter => fighter.hp > 0) &&
@@ -105,9 +118,9 @@ const self = module.exports = {
         }
         else {
             const win = Math.ceil(wager * 8 / players.length);
-            //const xp  = Math.ceil(2000 / players.length);
-            const awardText = `Each player wins ${win} GBPs!`;// and ${xp} xp!`;
-            players.forEach(fighter => updateData(db, fighter.member.user, { gbps: win/*, xp: xp*/ }));
+            const xp  = Math.ceil(2000 / players.length);
+            const awardText = `Each player wins ${win} GBPs and ${xp} xp!`;
+            players.forEach(fighter => updateData(db, fighter.member.user, { gbps: win, xp: xp }));
             updateData(db, boss.member.user, { gbps: -players.length * win });
             actions.push(new Action(awardText, 0, party));
         }
@@ -141,7 +154,7 @@ function getBossAction(party, turn) {
         const dmg = Math.floor(getRandom(20, 30) * boss.bonus);
         const target = opps.sort(function (p1, p2) { return p1.hp - p2.hp; })[0];
         text = `${boss.member.displayName} used *aqua tail*, hitting *${target.member.displayName}* for **${dmg}** dmg!`;
-        target.hp -= dmg;
+        attack(boss, target, dmg);
     }
     //surf/earthquake
     //aoe dmg
@@ -150,11 +163,25 @@ function getBossAction(party, turn) {
         const dmgs = [];
         opps.forEach(p => {
             const dmg = Math.floor((surf ? getRandom(10, 15) : getRandom(5, 20)) * boss.bonus);
-            p.hp -= dmg;
+            attack(boss, p, dmg);
             dmgs.push(dmg);
         });
         text = `${boss.member.displayName} used *${surf ? 'surf' : 'earthquake'}*, hitting for: **${dmgs.join('**/**')}** dmg!`;
     }
     
     return text;
+}
+
+//this function does not provide text for upgraded kamehameha and sword effects
+function attack(boss, player, dmg) {
+    if (player.shield > 0) {
+        player.shield -= dmg;
+    }
+    else {
+        player.hp -= dmg;
+    }
+
+    if (player.weapon.name === 'sword' && player.skills.sword) {
+        boss.hp -= Math.round(0.06 * player.skills.sword * dmg);
+    }
 }

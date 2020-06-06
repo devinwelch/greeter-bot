@@ -98,13 +98,22 @@ function getHeader(emojis, challenger, enemy, qt='') {
     //get status at top of message
     const maxNameLength = Math.max(challenger.member.displayName.length, enemy.icon.length) + 2;
 
-    const line1 = '`' + format(challenger.member.displayName, maxNameLength + Math.floor(enemy.icon.length / 4)) + 'HP: ' + format(challenger.hp, 4) + '`' + `${emojis.resolve(challenger.weapon.id)}`;
+    const line1 = '`' + format(challenger.member.displayName, maxNameLength + Math.floor(enemy.icon.length / 4)) + 'HP: ' + format(challenger.hp, 4) + '`' + `${emojis.resolve(challenger.weapon.id)}` + (challenger.shield > 0 ? '🛡' : '');
     const line2 = '\n`' + format(enemy.icon, maxNameLength) + 'HP: ' + format(enemy.hp, 4) + '`' + qt;
 
     return line1 + line2;
 }
 
 async function fight(client, config, db, msg, challenger, enemy, challengerTurn) {
+    //fists bonus
+    if (challenger.weapon.name === 'fists' && challenger.skills.fists) {
+        const multiplier = 0.6 + challenger.skills.fists * 0.2;
+        const dmg = Math.round(multiplier * getRandom(challenger.weapon.low, challenger.weapon.high) * challenger.bonus);
+        const text = `${challenger.member.displayName} sucker-punched ${enemy.member.displayName} for **${dmg}** dmg!`;
+        enemy.hp -= dmg;
+        await delay(1500).then(() => { display(msg, text, client.emojis, challenger, enemy, true); });
+    }
+
     while(challenger.hp > 0 && enemy.hp > 0) {
         if (challengerTurn) {
             await getTurn(client, config, msg, challenger, enemy, challengerTurn);
@@ -179,6 +188,15 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
             await delay(1500).then(() => { display(message, burn, client.emojis, challenger, enemy, challengerTurn); });
         }
     }
+
+    //poisoned by daggers
+    if (this.poisoned && !this.selfKill) {
+        const poisonDamage = Math.round(this.max * this.poisoned * 0.05);
+        this.hp -= poisonDamage;
+        this.selfKill = this.hp <= 0;
+        const poisonText = `*...and ${this.selfKill ? 'died' : `lost **${poisonDamage}** hp`} to poison*`;
+        await delay(1500).then(() => { display(message, poisonText, client.emojis, challenger, enemy, challengerTurn); });
+    }
 }
 
 async function getHits(client, config, message, turnPlayer, opponent, challengerTurn) {
@@ -202,6 +220,7 @@ async function getHits(client, config, message, turnPlayer, opponent, challenger
 
 async function getEnemyAction(client, config, message, challenger, enemy) {
     let text;
+    let dmg;
 
     //how do magnets work?
     if (enemy.weapon.emoji === '🧲' && challenger.weapon.steel) {
@@ -246,17 +265,36 @@ async function getEnemyAction(client, config, message, challenger, enemy) {
         }
 
         //basic damage calculation
-        const dmg = getRandom(enemy.weapon.low, enemy.weapon.high);
+        dmg = getRandom(enemy.weapon.low, enemy.weapon.high);
         text = `${enemy.displayName} hit for **${dmg}** dmg!`;
-        challenger.hp -= dmg;
     }
 
     //slow weapons pause between turns
     if (enemy.speed < 0) {
         enemy.cooldown = !enemy.cooldown;
     }
-    
-    await delay(1500).then(() => { display(message, text, client.emojis, challenger, enemy, false); });
+
+    if (challenger.shield > 0) {
+        challenger.shield -= dmg;
+        if (challenger.shield <= 0) {
+            const shieldText = `${enemy.displayName} broke your shield!`;
+            await delay(1500).then(() => { display(message, text, client.emojis, challenger, enemy, false); });
+            await delay(1500).then(() => { display(message, shieldText, client.emojis, challenger, enemy, false); });
+        }
+    }
+    else {
+        challenger.hp -= dmg;
+        await delay(1500).then(() => { display(message, text, client.emojis, challenger, enemy, false); });
+    }
+
+    if (challenger.weapon.name === 'sword' && challenger.skills.sword && dmg) {
+        const parryDmg = Math.round(0.06 * challenger.skills.sword * dmg);
+        if (parryDmg) {
+            enemy.hp -= parryDmg;
+            const parryText = `${challenger.member.displayName} parried and returned **${parryDmg}** dmg!`;
+            await delay(1500).then(() => { display(message, parryText, client.emojis, challenger, enemy, true); });
+        }
+    }
 }
 
 async function getResults(client, db, message, challenger, enemy) {
@@ -278,9 +316,9 @@ async function getResults(client, db, message, challenger, enemy) {
         if (winner === challenger) {
             //award random GBPs (flat for special creatures)
             const award = enemy.creature.award || getRandom(1, 3);
-            //const xp = 100 + (enemy.creature.xp || 0);
+            const xp = 100 + (enemy.creature.xp || 0);
             const inventory = {};
-            let awardText = `You win ${award} GBPs!`;// and ${xp} xp!`;
+            let awardText = `You win ${award} GBPs and ${xp} xp!`;
 
             //give challenger the golden fiddle item
             if (enemy.weapon.emoji === '🎻') {
@@ -288,7 +326,7 @@ async function getResults(client, db, message, challenger, enemy) {
                 awardText = 'You win this shiny fiddle made of gold!';
             }
 
-            updateData(db, challenger.member.user, { gbps: award/*, xp: xp*/, inventory: inventory});
+            updateData(db, challenger.member.user, { gbps: award, xp: xp, inventory: inventory});
             await delay(1500).then(() => { display(message, awardText, client.emojis, challenger, enemy, true); });
         }
         //lose a GBP
