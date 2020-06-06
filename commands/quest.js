@@ -157,7 +157,7 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
         //5% chance to infect user
         const yuck = ['yuck!', 'eww!', 'gross!', '\\*coughs\\*'];
         if (turnPlayer === enemy && !opponent.infected && !getRandom(19)) {
-            opponent.roles.add(config.ids.corona);
+            opponent.member.roles.add(config.ids.corona);
             opponent.infected = true;
             const infectText = `${opponent.member.displayName} **caught corona, ${selectRandom(yuck)}**`;
             await delay(1500).then(() => { display(message, infectText, client.emojis, challenger, enemy, challengerTurn); });

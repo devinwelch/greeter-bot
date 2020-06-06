@@ -87,7 +87,7 @@ const self = module.exports = {
         
         //do not add execution text if boss self-killed
         if (winner === boss || !boss.selfKill) {
-            const winText = winner.weapon.win.replace(':w', winner.username).replace(':l', boss.username);
+            const winText = winner.weapon.win.replace(':w', winner.member.displayName).replace(':l', boss.member.displayName);
             actions.push(new Action(winText, 0, party));
         }
         
@@ -123,7 +123,7 @@ function getBossAction(party, turn) {
 
     //boss is asleep
     if (boss.cooldown) {
-        text = `${boss.username} is waking up...`;
+        text = `${boss.member.displayName} is waking up...`;
         boss.cooldown = false;
     }
     //rest

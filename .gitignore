@@ -2,3 +2,4 @@
 .env
 config.json
 ideas.txt
+.vscode/launch.json
