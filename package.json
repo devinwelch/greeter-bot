@@ -1,6 +1,6 @@
 {
   "name": "greeter-bot",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "author": "Devin Welch",
   "description": "TDLB4LIFE's meme-bot for Hooligan House",
   "main": "index.js",

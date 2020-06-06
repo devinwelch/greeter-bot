@@ -5,7 +5,7 @@ module.exports = {
     hideFromHelp: true,
     execute(client, config, db, message, args) {
         if (message.author.id === config.ids.bus) {
-            client.channels.cache.get(config.ids.mainChat).send(args);
+            client.channels.cache.get(config.ids.botchat).send(args);
         }
         else {
             console.log(`${message.author.username} is trying to control me!`);

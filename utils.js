@@ -111,7 +111,7 @@ let self = module.exports = {
                 if (roll < chance) {
                     const victim = noninfected.random(1)[0];
                     victim.roles.add(config.ids.corona);
-                    client.channels.cache.get(config.ids.mainChat).send(`${victim.user.username} caught the coronavirus! Yuck, stay away!`);
+                    client.channels.cache.get(config.ids.botchat).send(`${victim.user.username} caught the coronavirus! Yuck, stay away!`);
                 }
             }
         });
@@ -224,7 +224,9 @@ let self = module.exports = {
                     if (lvl > d.Lvl) {
                         expressions.push('Lvl = :lvl');
                         attributes[':lvl'] = lvl;
-                        //announce level up 
+                        
+                        //announce to the world
+                        user.client.channels.cache.get(config.ids.botchat).send(`${user} leveled up to ${lvl}!`);
                     }
                 }
 
@@ -320,7 +322,7 @@ let self = module.exports = {
 
     reset(client, db, data) {                    
         console.log('Resetting the economy!');
-        client.channels.cache.get(config.ids.exchange).send('**From the ashes we are born anew. The GBP economy has been reset. Go forth!**');
+        client.channels.cache.get(config.ids.botchat).send('**From the ashes we are born anew. The GBP economy has been reset. Go forth!**');
         
         data.Items.filter(r => !r.Executed).forEach(r =>{
             const resetParams = {
@@ -372,7 +374,7 @@ let self = module.exports = {
                 self.updateData(db, client.user, { gbps: reclaim });
 
                 console.log(`Reclaimed loan from ${user.username}`);
-                client.channels.cache.get(config.ids.exchange).send(`Reclaimed ${reclaim} GBPs from ${user.username}`);
+                client.channels.cache.get(config.ids.botchat).send(`Reclaimed ${reclaim} GBPs from ${user.username}`);
             });
         });
     },
@@ -386,7 +388,7 @@ let self = module.exports = {
 
         client.guilds.cache
             .get(config.ids.hooliganHouse).channels.cache
-            .get(config.ids.exchange)
+            .get(config.ids.botchat)
             .send(`${winner.tag} wins the daily lotto: ${jackpot} GBPs!`);
     },
 
