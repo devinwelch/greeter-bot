@@ -61,7 +61,7 @@ let self = module.exports = {
                     else {
                         console.log(`${user.username} gave nanners to ${reaction.message.author.username}`);
                         updateData(db, reaction.message.author, { gbps: 1 });
-                        //updateData(db, user, { xp: 25 });
+                        updateData(db, user, { xp: 25 });
                     }
                 });
             }

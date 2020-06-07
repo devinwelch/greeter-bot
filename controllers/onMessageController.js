@@ -17,7 +17,7 @@ let self = module.exports = {
         }
 
         //xp for participation in chat
-        //updateData(db, message.author, { xp: 5 });
+        updateData(db, message.author, { xp: 5 });
 
         //Stop spammers in their tracks
         if (!message.guild || !message.author.dorseProtection && message.guild.id === config.ids.hooliganHouse) {
