@@ -7,17 +7,19 @@ const self = module.exports;
 self.Fighter = class { 
     constructor(member, options) {
         if (options.boss) {
-            //required options: partySize
+            //required options: partySize, lvl
+            this.lvl = options.lvl;
+            const lvlBonus = (1 + (options.lvl === 99 ? 1 : (options.lvl - 1) / 100));
             this.boss = true;
-            this.max = 70 + 80 * options.partySize;
-            this.bonus = 1 + .1 * Math.min(options.partySize, 4);
+            this.max = Math.round((70 + 80 * options.partySize) * lvlBonus);
+            this.bonus = lvlBonus * (1 + .1 * Math.min(options.partySize, 4));
             this.weapon = { id: config.ids.woop, speed: 1, hits: 1, win: 'The party wiped!' };
             this.shield = 0;
         }
         else {
             //required options: data
             this.bonus = 1 + (options.data.Lvl === 99 ? 100 : options.data.Lvl - 1) / 100; 
-            this.max = 100 * this.bonus;
+            this.max = Math.round(100 * this.bonus);
             this.hp = this.max;
             this.turn = 0;
             this.infected = member.roles.cache.has(config.ids.corona);
@@ -115,7 +117,8 @@ self.Fighter = class {
 
         //poisoned by daggers
         if (this.poisoned && !this.selfKill) {
-            const poisonDamage = Math.round(this.max * this.poisoned * 0.05);
+            //capped at 20/stack 
+            const poisonDamage = Math.round(Math.min(this.max * 0.05, 20) * this.poisoned );
             this.hp -= poisonDamage;
             this.selfKill = this.hp <= 0;
             const poisonText = `*...and ${this.selfKill ? 'died' : `lost **${poisonDamage}** hp`} to poison*`;
@@ -134,7 +137,7 @@ self.Fighter = class {
         let chance = 7;
         //fiddle bonus
         if (this.weapon.name === 'fiddle' && this.skills.fiddle) {
-            chance += this.skills.fiddle;
+            chance += 1.5 * this.skills.fiddle;
         }
 
         //skeleton for sequence-style weapons, but just kamehameha for now
@@ -172,12 +175,8 @@ self.Fighter = class {
                 text = `${this.member.displayName} is winding up...`;
             }
             else {
-                let low = weapon.low;
-                //upgraded warhammer bonus
-                if (this.weapon.name === 'warhammer' && this.skills.warhammer) {
-                    low += 3 * this.skills.warhammer;
-                }
-                dmg = getRandom(low, weapon.high);
+                dmg = getRandom(weapon.low, weapon.high);
+
                 if (weapon.zerk) {
                     //upgraded battleaxe bonus
                     dmg += Math.ceil(dmg * (0.2 * (this.skills.battleaxe || 0) + 1) * (this.max - this.hp) / (this.max + 1));
@@ -188,7 +187,20 @@ self.Fighter = class {
                         dmg += 4;
                     }
                 }
+
+                let recoil;
+                //upgraded warhammer
+                if (this.weapon.name === 'warhammer' && this.skills.warhammer) {
+                    dmg += 4 * this.skills.warhammer;
+                    recoil = 2 * this.skills.warhammer;
+                }
+
                 text = `${this.member.displayName} hit for **<dmg>** dmg`;
+
+                if (recoil) {
+                    text += ` and recoiled for **-${recoil}** hp`;
+                    this.hp -= recoil;
+                }
             }
 
             //slow weapons pause between turns
@@ -204,7 +216,7 @@ self.Fighter = class {
             !getRandom(7))
         {
             opponent.poisoned++;
-            text += ` and poisoned ${opponent.member.displayName} (**${opponent.poisoned} stack${opponent.poisoned > 1 ? 's' : ''}**)!`;
+            text += ` and poisoned ${opponent.member.displayName} (**${opponent.poisoned} stack${opponent.poisoned > 1 ? 's' : ''}**)`;
         }
 
         dmg = Math.round(dmg * this.bonus);
@@ -213,8 +225,6 @@ self.Fighter = class {
             opponent.shield -= dmg;
             if (opponent.shield <= 0) {
                 text += ` and broke ${opponent.member.displayName}'s shield`;
-                //buff warhammer
-                this.cooldown = false;
             }
         }
         else {
@@ -223,7 +233,7 @@ self.Fighter = class {
 
         //lifesteal for upgraded scythe
         if (this.weapon.name === 'scythe' && this.skills.scythe && this.hp < this.max) {
-            const heal = Math.min(Math.round(this.skills.scythe * .08 * dmg), this.max - this.hp);
+            const heal = Math.min(Math.round(this.skills.scythe * .09 * dmg), this.max - this.hp);
             this.hp += heal;
             text += ` and healed **${heal}** hp`;
         }

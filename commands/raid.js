@@ -33,14 +33,18 @@ const self = module.exports = {
             fighterParty.push(fighter);
         });
 
+        //average of all party members, re-averaged with highest level to add weight 
+        const lvl = Math.round(((data.map(d => d.Lvl).reduce((a, b) => a + b) / data.length) + Math.max(...data.map(d => d.Lvl))) / 2);
+
         const bossMember = guild.members.resolve(client.user);
-        const boss = new Fighter(bossMember, { boss: true, partySize: party.length });
+        const boss = new Fighter(bossMember, { boss: true, partySize: party.length, lvl: lvl });
 
         //add boss to party and randomize order based on weapon speed
         fighterParty.push(boss);
         fighterParty = getOrder(fighterParty);
 
         //get battle results then display
+        channel.send(`${boss.member.displayName} (Lvl ${boss.lvl}) stands fierce!`);
         channel.send(getHeader(client, fighterParty))
         .then(msg => {
             const fight = self.fight(fighterParty);
@@ -57,7 +61,7 @@ const self = module.exports = {
             const fighter = party[i];
             if (fighter.weapon.name === 'fists' && fighter.skills.fists) {
                 const opponent = party.find(opponent => opponent.boss);
-                const multiplier = 0.6 + fighter.skills.fists * 0.2;
+                const multiplier = 0.4 + fighter.skills.fists * 0.3;
                 const dmg = Math.round(multiplier * getRandom(fighter.weapon.low, fighter.weapon.high) * fighter.bonus);
                 const text = `${fighter.member.displayName} sucker-punched ${opponent.member.displayName} for **${dmg}** dmg!`;
                 opponent.hp -= dmg;
@@ -142,7 +146,7 @@ function getBossAction(party, turn) {
     //rest
     //restore hp up to once per raid
     else if (boss.hp <= boss.max / 3 && !boss.rested) {
-        const rest = 15 + 40 * (opps.length);
+        const rest = 15 + (40 + Math.round(boss.lvl / 2)) * (opps.length);
         text = `${boss.member.displayName} used *rest*! He restored **${rest}** hp and fell asleep...`;
         boss.hp += rest;
         boss.cooldown = true;

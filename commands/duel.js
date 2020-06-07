@@ -226,7 +226,7 @@ const self = module.exports = {
             const fighter = party[i];
             if (fighter.weapon.name === 'fists' && fighter.skills.fists) {
                 const opponent = party.find(opponent => opponent.member !== fighter.member);
-                const multiplier = 0.6 + fighter.skills.fists * 0.2;
+                const multiplier = 0.4 + fighter.skills.fists * 0.3;
                 const dmg = Math.round(multiplier * getRandom(fighter.weapon.low, fighter.weapon.high) * fighter.bonus);
                 const text = `${fighter.member.displayName} sucker-punched ${opponent.member.displayName} for **${dmg}** dmg!`;
                 opponent.hp -= dmg;

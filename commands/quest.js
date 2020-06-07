@@ -8,48 +8,42 @@ module.exports = {
     name: 'quest',
     description: 'Fight a random enemy to earn GBP! React in time to land a hit!',
     execute(client, config, db, message, args) {
-        //determine random enemy
-        const enemy = new Enemy();
-        const send = [];
+        getData(db, message.author.id)
+        .then(data => {
+            if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
+                return;
+            }
 
-        //encounter text
-        const encounter = [
-            'You ran into :c!',
-            'You are challenged by :c!',
-            'You stumble across :c!',
-            ':c gets ready to fight!',
-            ':c appeared!'
-        ];
+            data = data.Responses.GBPs[0];
 
-        send.push(`${selectRandom(encounter).replace(':c', enemy.displayName)} ${enemy.icon}`);
-        send.push('**React with the icon displayed below your weapon to hit, but be quick!**');
+            const fighter = new Fighter(message.member, { data: data });
+            fighter.turn = 2;
 
-        message.reply(send)
-        .then(() => setup(client, config, db, message.channel, message.member, enemy))
-        .catch(console.error);
+            //determine random enemy
+            const enemy = new Enemy(data.Lvl);
 
-        if (enemy.weapon.musical && message.member.voice.channel && !message.member.voice.mute && !message.member.voice.deaf) {
-            const song = enemy.creature.emoji === '💀' ? 'spooky' : enemy.weapon.literal;
-            playSong(client, message.member.voice.channel, `Enemies/${song}.mp3`, true);
-        }
+            //encounter text
+            const encounter = [
+                'You ran into :c!',
+                'You are challenged by :c!',
+                'You stumble across :c!',
+                ':c gets ready to fight!',
+                ':c appeared!'
+            ];
+            const send = [];
+            send.push(`${selectRandom(encounter).replace(':c', enemy.displayName)} ${enemy.icon} (Lvl ${enemy.lvl})`);
+            send.push('**React with the icon displayed below your weapon to hit, but be quick!**');
+            message.reply(send)
+            .then(() => start(client, config, db, message.channel, fighter, enemy))
+            .catch(console.error);
+
+            if (enemy.weapon.musical && message.member.voice.channel && !message.member.voice.mute && !message.member.voice.deaf) {
+                const song = enemy.creature.emoji === '💀' ? 'spooky' : enemy.weapon.literal;
+                playSong(client, message.member.voice.channel, `Enemies/${song}.mp3`, true);
+            }
+        });   
     }
 };
-
-async function setup(client, config, db, channel, challenger, enemy) {
-    getData(db, challenger.id)
-    .then(data => {
-        if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
-            return;
-        }
-
-        data = data.Responses.GBPs[0];
-
-        const fighter = new Fighter(challenger, { data: data });
-        fighter.turn = 2;
-
-        start(client, config, db, channel, fighter, enemy);
-    });
-}
 
 async function start(client, config, db, channel, challenger, enemy) {
     channel.send(getHeader(client.emojis, challenger, enemy))
@@ -107,7 +101,7 @@ function getHeader(emojis, challenger, enemy, qt='') {
 async function fight(client, config, db, msg, challenger, enemy, challengerTurn) {
     //fists bonus
     if (challenger.weapon.name === 'fists' && challenger.skills.fists) {
-        const multiplier = 0.6 + challenger.skills.fists * 0.2;
+        const multiplier = 0.4 + challenger.skills.fists * 0.3;
         const dmg = Math.round(multiplier * getRandom(challenger.weapon.low, challenger.weapon.high) * challenger.bonus);
         const text = `${challenger.member.displayName} sucker-punched ${enemy.member.displayName} for **${dmg}** dmg!`;
         enemy.hp -= dmg;
@@ -249,6 +243,7 @@ async function getEnemyAction(client, config, message, challenger, enemy) {
         challenger.hp = 0;
         enemy.hp = 0;
         enemy.selfKill = true;
+        enemy.bonus = 5; 
     }
     //bullying the blind
     else if (enemy.weapon.emoji === '🦯' && getRandom(1)) {
@@ -265,7 +260,7 @@ async function getEnemyAction(client, config, message, challenger, enemy) {
         }
 
         //basic damage calculation
-        dmg = getRandom(enemy.weapon.low, enemy.weapon.high);
+        dmg = Math.round(enemy.bonus * getRandom(enemy.weapon.low, enemy.weapon.high));
         text = `${enemy.displayName} hit for **${dmg}** dmg!`;
     }
 
@@ -316,7 +311,7 @@ async function getResults(client, db, message, challenger, enemy) {
         if (winner === challenger) {
             //award random GBPs (flat for special creatures)
             const award = enemy.creature.award || getRandom(1, 3);
-            const xp = 100 + (enemy.creature.xp || 0);
+            const xp = Math.round((enemy.bonus ** 2) * (100 + (enemy.creature.xp || 0)));
             const inventory = {};
             let awardText = `You win ${award} GBPs and ${xp} xp!`;
 
@@ -345,7 +340,7 @@ async function getResults(client, db, message, challenger, enemy) {
 }
 
 class Enemy {
-    constructor() {
+    constructor(level) {
         //random creature
         this.creature = enemies.creatures[selectRandom(Object.keys(enemies.creatures))];
 
@@ -369,11 +364,16 @@ class Enemy {
             this.displayName = this.displayName.replace('a ', 'an ');
         }
 
+        //cheat this in here so it works with other functions
         this.member = { displayName: this.displayName };
+
+        //determine enemy level, affecting stats and rewards
+        this.lvl = getRandom(Math.max(1, level - 5), Math.min(99, level + 5));
+        this.bonus = 1 + (this.lvl === 99 ? 1 : (this.lvl - 1) / 100);
 
         //set up stats
         this.cooldown = false;
-        this.hp = 60 + this.creature.hp;
+        this.hp = Math.round(this.bonus * (60 + this.creature.hp));
         this.speed = 1 + (this.creature.speed || 0);
         this.weapon.hits = this.creature.hits || 1;
         this.weapon.low = this.weapon.emoji === '🔫' ? 40 : 1 + this.creature.dmg;

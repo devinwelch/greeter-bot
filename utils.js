@@ -519,7 +519,7 @@ let self = module.exports = {
 
     format(str, max) {
         str = str.toString();
-        return str + ' '.repeat(max - str.length);
+        return str + ' '.repeat(Math.max(0, max - str.length));
     },
 
     giveXP(client, db) {
