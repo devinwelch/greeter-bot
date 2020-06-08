@@ -10,7 +10,7 @@ let self = module.exports = {
         else if (/.*:BananaCrown:.*/.test(message.content)) {
             getData(db, message.author.id)
             .then(data => {
-                if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length || !data.Responses.GBPs[0].GBPs < 1000) {
+                if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length || data.Responses.GBPs[0].GBPs < 1000) {
                     return message.delete().catch(console.error);
                 }
             });
