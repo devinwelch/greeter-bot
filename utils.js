@@ -226,7 +226,13 @@ let self = module.exports = {
                         attributes[':lvl'] = lvl;
                         
                         //announce to the world
-                        user.client.channels.cache.get(config.ids.botchat).send(`${user} leveled up to ${lvl}!`);
+                        const botchat = user.client.channels.cache.get(config.ids.botchat);
+                        botchat.messages.fetch({ limit: 100 })
+                        .then(messages => {
+                            messages.filter(msg => msg.mentions.has(user) && msg.content.includes('leveled up to'))
+                            .forEach(msg => msg.delete().catch(console.error));
+                        });
+                        botchat.send(`${user} leveled up to ${lvl}!`);
                     }
                 }
 
