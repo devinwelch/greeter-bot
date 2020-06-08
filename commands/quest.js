@@ -214,7 +214,7 @@ async function getHits(client, config, message, turnPlayer, opponent, challenger
 
 async function getEnemyAction(client, config, message, challenger, enemy) {
     let text;
-    let dmg;
+    let dmg = 0;
 
     //how do magnets work?
     if (enemy.weapon.emoji === '🧲' && challenger.weapon.steel) {
