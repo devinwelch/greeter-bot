@@ -34,7 +34,8 @@ const self = module.exports = {
         });
 
         //average of all party members, re-averaged with highest level to add weight 
-        const lvl = Math.round(((data.map(d => d.Lvl).reduce((a, b) => a + b) / data.length) + Math.max(...data.map(d => d.Lvl))) / 2);
+        //const lvl = Math.round(((data.map(d => d.Lvl).reduce((a, b) => a + b) / data.length) + Math.max(...data.map(d => d.Lvl))) / 2);
+        const lvl = Math.max(...data.map(d => d.Lvl));
 
         const bossMember = guild.members.resolve(client.user);
         const boss = new Fighter(bossMember, { boss: true, partySize: party.length, lvl: lvl });

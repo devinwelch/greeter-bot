@@ -56,7 +56,7 @@ module.exports = {
                         });
                     }).catch(console.error);
 
-                updateData(db, user, { gbps: win, xp: Math.min(Math.max(win, 0), 1000) });
+                updateData(db, user, { gbps: win });
                 updateData(db, client.user, { gbps: -win });
             }
         });
