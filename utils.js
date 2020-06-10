@@ -71,7 +71,7 @@ let self = module.exports = {
         }
     },
 
-    playMe(client, voiceChannel, name, gnomed = false, noKnock = false) {
+    playMe(client, voiceChannel, name, gnomed = false, noKnock = false, paws = false) {
         let path;
         
         if (gnomed &&
@@ -81,13 +81,17 @@ let self = module.exports = {
         }
         else {
             const regex = RegExp('^' + name.toLowerCase());
-            const files = fs.readdirSync('./Sounds/Friends/').filter(file => regex.test(file));
+            const files = fs.readdirSync('./Sounds/Friends/' + (paws ? 'Paws/' : '')).filter(file => regex.test(file));
             
             if (!files.length) {
+                if (paws) {
+                    self.playSong(client, voiceChannel, 'Friends/Paws/paws.mp3', noKnock);
+                }
+
                 return;
             }
             
-            path = 'Friends/' + self.selectRandom(files);
+            path = 'Friends/' + (paws ? 'Paws/' : '') + self.selectRandom(files);
         }
         
         self.playSong(client, voiceChannel, path, noKnock);

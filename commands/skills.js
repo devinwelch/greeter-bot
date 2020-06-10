@@ -4,7 +4,7 @@ const items = require('./items.json');
 module.exports = {
     name: 'skills',
     description: 'Spend your skill points earned every 5 levels. Spend 5 points to earn rank 2 weapon upgrades and 10 to unlock rank 3.',
-    aliases: [''],
+    aliases: ['skill'],
     usage: '[skill/weapon]',
     execute(client, config, db, message, args) {
         args = args.toLowerCase();
@@ -19,19 +19,19 @@ module.exports = {
             const spent = Object.keys(data.Skills).length ? Object.values(data.Skills).reduce((a, b) => a + b) : 0;
             const available = (data.Lvl === 99 ? 20 : Math.floor(data.Lvl / 5)) - spent;
             const upgradable = Object.values(items).filter(item => item.upgrade);
-            const owned = upgradable.filter(item => Object.keys(data.Inventory).filter(i => data.Inventory[i]).includes(item.name));
+            const owned = upgradable.filter(item => Object.keys(data.Inventory).filter(i => data.Inventory[i]).includes(item.name) || !item.weapon);
 
             if (args.length) {
                 if (available <= 0) {
                     message.reply("You don't have any skill points available! Get back to grinding!");
                 }
-                else if (args !== 'luck' && !owned.map(i => i.name).includes(args)) {
+                else if (!owned.map(i => i.name).includes(args)) {
                     message.reply('Skill not available.');
                 }
                 else if (!data.Skills[args]) {
                     buy(db, message, args, data);
                 }
-                else if ((args === 'luck' && data.Skills.luck === 5) || (args !== 'luck' && data.Skills[args] === 3)) {
+                else if(data.Skills[args] === (items[args].skillUpgrades || 3)) {
                     message.reply("You're already maxed out!");
                 }
                 else if (args === 'luck') {
@@ -56,9 +56,8 @@ module.exports = {
                 response.push('  -----      ---  -----------');
                     
                 owned.forEach(item => {
-                    response.push(`• ${format(item.name, 11)}${format(`${data.Skills[item.name] || 0}/3`, 5)}${item.upgrade}`);
+                    response.push(`• ${format(item.name, 11)}${format(`${data.Skills[item.name] || 0}/${item.skillUpgrades || 3}`, 5)}${item.upgrade}`);
                 });
-                response.push(format('• luck', 13) + format(`${data.Skills.luck || 0}/5`, 5) + "Don't like fighting? Increase your odds when you gamble!");
                 response.push('```');
                 
                 if (upgradable.length > owned.length) {
@@ -79,5 +78,5 @@ function buy(db, message, skill, data) {
     else {
         skills[skill] = 1;
     }
-    updateData(db, message.author, { skills: skills, message: message, emoji: '🦿' });
+    updateData(db, message.author, { skills: skills, message: message, emoji: skill === 'rumpaws' ? '🐾' : '🦿' });
 }

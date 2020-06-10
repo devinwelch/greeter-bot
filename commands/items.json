@@ -152,5 +152,17 @@
         "insta": true,
         "hide": true,
         "id": "713777145960333405"
+    },
+    "luck": {
+        "name": "luck",
+        "upgrade": "Don't like fighting? Increase your odds when you gamble!",
+        "skillUpgrades": 5,
+        "hide": true
+    },
+    "rumpaws": {
+        "name": "rumpaws",
+        "upgrade": "Paws more harder and/or better to the outer limits of this world!",
+        "skillUpgrades": 1,
+        "hide": true
     }
 }
