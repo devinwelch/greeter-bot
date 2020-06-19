@@ -127,6 +127,8 @@ function start(db, channel, challenger, target, wager) {
                 }
                 await msg.edit(board);
             }
+
+            reaction.users.remove(user);
         });
 
         collector.on('end', () => {

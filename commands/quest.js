@@ -143,6 +143,10 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
                 const missText = `${challenger.member.displayName} ${challenger.cooldown || challenger.weapon.sequence ? 'stumbled' : 'missed'}!`;
                 await delay(1500).then(() => { display(message, missText, client.emojis, challenger, enemy, challengerTurn); });
             }
+
+            collected.forEach(reaction => {
+                reaction.users.remove(challenger.member.user);
+            });
         });
     }
     else {

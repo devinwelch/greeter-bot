@@ -145,7 +145,7 @@ async function getReactions(status, message, qt, time, startTime) {
     collector.on('collect', (reaction, user) => {
         const member = status.party.find(p => p.user.id === user.id);
 
-        //first react5ion of the round
+        //first reaction of the round
         if (!member.reaction) {
             member.reaction = reaction.emoji.name;
 
@@ -163,6 +163,8 @@ async function getReactions(status, message, qt, time, startTime) {
                 }
             }
         }
+
+        reaction.users.remove(user);
     });
 
     return new Promise(function(resolve) {
