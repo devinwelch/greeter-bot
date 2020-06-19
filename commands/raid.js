@@ -152,6 +152,7 @@ function getBossAction(party, turn) {
         boss.hp += rest;
         boss.cooldown = true;
         boss.rested = true;
+        boss.poisoned = 0;
     }
     //aqua tail
     //single target dmg
