@@ -188,11 +188,11 @@ async function getTurn(client, config, message, turnPlayer, opponent, challenger
     }
 
     //poisoned by daggers
-    if (this.poisoned && !this.selfKill) {
-        const poisonDamage = Math.round(this.max * this.poisoned * 0.05);
-        this.hp -= poisonDamage;
-        this.selfKill = this.hp <= 0;
-        const poisonText = `*...and ${this.selfKill ? 'died' : `lost **${poisonDamage}** hp`} to poison*`;
+    if (turnPlayer.poisoned && !turnPlayer.selfKill) {
+        const poisonDamage = Math.round(turnPlayer.max * turnPlayer.poisoned * 0.05);
+        turnPlayer.hp -= poisonDamage;
+        turnPlayer.selfKill = turnPlayer.hp <= 0;
+        const poisonText = `*...and ${turnPlayer.selfKill ? 'died' : `lost **${poisonDamage}** hp`} to poison*`;
         await delay(1500).then(() => { display(message, poisonText, client.emojis, challenger, enemy, challengerTurn); });
     }
 }
@@ -377,7 +377,9 @@ class Enemy {
 
         //set up stats
         this.cooldown = false;
-        this.hp = Math.round(this.bonus * (60 + this.creature.hp));
+        this.poisoned = 0;
+        this.max = Math.round(this.bonus * (60 + this.creature.hp));
+        this.hp = this.max;
         this.speed = 1 + (this.creature.speed || 0);
         this.weapon.hits = this.creature.hits || 1;
         this.weapon.low = this.weapon.emoji === '🔫' ? 40 : 1 + this.creature.dmg;
