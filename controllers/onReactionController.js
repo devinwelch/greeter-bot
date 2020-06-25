@@ -1,4 +1,4 @@
-const { updateData, getRandom } = require('../utils.js');
+const { updateData, getRandom, playSong } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, reaction, user) {
@@ -29,7 +29,7 @@ let self = module.exports = {
         else if (reaction.emoji.id === config.ids.brownie && !getRandom(49)) {
             const voiceChannel = reaction.message.member.voice.channel;
             if (voiceChannel) {
-                client.utils.playSong(client, voiceChannel, 'Alert.mp3');
+                playSong(client, voiceChannel, 'Alert.mp3');
             }
         }
     },

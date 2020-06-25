@@ -99,7 +99,7 @@ let self = module.exports = {
 
     infect(client) {
         client.channels.cache.filter(channel => channel.type === 'voice').array().forEach(voiceChannel => {
-            const noninfected = voiceChannel.members.filter(member => member.roles.cache.every(role => role.id !== config.ids.corona));
+            const noninfected = voiceChannel.members.filter(member => !member.roles.cache.has(config.ids.corona));
             
             if (noninfected.size) { 
                 const infectedCount = voiceChannel.members.size - noninfected.size;
@@ -115,7 +115,14 @@ let self = module.exports = {
                 if (roll < chance) {
                     const victim = noninfected.random(1)[0];
                     victim.roles.add(config.ids.corona);
-                    client.channels.cache.get(config.ids.botchat).send(`${victim.user.username} caught the coronavirus! Yuck, stay away!`);
+
+                    const botchat = client.channels.cache.get(config.ids.botchat);
+                    botchat.messages.fetch({ limit: 100 })
+                    .then(messages => {
+                        messages.filter(msg => msg.mentions.has(victim) && msg.content.includes('Yuck, stay away'))
+                        .forEach(msg => msg.delete().catch(console.error));
+                    });
+                    client.channels.cache.get(config.ids.botchat).send(`${victim} caught the coronavirus! Yuck, stay away!`);
                 }
             }
         });
@@ -384,7 +391,7 @@ let self = module.exports = {
                 self.updateData(db, client.user, { gbps: reclaim });
 
                 console.log(`Reclaimed loan from ${user.username}`);
-                client.channels.cache.get(config.ids.botchat).send(`Reclaimed ${reclaim} GBPs from ${user.username}`);
+                client.channels.cache.get(config.ids.botchat).send(`Reclaimed ${reclaim} GBPs from ${user}`);
             });
         });
     },
@@ -396,10 +403,7 @@ let self = module.exports = {
         const winner = members.random(1)[0].user;
         self.updateData(db, winner, { gbps: jackpot });
 
-        client.guilds.cache
-            .get(config.ids.hooliganHouse).channels.cache
-            .get(config.ids.botchat)
-            .send(`${winner.tag} wins the daily lotto: ${jackpot} GBPs!`);
+        client.guilds.channels.cache.get(config.ids.botchat).send(`${winner} wins the daily lotto: ${jackpot} GBPs!`);
     },
 
     assembleParty(client, config, db, channel, leader, text, wager) {
@@ -536,6 +540,15 @@ let self = module.exports = {
         client.channels.cache.filter(channel => channel.type === 'voice').each(channel => {
             channel.members.filter(m => !m.deaf).filter(m => !m.mute).each(m => self.updateData(db, m.user, { xp: 60 }));
         });
+    },
+
+    shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = self.getRandom(i);
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+
+        return arr;
     }
 };
 
