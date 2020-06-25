@@ -335,6 +335,24 @@ let self = module.exports = {
                 self.collectLoans(client, db);
             }
         });
+
+        //clear channel of generic anouncements
+        const botchat = client.channels.cache.get(config.ids.botchat);
+        const weekAgo = Date.now() - (1000 * 60 * 60 * 24 * 7); 
+        botchat.messages.fetch({ limit: 100 })
+        .then(messages => {
+            messages.filter(msg => 
+                msg.author === client.user &&
+                msg.createdTimestamp < weekAgo && 
+                (
+                    msg.content.includes('wins the daily lotto') ||
+                    msg.content.includes('Yuck, stay away') ||
+                    msg.content.includes('leveled up to') ||
+                    msg.content.includes('Reclaimed')
+                )
+            )
+            .forEach(msg => msg.delete().catch(console.error));
+        });
     },
 
     reset(client, db, data) {                    
