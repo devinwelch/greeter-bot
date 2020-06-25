@@ -399,17 +399,14 @@ let self = module.exports = {
     collectLoans(client, db) {
         db.scan({ TableName: 'GBPs' }, function(err, data) {
             data.Items.filter(d => d.Loan > 0).forEach(d => {
-                const user = { 
-                    id: d.UserID,
-                    username: d.Username
-                };
                 const reclaim = Math.ceil(d.Loan * 1.1);
                 
-                self.updateData(db, user, { gbps: -reclaim, loan: 0 });
-                self.updateData(db, client.user, { gbps: reclaim });
+                client.users.fetch(d.UserID).then(user => {
+                    self.updateData(db, user, { gbps: -reclaim, loan: 0 });
+                    self.updateData(db, client.user, { gbps: reclaim });
 
-                console.log(`Reclaimed loan from ${user.username}`);
-                client.channels.cache.get(config.ids.botchat).send(`Reclaimed ${reclaim} GBPs from ${user}`);
+                    client.channels.cache.get(config.ids.botchat).send(`Reclaimed ${reclaim} GBPs from ${user}`);
+                });    
             });
         });
     },
