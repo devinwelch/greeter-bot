@@ -154,6 +154,11 @@ let self = module.exports = {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
+    getChance(percent) {
+        //works to 2 decimal places
+        return self.getRandom(1, 10000) <= percent * 100;
+    },
+
     putData(db, user, options) {
         const params = {
             TableName: 'GBPs',
@@ -418,7 +423,7 @@ let self = module.exports = {
         const winner = members.random(1)[0].user;
         self.updateData(db, winner, { gbps: jackpot });
 
-        client.guilds.channels.cache.get(config.ids.botchat).send(`${winner} wins the daily lotto: ${jackpot} GBPs!`);
+        client.channels.cache.get(config.ids.botchat).send(`${winner} wins the daily lotto: ${jackpot} GBPs!`);
     },
 
     assembleParty(client, config, db, channel, leader, text, wager) {
