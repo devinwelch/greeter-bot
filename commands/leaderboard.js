@@ -2,6 +2,7 @@ module.exports = {
     name: 'leaderboard',
     aliases: ['rank'],
     description: 'See list of goodest boys on the server',
+    category: 'gbp',
     execute(client, config, db, message, args) {
         db.scan({ TableName: 'GBPs'}, function(err, data) {
             if (err) {

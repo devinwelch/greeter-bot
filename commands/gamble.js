@@ -3,6 +3,7 @@ const { getData, updateData, delay, getRandom } = require('../utils.js');
 module.exports = {
     name: 'gamble',
     description: "Gamble with your GBPs. Roll 1-100, higher than 55 wins! Hit 100 for jackpot. Don't try any funny business...",
+    category: 'gbp',
     aliases: ['bet'],
     usage: '<(amount)|max|all>',
     execute(client, config, db, message, args) {

@@ -4,6 +4,7 @@ const { getData, updateData } = require('../utils.js');
 module.exports = {
     name: 'use',
     description: 'Use an item from inventory or equip a weapon for duels.',
+    category: 'rpg',
     aliases: ['equip'],
     usage: '[item|random]',
     execute(client, config, db, message, args) {

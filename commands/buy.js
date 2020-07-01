@@ -4,6 +4,7 @@ const { format, updateData, getData } = require('../utils.js');
 module.exports = {
     name: 'buy',
     description: 'Spend your good boy points on **useful** items!',
+    category: 'rpg',
     aliases: ['shop'],
     usage: '[item]',
     execute(client, config, db, message, args) {

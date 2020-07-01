@@ -4,6 +4,7 @@ const { playMe } = require('../utils.js');
 module.exports = {
     name: 'me',
     description: 'Play a personalized greeting. If not set up, contact Bus.',
+    category: 'sound',
     usage: '[username]',
     execute(client, config, db, message, args) {
         const user = message.mentions.members.size

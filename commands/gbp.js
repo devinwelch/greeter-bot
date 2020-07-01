@@ -3,6 +3,7 @@ const { getData } = require('../utils.js');
 module.exports = {
     name: 'gbp',
     description: 'Find out how many good boy points you have! Maybe you can buy some tendies if you have enough...',
+    category: 'gbp',
     usage: '[user]',
     execute(client, config, db, message, args) {
         const userIDs = message.mentions.members.size

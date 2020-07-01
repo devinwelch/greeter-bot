@@ -3,6 +3,7 @@ const ytdl = require('ytdl-core');
 module.exports = {
     name: 'sing',
     description: 'Play the first 10 seconds of a YouTube video in voice chat. Seeking too far slows this down.',
+    category: 'sound',
     usage: '<youtube link> [start time (seconds)]',
     execute(client, config, db, message, args) {
         const voiceChannel = message.member.voice.channel;

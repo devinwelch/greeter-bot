@@ -3,6 +3,7 @@ const { getData } = require('../utils.js');
 module.exports = {
     name: 'xp',
     description: "Check a user's current level!",
+    category: 'rpg',
     aliases: ['experience', 'level', 'lvl'],
     usage: '[user|tag]',
     execute(client, config, db, message, args) {

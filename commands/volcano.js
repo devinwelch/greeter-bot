@@ -8,6 +8,7 @@ module.exports = {
                 "Use the word 'klok' to activate music.\n" +
                 '**Solo:** make it to the end to double your wager.\n' +
                 '**Crew:** last person remaining takes all. If multiple escape, pot is split among winners.',
+    category: 'fun',
     usage: '[wager] [klok]',
     execute(client, config, db, message, args) {
         const wager = Math.min(/\d+.*/.test(args) ? Math.max(Math.floor(args.trim().split(/\D/, 1)[0]), 0) : 0, 100);

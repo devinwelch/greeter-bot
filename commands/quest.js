@@ -7,6 +7,7 @@ const quicktime = ['🔴', '🔵', '🟢', '🟡'];
 module.exports = {
     name: 'quest',
     description: 'Fight a random enemy to earn GBP! React in time to land a hit!',
+    category: 'rpg',
     execute(client, config, db, message, args) {
         getData(db, message.author.id)
         .then(data => {

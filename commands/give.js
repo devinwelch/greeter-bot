@@ -3,6 +3,7 @@ const { updateData, getData } = require('../utils.js');
 module.exports = {
     name: 'give',
     description: 'Donate GBPs to bring up our fellow sinners with your kind spirit.',
+    category: 'gbp',
     aliases: ['donate'],
     usage: '<amount> <username/tag>',
     execute(client, config, db, message, args) {

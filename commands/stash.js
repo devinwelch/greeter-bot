@@ -3,6 +3,7 @@ const { getData, updateData } = require('../utils.js');
 module.exports = {
     name: 'stash',
     description: "Set aside GBPs for a rainy day. Don't want to walk into a casino with all your money, right?",
+    category: 'gbp',
     aliases: ['stache'],
     usage: '[amount|max|all]',
     execute(client, config, db, message, args) {

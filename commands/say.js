@@ -3,6 +3,7 @@ const { react } = require('../utils');
 module.exports = {
     name: 'say',
     description: 'Lets Bus post a message from greeter-bot',
+    category: 'misc.',
     usage: '<comment>',
     hideFromHelp: true,
     execute(client, config, db, message, args) {

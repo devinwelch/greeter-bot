@@ -3,6 +3,7 @@ const { getData, updateData } = require('../utils.js');
 module.exports = {
     name: 'pay',
     description: 'Pay back your loan early.',
+    category: 'gbp',
     aliases: ['repay', 'payloan'],
     execute(client, config, db, message, args) {
         //get users GBP and loan data

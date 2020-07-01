@@ -3,6 +3,7 @@ const { getRandom, getData, react } = require('../utils.js');
 module.exports = {
     name: 'pray',
     description: "Pray to RNGesus to cleanse you of your GBP debt. Random chance; can be used once per day. You'll be told if it works!",
+    category: 'gbp',
     execute(client, config, db, message, args) {
         if (!client.prayers.includes(message.author.id)) {
             client.prayers.push(message.author.id);

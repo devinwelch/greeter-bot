@@ -3,6 +3,7 @@ const { getData } = require('../utils.js');
 module.exports = {
     name: 'inventory',
     description: 'See what items you have in your inventory',
+    category: 'rpg',
     execute(client, config, db, message, args) {
         getData(db, message.author.id)
         .then(data => {

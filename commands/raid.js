@@ -5,6 +5,7 @@ const { Fighter, Action, getHeader, display, getOrder } = require('../fights');
 const self = module.exports = {
     name: 'raid',
     description: 'Join forces for a PVE raid. Loot pool is 8x wager, split among all party members.',
+    category: 'rpg',
     usage: '[wager] [@users/here]',
     execute(client, config, db, message, args) {
         const wager = /\d+.*/.test(args) ? Math.max(Math.floor(args.trim().split(/\D/, 1)[0]), 0) : 0;

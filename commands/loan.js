@@ -4,6 +4,7 @@ module.exports = {
     name: 'loan',
     description: "Take out a loan from greeter-bot. Be careful, he's a shark; he will collect 110% at midnight(EST).\n" + 
                  'Use no arguments to check the status of your loan or see how much you qualify for.',
+    category: 'gbp',
     usage: '[amount]',
     execute(client, config, db, message, args) {
         //return before querying

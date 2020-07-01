@@ -3,6 +3,7 @@ const { react } = require('../utils.js');
 module.exports = {
     name: 'poll',
     description: 'Create a poll with 2-9 options. Separate options with semicolons. Use reactions to vote.',
+    category: 'misc.',
     aliases: ['ask'],
     usage: '<question>? <option 1>; <option 2>; [option 3]; ...',
     execute(client, config, db, message, args) {

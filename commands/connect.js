@@ -8,6 +8,7 @@ const yellow = '🟡';
 module.exports = {
     name: 'connect',
     description: 'Play Connect 4 against a friend. Put some GBPs on the line if you want! 120s turn timer.',
+    category: 'fun',
     aliases: ['challenge'],
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {

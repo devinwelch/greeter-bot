@@ -3,6 +3,7 @@ const { getData, updateData } = require('../utils');
 module.exports = {
     name: 'unpaws',
     description: 'Remove your rumpaws skill upgrade :(',
+    category: 'rpg',
     execute(client, config, db, message, args) {
         getData(db, message.author.id)
         .then(data => {

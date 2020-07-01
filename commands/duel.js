@@ -4,6 +4,7 @@ const { Fighter, Action, getHeader, display, getOrder } = require('../fights');
 const self = module.exports = {
     name: 'duel',
     description: 'Duel against another player using equipped weapons. Add a wager to bet GBPs! Spectators can place side bets before the duel starts.',
+    category: 'rpg',
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
         //input sanitization

@@ -4,6 +4,7 @@ const items = require('./items.json');
 module.exports = {
     name: 'skills',
     description: 'Spend your skill points earned every 5 levels. Spend 5 points to earn rank 2 weapon upgrades and 10 to unlock rank 3.',
+    category: 'rpg',
     aliases: ['skill'],
     usage: '[skill/weapon]',
     execute(client, config, db, message, args) {

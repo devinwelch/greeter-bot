@@ -11,6 +11,7 @@ const { react } = require('../utils.js');
 module.exports = {
     name: 'reset',
     description: 'Start a vote to reset the economy. If top 3 good boys™ concur, all user GBPs are set to 0 at midnight EST. Items are kept. Maximum of 1 reset per week.',
+    category: 'gbp',
     execute(client, config, db, message, args) {
         start(client, config, db, message, args);
     }

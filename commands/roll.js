@@ -3,6 +3,7 @@ const { delay, getRandom } = require('../utils.js');
 module.exports = {
     name: 'roll',
     description: "Roll an *n*-sided die *x* times. Lower limit is optional (defaults to 1). 'd' character is optional if not rolling multiple dice.",
+    category: 'misc.',
     aliases: ['rollfast'], //TODO:implement later
     usage: '[d][lower-]<upper limit>` *or* `[x]d<range>`\nExamples:\n```!roll 20\n!roll 3d6\n!roll 5-10``', //this is a mess
     execute(client, config, db, message, args) {

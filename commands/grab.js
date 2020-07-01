@@ -3,6 +3,7 @@ const { getData, updateData } = require('../utils.js');
 module.exports = {
     name: 'grab',
     description: 'Withdraw GBPs from your stash.',
+    category: 'gbp',
     usage: '[amount]',
     execute(client, config, db, message, args) {
         if (args || args.length) {
