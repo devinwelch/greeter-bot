@@ -26,13 +26,14 @@ for (const file of commandFiles) {
 client.swears = fs.readFileSync('./swears.txt').toString().split(',');
 client.themeSongs = [];
 client.prayers = [];
+client.buybacks = {};
 
 AWS.config.update({
     region: config.db.region,
     endpoint: config.db.endpoint
 });
 const db = new AWS.DynamoDB.DocumentClient();
-db.xp = fs.readFileSync('./xp.txt').toString().split(',');
+db.xp = fs.readFileSync('./rpg/xp.txt').toString().split(',');
 
 client.on('ready', () => {
     console.log('I am ready!');

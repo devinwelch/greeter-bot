@@ -1,7 +1,10 @@
+const { Weapon  } = require('./rpg/classes/weapon');
+const { v4: uuidv4 } = require('uuid');
+const items = require('./rpg/items.json');
 const config = require('./config.json');
 const fs = require('fs');
 
-let self = module.exports = {
+const self = module.exports = {
     getPopularChannel(client) {
         return client.channels.cache
             .filter(channel => channel.type === 'voice')
@@ -134,8 +137,25 @@ let self = module.exports = {
         });
     },
 
-    selectRandom(array) {
-        return array[Math.floor(Math.random() * array.length)];
+    selectRandom(array, amount) {
+        if (!amount) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        if (amount > array.length) {
+            return false;
+        }
+        
+        const selected = [];
+        const arr = Array.from(array);
+        
+        for(let i = 0; i < amount; i++) {
+            const selection = self.getRandom(arr.length - 1);
+            selected.push(arr[selection]);
+            arr.splice(selection, 1);
+        }
+
+        return selected;
     },
 
     getRandom(x, y) {
@@ -169,8 +189,8 @@ let self = module.exports = {
                 HighScore   : options.gbps || 0,
                 Stash       : 0,
                 Loan        : 0,
-                Inventory   : { 'fists': true, 'random': true },
-                Equipped    : 'fists',
+                Inventory   : [self.generateWeapon(1, { type: 'fists', chances: [1, 0, 0, 0], plain: true })],
+                Equipped    : 0,
                 Team        : 'none',
                 Lvl         : getLvl(db.xp, options.xp || 1),
                 XP          : options.xp || 0,
@@ -240,6 +260,9 @@ let self = module.exports = {
                     if (lvl > d.Lvl) {
                         expressions.push('Lvl = :lvl');
                         attributes[':lvl'] = lvl;
+
+                        expressions.push('Inventory[0] = :fists');
+                        attributes[':fists'] = self.generateWeapon(lvl, { type: 'fists', chances: [1, 0, 0, 0], plain: true });
                         
                         //announce to the world
                         const botchat = user.client.channels.cache.get(config.ids.botchat);
@@ -266,15 +289,29 @@ let self = module.exports = {
                 }
 
                 if (options.inventory) {
-                    Object.keys(options.inventory).forEach(i => {
-                        expressions.push(`Inventory.${i} = :${i}`);
-                        attributes[`:${i}`] = options.inventory[i];
-                    });
+                    if (!Array.isArray(options.inventory)) {
+                        options.inventory = [options.inventory];
+                    }
+                    if (options.inventory.length) {
+                        expressions.push('Inventory = list_append(Inventory, :inventory)');
+                        attributes[':inventory'] = options.inventory;
+                    }
                 }
 
-                if (options.equipped) {
+                if (!isNaN(options.equipped) && options.equipped !== d.Equipped) {
                     expressions.push('Equipped = :equipped');
                     attributes[':equipped'] = options.equipped;
+                }
+
+                if (options.reequip) {
+                    if (d.Equipped === options.reequip) {
+                        expressions.push('Equipped = :equipped');
+                        attributes[':equipped'] = 0;
+                    }
+                    else if (d.Equipped > options.reequip) {
+                        expressions.push('Equipped = Equipped + :reequip');
+                        attributes[':reequip'] = -1;
+                    }
                 }
 
                 if (options.team) {
@@ -301,12 +338,21 @@ let self = module.exports = {
                     }
                     else {
                         if (attributes[':xp'] >= 100 || Object.keys(attributes).some(a => a !== ':xp')) {
+                            if (attributes[':inventory']) {
+                                for (let i = 0; i < attributes[':inventory'].length; i++) {
+                                    attributes[':inventory'][i] = {
+                                        rarity: attributes[':inventory'][i].rarity,
+                                        type: attributes[':inventory'][i].type
+                                    };
+                                }
+                            }
+                            attributes[':fists'] = undefined;
                             console.log(`Updated ${user.username || user}:`, JSON.stringify(attributes));
                         }
                         
                         //optional confirmation to user
                         if (options.message && options.emoji) {
-                            self.react(options.message, [options.emoji]);
+                            self.react(options.message, options.emoji);
                         }
                     }
                 });
@@ -542,6 +588,9 @@ let self = module.exports = {
 
     react(message, emojis) {
         try {
+            if (!Array.isArray(emojis)) {
+                emojis = [emojis];
+            }
             emojis.forEach(emoji => message.react(emoji));
             return true;
         }
@@ -582,3 +631,291 @@ function getLvl(table, xp) {
 
     return false;
 }
+
+self.generateWeapon = function(lvl, options) {
+    options = options || {};
+
+    //generate uuid
+    const id = options.id || uuidv4();
+
+    //determine rarity
+    const chances = options.chances || [75, 17, 7, 1];
+    const roll = self.getRandom(chances.reduce((a, b) => a + b) - 1);
+    const rarity = 
+        roll < chances[0] ? 0 :
+        roll < chances[0] + chances[1] ? 1 :
+        roll < chances[0] + chances[1] + chances[2] ? 2 : 3;
+
+    //do not award comon fists (randomly)
+    let weapons = Object.values(items).filter(item => item.weapon && !item.cursed);
+    if (!rarity) {
+        weapons = weapons.filter(w => w.type !== 'fists');
+    }
+
+    const w = options.type
+        ? items[options.type] 
+        : self.selectRandom(weapons);
+
+    const weapon = new Weapon({
+        rarity:         rarity,
+        id:             id,
+
+        type:           w.type,
+        name:           w.name,
+        icon:           w.icons[rarity],
+        description:    w.description,
+        win:            w.win,
+
+        low:            w.low,
+        high:           w.high,
+        priority:       w.priority,
+        hits:           w.hits,
+        steel:          w.steel,
+
+        spidermin:      w.spidermin,
+        spidermax:      w.spidermax,
+        zerk:           w.zerk,
+        instakill:      w.instakill,
+        sequence:       w.sequence,
+        slow:           w.slow
+    });
+
+    //get random bonuses for rare+
+    if (weapon.rarity) {
+        const stats = self.shuffle(['dmg', 'speed', 'reaction', 'hp', 'insta', 'priority']);
+        const bonuses = {};
+
+        stats.forEach(stat => bonuses[stat] = 0);
+
+        let points = self.getRandom(10, 20);
+        let s = 0;
+        
+        while (points > 0 && s < stats.length) {
+            switch(stats[s]) {
+                case 'dmg':
+                    bonuses.dmg = getWeaponBonus(1, 5, 2, points);
+                    if (!bonuses.dmg) break;
+                    points -= 2 * bonuses.dmg;
+                    weapon.low *= 1 + bonuses.dmg / 100;
+                    weapon.high *= 1 + bonuses.dmg / 100;
+                    weapon.bonuses.push(`+${bonuses.dmg}% dmg`);
+                    break;
+                case 'speed':
+                    bonuses.speed = getWeaponBonus(1, 5, 1, points);
+                    if (!bonuses.speed) break;
+                    points -= bonuses.speed;
+                    weapon.speed = 5 * bonuses.speed;
+                    weapon.bonuses.push(`+${5 * bonuses.speed} speed`);
+                    break;
+                case 'reaction':
+                    bonuses.reaction = getWeaponBonus(1, 4, 1, points);
+                    if (!bonuses.reaction) break;
+                    points -= bonuses.reaction;
+                    weapon.reaction = 1500 + 250 * bonuses.reaction;
+                    weapon.bonuses.push(`+${bonuses.reaction === 4 ? '1s' : 250 * bonuses.reaction + 'ms'} reaction time`);
+                    break;
+                case 'hp':
+                    bonuses.hp = getWeaponBonus(1, 3, 5, points);
+                    if (!bonuses.hp) break;
+                    points -= 5 * bonuses.hp;
+                    weapon.hpRegen = bonuses.hp;
+                    weapon.bonuses.push(`+${bonuses.hp} hp regen`);
+                    break;
+                case 'insta':
+                    bonuses.insta = getWeaponBonus(1, 2, 10, points);
+                    if (!bonuses.insta || weapon.sequence) break;
+                    points -= 10 * bonuses.insta;
+                    weapon.instakill += bonuses.insta;
+                    weapon.bonuses.push(`+${bonuses.insta}% instakill chance`);
+                    break;
+                case 'priority':
+                    bonuses.priority = getWeaponBonus(1, 2, 10, points);
+                    if (!bonuses.priority) break;
+                    points -= 10 * bonuses.priority;
+                    weapon.priority += bonuses.priority / 2;
+                    weapon.bonuses.push(`+${bonuses.priority / 2} priority`);
+                    break;
+            }
+
+            s++;
+        }
+    }
+    //common, stat modified (use 'plain' to force no modifiers)
+    else if (!options.plain && self.getRandom(1)) {
+        //light weapon
+        if (self.getRandom(1)) {
+            weapon.low *= .97;
+            weapon.high *= .97;
+            weapon.reaction = 2000;
+            weapon.speed = 20;
+
+            weapon.bonuses = ['-3% dmg', '+10 speed', '+500ms reaction time'];
+        }
+        //heavy weapon
+        else {
+            weapon.low *= 1.05;
+            weapon.high *= 1.05;
+            weapon.speed = -20;
+
+            weapon.bonuses = ['+5% dmg', '-20 speed'];
+        }
+    }
+
+    weapon.lvl = Math.round(0.9 * lvl);
+    const bonus = self.getBonus(lvl);
+    weapon.low *= bonus;
+    weapon.high *= bonus;
+
+    return weapon;
+
+    function getWeaponBonus(min, max, weight, available) {
+        const roll = self.getRandom(min, max);
+        for(let i = roll; i >= 0; i--) {
+            if (i * weight <= available) {
+                return i;
+            }
+        }
+    }
+};
+
+self.getOrder = function(party) {
+    //get different weapon priorities
+    const priorities = [...new Set(party.map(fighter => fighter.weapon.priority))];
+    let order = [];
+
+    //randomize order of player per different weapon speed
+    priorities.sort((a, b) => b - a).forEach(p => {
+        const players = party.filter(user => user.weapon.priority === p);
+        order = order.concat(self.shuffleFighters(players));
+    });
+
+    //assign turns
+    for(let i = 0; i < order.length; i++) {
+        order[i].position = i;
+    }
+    
+    return order;
+};
+
+self.shuffleFighters = function(party) {
+    let order = [];
+    
+    while(party.length) {
+        //1-total, defines fighter's speed = 15 + weapon.speed
+        const roll = self.getRandom(1, party.map(fighter => fighter.weapon.speed + 20).reduce((a, b) => a + b));
+        let sum = 0;
+
+        for(let i = 0; i < party.length; i++) {
+            sum += party[i].weapon.speed + 20;
+            if (roll <= sum) {
+                order = order.concat(party.splice(i, 1));
+                break;
+            }
+        }
+    }
+
+    return order;
+};
+
+self.addToInventory = async function(client, db, user, item) {
+    let data = await self.getData(db, user.id);
+    if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
+        return;
+    }
+
+    data = data.Responses.GBPs[0];
+    if (data.Inventory.length > 10 + 5 * (data.Skills.backpack || 0)) {
+        self.addToBuybacks(client, user, item);
+        self.updateData(db, user, { gbps: item.sell() });
+        return true;
+    }
+    else {
+        self.updateData(db, user, { inventory: item });
+        return false;
+    }
+};
+
+self.addToBuybacks = async function(client, user, item) {
+    if (client.buybacks[user.id]) {
+        client.buybacks[user.id].push(item);
+    }
+    else {
+        client.buybacks[user.id] = [item];
+    }
+};
+
+//determine multiplier based on fighter's level
+self.getBonus = function(lvl) {
+    return (1 + (lvl === 99 ? 100 : lvl - 1) / 100) ** 2; 
+};
+
+self.need = async function(client, db, party, channel, options) {
+    const users = party.filter(f => f.human).map(h => h.member.user);
+    let item;
+    let text;
+
+    const need = new Set();
+    const greed = new Set();
+    const pass = new Set();
+
+    if (options.pick) {
+        item = { type: 'pick', id: uuidv4() };
+        text = 'The Pick of Destiny';
+    }
+    else {
+        item = self.generateWeapon(1, options);
+        text = `A${item.rarity === 2 ? 'n' : ''} ${item.getRarity()} ${item.name}`;
+    }
+
+    if (users.length === 1) {
+        channel.send(`You found ${text}!`);
+        return self.addToInventory(client, db, users[0], item);
+    }
+
+    text += ' dropped! Roll for it:\t🎲 Need\t💰 Greed\t🚫 Pass';
+    const message = await channel.send(text);
+
+    self.react(message, ['🎲', '💰', '🚫']);
+    const filter = (reaction, user) => users.includes(user);
+    const collector = message.createReactionCollector(filter, { time: 30000 });
+    
+    collector.on('collect', (reaction, user) => {
+        reaction.users.remove(user);
+
+        switch (reaction.emoji.name) {
+            case '🎲':
+                need.add(user);
+                break;
+            case '💰':
+                greed.add(user);
+                break;
+            case '🚫':
+                pass.add(user);
+                break;
+            default:
+                break;
+        }
+
+        if ((new Set([...need, ...greed, ...pass])).size === users.length) {
+            collector.stop();
+        }
+    });
+
+    collector.on('end', () => {
+        let arr =
+            need.size ? need :
+            greed.size ? greed :
+            pass.size ? pass : users;
+
+        const winner = self.selectRandom(Array.from(arr));
+
+        if (item.weapon) {
+            const options = { type: item.type, chances: [0, 0, 0, 0] };
+            options.chances[item.rarity] = 1;
+            item = self.generateWeapon(party.find(fighter => fighter.member.id === winner.id).lvl || 1, options);
+        }
+
+        self.addToInventory(client, db, winner, item);
+        channel.send(`${winner.username} wins!`);
+    });
+};

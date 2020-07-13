@@ -5,7 +5,7 @@ module.exports = {
     aliases: ['begonebot'],
     execute(client, config, db, message, args) {
         const channel = message.guild.me.voice.channel;
-        if (channel) {   
+        if (channel && !client.rocking) {   
             channel.leave();
         }
     }

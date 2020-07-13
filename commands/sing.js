@@ -11,11 +11,10 @@ module.exports = {
         const song = args[0];
         const streamOptions = { seek: args.length > 1 ? args[1] : 0, volume: 0.5 };
 
-        if (message.member.voice.channel && (!voiceChannel.parent || voiceChannel.parent.id !== config.ids.foil)) {
+        if (voiceChannel && ytdl.validateURL(song) && (!voiceChannel.parent || voiceChannel.parent.id !== config.ids.foil)) {
             voiceChannel.join()
-            .then(connection => {
-                const stream = ytdl(song, { filter: 'audioonly' });
-                const dispatcher = connection.play(stream, streamOptions);
+            .then(async function(connection) {
+                const dispatcher = connection.play(ytdl(song), streamOptions);
                 dispatcher.on('start', () => {
                     setTimeout(() => dispatcher.end(), 10000);
                 });

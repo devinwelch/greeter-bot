@@ -43,7 +43,7 @@ let self = module.exports = {
                 client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
             if (!command) {
-                return react(message, [config.ids.brownie]);
+                return react(message, config.ids.brownie);
             }
 
             if (command.args && !args.length) {
@@ -93,7 +93,7 @@ let self = module.exports = {
         //Enforce some positivity
         else if (self.isQuestion(message.content)) {
             playSong(client, message.member.voice.channel, 'Doable.mp3');
-            react(message, [config.ids.doable]);
+            react(message, config.ids.doable);
         }
 
         //Man's not hot
@@ -114,7 +114,7 @@ let self = module.exports = {
         else if (!getRandom(19)) {
             if (!getRandom(9) && message.member.voice.channel) {
                 playSong(client, message.member.voice.channel, 'Ree.mp3');
-                react(message, [config.ids.ree]);
+                react(message, config.ids.ree);
             }
             else {   
                 message.channel.send(self.spongeMock(message.content));

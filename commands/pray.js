@@ -10,7 +10,7 @@ module.exports = {
             pray(db, message);
         }
 
-        react(message, ['🙏']);
+        react(message, '🙏');
     }
 };
 
