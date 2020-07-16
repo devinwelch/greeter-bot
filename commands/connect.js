@@ -241,7 +241,7 @@ class Board {
         }
 
         //check diagonal down-left
-        for (x = 4; x < 7; x++) {
+        for (x = 3; x < 7; x++) {
             for (y = 3; y < 7; y++) {
                 if (this[x][y] !== blank &&
                     this[x][y] === this[x-1][y-1] &&
