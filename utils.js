@@ -1,4 +1,5 @@
-const { Weapon  } = require('./rpg/classes/weapon');
+const { Weapon } = require('./rpg/classes/weapon');
+const { Item } = require('./rpg/classes/item');
 const { v4: uuidv4 } = require('uuid');
 const items = require('./rpg/items.json');
 const config = require('./config.json');
@@ -821,6 +822,10 @@ self.addToInventory = async function(client, db, user, item) {
     let data = await self.getData(db, user.id);
     if (!data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
         return;
+    }
+
+    if (item.weapon) {
+        item = new Item(item);
     }
 
     data = data.Responses.GBPs[0];
