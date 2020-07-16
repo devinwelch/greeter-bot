@@ -244,7 +244,7 @@
     },
     "rumpaws": {
         "type": "rumpaws",
-        "name": "Paws",
+        "name": "Rumpaws",
         "upgrade": "Paws more harder and/or better to the outer limits of this world!",
         "skillUpgrades": 1,
         "icon": "🐾"

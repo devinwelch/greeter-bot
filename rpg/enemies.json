@@ -1,7 +1,7 @@
 {
     "creatures": {
         "devil":    { "emoji": "😈", "literal": "the :adj devil",  "dmg": 5,  "hp": 40, "xp": 100 },
-        "ogre":     { "emoji": "👹", "literal": "a :adj ogre",     "dmg": 20,  "hp": 20, "speed": -2, "xp": 50 },
+        "ogre":     { "emoji": "👹", "literal": "a :adj ogre",     "dmg": 20,  "hp": 20, "speed": -2, "slow": true, "xp": 50 },
         "goblin":   { "emoji": "👺", "literal": "a :adj goblin",   "dmg": 0,  "hp": 0 },
         "skeleton": { "emoji": "💀", "literal": "a :adj skeleton", "dmg": 0,  "hp": 0 },
         "ghost":    { "emoji": "👻", "literal": "a :adj ghost",    "dmg": 0,  "hp": 0 },
