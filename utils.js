@@ -824,7 +824,7 @@ self.addToInventory = async function(client, db, user, item) {
         return;
     }
 
-    if (item.weapon) {
+    if (!item.weapon) {
         item = new Item(item);
     }
 
