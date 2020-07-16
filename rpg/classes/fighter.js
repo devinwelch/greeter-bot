@@ -75,7 +75,7 @@ module.exports.Fighter = class {
         if (this.spiders) {
             const dmgText = 'Spiders dealt <dmg> dmg!';
             const deathText = `${this.name} was devoured by spiders!`;
-            const dmg = Math.min(50, this.spiders);
+            const dmg = this.spiders;
             this.getStatusEffect(dmgText, deathText, dmg, actions, party, options);
         }
         if (this.weapon.hpRegen && this.hp > 0 && this.hp < this.max) {
