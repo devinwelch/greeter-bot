@@ -164,13 +164,6 @@ function getHeader(client, party, hp, qt) {
 }
 
 async function getReactions(message, party, qt) {
-    // const collectors = {};
-
-    // party.filter(fighter => fighter.human && fighter.hp > 0).forEach(fighter => {
-    //     const filter = (reaction, user) => fighter.member.user === user;
-    //     collectors[fighter.member.id] = message.createReactionCollector(filter, { time: fighter.weapon.reaction});
-    // });
-
     //only consider alive humans
     const reactors = party.filter(fighter => fighter.human && fighter.hp > 0);
     const filter = (reaction, user) => reactors.some(figher => figher.member.id === user.id);

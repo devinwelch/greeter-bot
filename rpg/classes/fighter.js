@@ -25,6 +25,8 @@ module.exports.Fighter = class {
     getTurn(client, party, targets, options) {
         let actions = [];
         
+        options = options || {};
+
         //skip turn if user failed QTE
         if (!options.skip) {
             if (this.stumble) {
