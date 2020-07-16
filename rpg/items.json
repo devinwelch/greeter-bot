@@ -243,7 +243,7 @@
         "icon": "🍀"
     },
     "rumpaws": {
-        "type": "paws",
+        "type": "rumpaws",
         "name": "Paws",
         "upgrade": "Paws more harder and/or better to the outer limits of this world!",
         "skillUpgrades": 1,
