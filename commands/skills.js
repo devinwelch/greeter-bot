@@ -20,7 +20,7 @@ module.exports = {
             const spent = Object.keys(data.Skills).length ? Object.values(data.Skills).reduce((a, b) => a + b) : 0;
             const available = (data.Lvl === 99 ? 20 : Math.floor(data.Lvl / 5)) - spent;
             const upgradable = Object.values(items).filter(item => item.upgrade);
-            const owned = upgradable.filter(item => !item.weapon || data.Inventory.some(i => i.type === item.type));
+            const owned = upgradable.filter(item => !item.weapon || data.Inventory.some(i => i.type === item.type) || data.Skills[item.type]);
             const maxLength = Math.max(...owned.map(item => item.name.length)) + 4;
 
             if (args.length) {
