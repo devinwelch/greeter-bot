@@ -71,7 +71,7 @@ module.exports.Human = class extends Fighter {
                 this.weapon.lifeSteal = (epic ? 12 : 9) * bonus;
                 break;
             case 'sword':
-                this.weapon.parry = (epic ? 8 : 6);
+                this.weapon.parry = (epic ? 8 : 6) * bonus;
                 break;
             case 'warhammer':
                 dmg = (epic ? 5 : 4) * bonus;
