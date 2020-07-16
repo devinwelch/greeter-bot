@@ -204,8 +204,8 @@ module.exports.Fighter = class {
                     }
 
                     //lifesteal
-                    if (this.weapon.lifesteal && this.hp < this.max) {
-                        const heal = Math.min(this.weapon.lifesteal * dmg / 100, this.max - this.hp);
+                    if (this.weapon.lifeSteal && this.hp < this.max) {
+                        const heal = Math.min(this.weapon.lifeSteal * dmg / 100, this.max - this.hp);
                         this.hp += heal;
                         text += ` and healed **${Math.round(heal)}** hp`;
                     }
