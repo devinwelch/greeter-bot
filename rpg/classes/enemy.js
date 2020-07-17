@@ -73,7 +73,7 @@ module.exports.Enemy = class extends Fighter {
             this.infected = true;
         }
         if (this.weapon.type === '🔥') {
-            this.burning = true;
+            this.burning = 2;
         }
 
         //represent the enemy visually

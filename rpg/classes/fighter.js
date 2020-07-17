@@ -319,7 +319,7 @@ module.exports.Fighter = class {
             if (!opponent.burning) {
                 actions.push(new Action(`${opponent.name} caught on fire!`, this.position, party));
             }
-            opponent.burning = Math.max(opponent.burning, 3);
+            opponent.burning = Math.max(opponent.burning, 2);
         }
 
         return actions;

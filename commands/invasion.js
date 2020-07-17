@@ -113,6 +113,10 @@ async function getResults(client, db, party, board, actions, turn, header, map) 
     const humans  = party.filter(p => p.human);
     const enemies = party.filter(p => p.enemy);
 
+    if (humans[0].member === humans[1].member) {
+        humans.pop();
+    }
+
     let win = false;
     let xpAward = 0;
     enemies.filter(e => e.hp <= 0).forEach(e => {

@@ -202,19 +202,25 @@ async function getResults(client, config, db, message, leader, game) {
 
     game.finished = true;
 
-    await delay(5000);
     await display(client, config, message, game);
 
     const filter = (reaction, user) => user === leader && (reaction.emoji.name === check || reaction.emoji.name === circle);
     const collector = message.createReactionCollector(filter, { time: 60000, max: 1 });
 
+    let clear = true;
+
     collector.on('collect', (reaction, user) => {
         reaction.users.remove(user);
 
         if (reaction.emoji.name === check) {
+            clear = false;
             takeBets(client, config, db, message, leader);
         }
-        else {
+    });
+
+    collector.on('end', () => {
+        if (clear) {
+            message.reactions.removeAll();
             display(client, config, message, game, true);
         }
     });
