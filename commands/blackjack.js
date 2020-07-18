@@ -167,7 +167,7 @@ async function play(client, config, db, message, leader, game) {
     game.house.hand[1].down = false;
     await display(client, config, message, game);
 
-    while (getTotal(game.house.hand) <= 16 && game.players.some(p => getTotal(p.hand) < 21)) {
+    while (getTotal(game.house.hand) <= 16 && game.players.some(p => getTotal(p.hand) <= 21)) {
         game.deck.deal(game.house.hand);
         await display(client, config, message, game);
     }
@@ -182,13 +182,13 @@ async function getResults(client, config, db, message, leader, game) {
     game.players.filter(p => !p.finished).forEach(p => {
         const player = getTotal(p.hand);
 
-        if (player === house || (player > 21 && house > 21)) {
-            p.bet = '±0';
-        }
-        else if ((house > player && house <= 21) || player > 21) {
+        if (player > 21 || (house > player && house <= 21)) {
             win += p.bet;
             updateData(db, p.user, { gbps: -p.bet });
             p.bet = `-${p.bet}`;
+        }
+        else if (player === house) {
+            p.bet = '±0';
         }
         else {
             win -= p.bet;
