@@ -111,7 +111,7 @@ let self = module.exports = {
         }
 
         //Random chance to make fun of you or scream at you
-        else if (!getRandom(19)) {
+        else if (!getRandom(29)) {
             if (!getRandom(9) && message.member.voice.channel) {
                 playSong(client, message.member.voice.channel, 'Ree.mp3');
                 react(message, config.ids.ree);

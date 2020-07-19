@@ -592,7 +592,12 @@ const self = module.exports = {
             if (!Array.isArray(emojis)) {
                 emojis = [emojis];
             }
-            emojis.forEach(emoji => message.react(emoji));
+            emojis.forEach(emoji => {
+                const reaction = message.reactions.cache.find(reaction => reaction.emoji.id === emoji || reaction.emoji.name === emoji);
+                if (!reaction || !reaction.users.cache.has(reaction.client.user.id)) {
+                    message.react(emoji);
+                }
+            });
             return true;
         }
         catch (err) {

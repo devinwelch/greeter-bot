@@ -1,72 +1,31 @@
-const { react, getData, shuffle, delay, updateData } = require('../utils');
+const { getData, delay, updateData } = require('../utils');
+const { takeBets } = require('../casino/utils');
+const { Deck } = require('../casino/classes/deck');
 
 const circle = '⭕';
 const check = '✅';
 
 module.exports = {
     name: 'blackjack',
-    description: 'Play a round of blackjack at a table against greeter-bot, wagering GBPs! Deck shuffles after every round :^)',
+    description: 'Play a round of blackjack at a table against greeter-bot, wagering GBPs! Single deck shuffles after every round.',
     category: 'fun',
     aliases: ['21'],
     execute(client, config, db, message, args) {
         message.channel.send('<reserved>')
-        .then(msg => 
-            takeBets(client, config, db, msg, message.author)
-        )
+        .then(msg => bet(client, config, db, msg, message.author))
         .catch(console.error);
     }
 };
 
-function takeBets(client, config, db, message, leader) {
-    message.edit([
+async function bet(client, config, db, message, leader) {
+    const directions = [
         `${leader} wants to play blackjack! Everyone place your bets!`,
         'Betting over your total GBPs will bet max.',
-        `Anyone, press ${circle} to clear your bet/play for fun.`,
-        `${leader.username}, press ${check} to start.`
-    ]);
+        `${circle} Clear bet`,
+        `${check} Ready up`
+    ].join('\n');
 
-    const chips = [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000];
-    react(message, [circle, check].concat(chips));
-
-    const filter = (reaction, user) => 
-        user !== client.user &&
-        (
-            chips.includes(reaction.emoji.id) ||
-            reaction.emoji.name === circle ||
-            reaction.emoji.name === check
-        );
-    
-    const collector = message.createReactionCollector(filter, { time: 30000 });
-    const bets = {};
-    bets[leader.id] = 0;
-
-    collector.on('collect', (reaction, user) => {
-        reaction.users.remove(user);
-
-        if (reaction.emoji.name === check) {
-            if (user === leader) {
-                collector.stop();
-            }
-        }
-        else if (reaction.emoji.name === circle) {
-            bets[user.id] = 0;
-        }
-        else {
-            if (bets[user.id]) {
-                bets[user.id] += Number(reaction.emoji.name.substring(4));
-            }
-            else {
-                bets[user.id] = Number(reaction.emoji.name.substring(4));
-            }
-        }
-    });
-
-    collector.on('end', () => {
-        cleanBets(client, config, db, message, leader, bets);
-    });
-}
-
-async function cleanBets(client, config, db, message, leader, bets) {
+    const bets = await takeBets(client, config, message, leader, directions);
     let data = await getData(db, Object.keys(bets));
 
     if (!data.Responses || !data.Responses.GBPs) {
@@ -79,7 +38,7 @@ async function cleanBets(client, config, db, message, leader, bets) {
         const d = data.find(d => d.UserID === id);
 
         if (d) {
-            bets[id] = Math.max(Math.min(bets[id], d.GBPs), 0);
+            bets[id] = Math.max(Math.min(bets[id].amount, d.GBPs), 0);
         }
         else {
             bets[id] = 0;
@@ -214,7 +173,7 @@ async function getResults(client, config, db, message, leader, game) {
 
         if (reaction.emoji.name === check) {
             clear = false;
-            takeBets(client, config, db, message, leader);
+            bet(client, config, db, message, leader);
         }
     });
 
@@ -295,53 +254,4 @@ function getTotal(hand) {
     }
 
     return total;
-}
-
-class Deck {
-    constructor() {
-        this.newDeck();
-    }
-
-    newDeck() {
-        this.cards = [];
-
-        for (let rank = 1; rank <= 13; rank++) {
-            for(let suit = 0; suit < 4; suit++) {
-                this.cards.push(new Card(rank, suit));
-            }
-        }
-
-        shuffle(this.cards);
-    }
-
-    deal(hand, amount = 1) {
-        for (let i = 0; i < amount; i++) {
-            if (!this.cards.length) {
-                this.newDeck();
-            }
-
-            hand.push(this.cards.pop());
-        }
-    }
-}
-
-class Card {
-    constructor(rank, suit) {
-        this.rank = rank;
-        this.suit = suit;
-    }
-
-    getValue() {
-        return Math.min(10, this.rank);
-    }
-
-    top(client, config) {
-        const emoji = client.emojis.resolve(this.down ? config.ids.cardTop : config.ids.ranks[this.rank]);
-        return emoji.toString();
-    }
-
-    bot(client, config) {
-        const emoji = client.emojis.resolve(this.down ? config.ids.cardBottom : config.ids.suits[this.suit]);
-        return emoji.toString();
-    }
 }
