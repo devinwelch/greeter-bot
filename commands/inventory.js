@@ -62,7 +62,7 @@ self.execute = async function(client, config, db, message, args) {
             //sell
             case '💰':
                 if (await sell(client, db, user, result.id)) {
-                    index = index % result.length;
+                    index = (index - 1) % result.length;
                 }
                 break;
             
@@ -169,8 +169,8 @@ async function sell(client, db, user, id) {
     }
 
     updateData(db, user, { gbps: result.item.sell(), reequip: result.index });
-    addToBuybacks(client, user, result.item);
-    removeItem(db, user, result);
+    await addToBuybacks(client, user, result.item);
+    await removeItem(db, user, result);
 
     return true;
 }
