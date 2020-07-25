@@ -62,7 +62,7 @@ self.execute = async function(client, config, db, message, args) {
             //sell
             case '💰':
                 if (await sell(client, db, user, result.id)) {
-                    index = (index + 1) % result.length;
+                    index = index % result.length;
                 }
                 break;
             
