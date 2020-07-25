@@ -1,9 +1,6 @@
 const { getData, delay, updateData } = require('../utils');
-const { takeBets } = require('../casino/utils');
+const { takeBets, circle, check } = require('../casino/utils');
 const { Deck } = require('../casino/classes/deck');
-
-const circle = '⭕';
-const check = '✅';
 
 module.exports = {
     name: 'blackjack',

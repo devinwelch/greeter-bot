@@ -69,7 +69,7 @@ module.exports.Weapon = class {
     }
 
     sell() {
-        return [5, 10, 25, 50][this.rarity];
+        return [5, 25, 75, 200][this.rarity];
     }
 
     getRarity() {
