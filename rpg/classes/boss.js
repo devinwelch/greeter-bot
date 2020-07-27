@@ -5,25 +5,24 @@ const { Action } = require('./action');
 const config = require('../../config.json');
 
 module.exports.Boss = class extends Fighter {
-    constructor(clientMember, lvl, partySize) {
+    constructor(clientMember, lvl, partySize, type) {
         super(lvl, clientMember);
 
         let winText;
         let icon;
 
         //select raid boss type
-        this.type = getRandom(1, 3);
+        this.type = type ? type : getRandom(1, 3);
         switch (this.type) {
             case 1:
-                this.bonus *= 1 + .1 * Math.min(partySize, 4);
-                this.max = (70 + 80 * partySize) * this.bonus;
+                this.max = (50 + 75 * partySize) * this.bonus;
                 this.name = 'greeter-bot';
                 this.entrance = `A wild ${this.name} appeared!`;
                 winText = ":w KO'd :l!";
                 icon = config.ids.woop;
                 break;
             case 2:
-                this.max = (100 * partySize) * this.bonus;
+                this.max = 100 * partySize * this.bonus;
                 this.name = 'The Pentahook';
                 this.entrance = 'In Paraguay there lives a man, five rusty hooks on his right hand, and rage consumes his every living day!';
                 winText = ":w ate :l's face!";

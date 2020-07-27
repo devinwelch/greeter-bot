@@ -9,7 +9,7 @@ module.exports.Fighter = class {
         this.member = member;
 
         this.bonus = getBonus(this.lvl);
-        this.infected = this.member && this.member.roles.cache.has(config.ids.corona);
+        this.infected = this.member && this.member.roles && this.member.roles.cache.has(config.ids.corona);
 
         this.poisoned = 0;
         this.burning = 0;
@@ -186,9 +186,14 @@ module.exports.Fighter = class {
                         dmg = this.getDmg();
         
                         //required to balance battleaxe v. kamehameha matchup
-                        if (this.weapon.zerk && opponent.weapon.sequence) {
-                            opponent.shield = 0;
-                            dmg += 4;
+                        if (this.weapon.zerk) {
+                            if (opponent.weapon.sequence) {
+                                opponent.shield = 0;
+                                dmg += 4;
+                            }
+                            else if (opponent.weapon.spidermin) {
+                                dmg += 2;
+                            }
                         }
         
                         text = `${this.name} hit ${(options && options.named) ? opponent.name + ' ' : '' }for **<dmg>** dmg`;

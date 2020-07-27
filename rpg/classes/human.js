@@ -37,12 +37,12 @@ module.exports.Human = class extends Fighter {
         switch(this.weapon.type) {
             case 'bag':
                 if (epic) {
-                    this.weapon.spidermin += 1;
+                    this.weapon.spidermax += 1;
                 }
-                this.weapon.spidermax += bonus;
+                this.weapon.spidermin += bonus;
                 break;
             case 'battleaxe':
-                this.weapon.zerk += (epic ? .25 : .2) * bonus;
+                this.weapon.zerk += (epic ? .3 : .2) * bonus;
                 break;
             case 'bow':
                 this.weapon.multihit = (epic ? 10 : 7) * bonus;
@@ -55,11 +55,11 @@ module.exports.Human = class extends Fighter {
                 this.weapon.instakill += (epic ? 2 : 1.5) * bonus;
                 break;
             case 'fists':
-                this.weapon.suckerPunch = 40 + (epic ? 40 : 30) * bonus;
+                this.weapon.suckerPunch = 30 + (epic ? 40 : 30) * bonus;
                 break;
             case 'kamehameha':
                 multiplier = bonus > 2 ? bonus - 1 : bonus;
-                amount = (epic ? 15 : 10) * multiplier;
+                amount = (epic ? 20 : 10) * multiplier;
                 if (bonus > 2) {
                     this.shield += amount;
                 }
@@ -74,9 +74,9 @@ module.exports.Human = class extends Fighter {
                 this.weapon.parry = (epic ? 8 : 6) * bonus;
                 break;
             case 'warhammer':
-                dmg = (epic ? 5 : 4) * bonus;
-                this.weapon.low += dmg;
-                this.weapon.high += dmg;
+                dmg = 1 + ((epic ? 9 : 6) * bonus / 100);
+                this.weapon.low *= dmg;
+                this.weapon.high *= dmg;
                 this.weapon.recoil = 2 * bonus;
                 break;
         }

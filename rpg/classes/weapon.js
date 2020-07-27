@@ -38,7 +38,7 @@ module.exports.Weapon = class {
         this.set('lifeSteal', 0);       //% dmg to heal for
         this.set('parry', 0);           //% dmg to return
         this.set('slow');               //boolean, whether to have cooldown after weapon hit
-        this.set('recoil', 0);          //flat recoil dmg on hit
+        this.set('recoil', 0);          //% hp recoil dmg on hit
 
         delete this.data;
     }
