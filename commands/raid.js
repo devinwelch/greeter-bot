@@ -39,7 +39,8 @@ async function setup(client, db, guild, party, data, channel, voice) {
     });
 
     //average of all party members, re-averaged with highest level to add weight: this made things too easy with high skill lvls
-    const lvl = Math.round(((data.map(d => d.Lvl).reduce((a, b) => a + b) / data.length) + Math.max(...data.map(d => d.Lvl))) / 2);
+    //const lvl = Math.round(((data.map(d => d.Lvl).reduce((a, b) => a + b) / data.length) + Math.max(...data.map(d => d.Lvl))) / 2);
+    const lvl = Math.round((data.map(d => d.Lvl).reduce((a, b) => a + b) / data.length));
     const boss = new Boss(guild.members.resolve(client.user), lvl, party.length);
 
     //assign opponents and add boss to party
