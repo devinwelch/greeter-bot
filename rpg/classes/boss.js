@@ -109,7 +109,6 @@ module.exports.Boss = class extends Fighter {
             const dmgs = [];
             targets.forEach(p => {
                 const dmg = (surf ? getRandom(10, 15) : getRandom(5, 20)) * this.bonus;
-                p.takeDmg(dmg, this, party);
                 dmgs.push(Math.round(dmg));
                 extra = extra.concat(p.takeDmg(dmg, this, party));
                 extra = extra.concat(this.applyStatus(p, 2.5));
@@ -171,7 +170,6 @@ module.exports.Boss = class extends Fighter {
         const dmgs = [];
         targets.forEach(p => {
             const dmg = getRandom(1, 8) * this.bonus;
-            p.takeDmg(dmg, this, party);
             dmgs.push(Math.round(dmg));
             extra = extra.concat(p.takeDmg(dmg, this, party));
             extra = extra.concat(this.applyStatus(p, 2.5));
