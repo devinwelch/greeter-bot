@@ -94,14 +94,13 @@ async function fight(client, db, party, board, header, map) {
           party.filter(p => p.human).some(h => h.hp > 0))
     {
         turn = ++turn % party.length;
-        if (party[turn].hp <= 0) {
-            continue;
+
+        if (party[turn].hp > 0) {
+            await getTurn(client, party, board, actions, turn, header, map);
         }
 
-        await getTurn(client, party, board, actions, turn, header, map);
-
         if (turn === party.length - 1) {
-            await rain(client, party, board, actions, turn, header, map, round);
+            await rain(client, party, board, actions, header, map, round);
             round++;
         }
     }
@@ -323,7 +322,7 @@ async function move(client, party, board, actions, turn, header, map, moves) {
     return teleport;
 }
 
-async function rain(client, party, board, actions, turn, header, map, round) {
+async function rain(client, party, board, actions, header, map, round) {
     //every 5 rounds, add one extra effect
     for(let i = 0; i < Math.ceil(round / 5); i++) {
         const victims = [];
@@ -339,7 +338,7 @@ async function rain(client, party, board, actions, turn, header, map, round) {
             await delay(1500);
 
             //user at impact point loses 10% max hp, place crater at location
-            const impact = victimize(board, x, y, '☄️', 10, { burn: true, crater: true });
+            const impact = victimize(party, board, x, y, '☄️', 15, { burn: true, crater: true });
             if (impact) {
                 victims.push(impact);
             }
@@ -347,7 +346,7 @@ async function rain(client, party, board, actions, turn, header, map, round) {
             //surrounding users lose 5% hp, burn trees
             const surrounding = board.getSurrounding(x, y);
             surrounding.forEach(s => {
-                const burned = victimize(board, s.x, s.y, '🔥', 5, { burn: true });
+                const burned = victimize(party, board, s.x, s.y, '🔥', 5, { burn: true });
                 if (burned) {
                     victims.push(burned);
                 }
@@ -356,7 +355,7 @@ async function rain(client, party, board, actions, turn, header, map, round) {
         //lightning
         else {
             const victim = selectRandom(exposed);
-            victims.push(victimize(board, victim.x, victim.y, '⚡', 20, {}));
+            victims.push(victimize(party, board, victim.x, victim.y, '⚡', 15, {}));
 
             actions.push(new Action(`Lightning strikes ${getCoordinates(victim.x, victim.y)}!`, party.length, party));
             count = await display(client, party, board, actions, null, header, map);
@@ -374,7 +373,7 @@ async function rain(client, party, board, actions, turn, header, map, round) {
     board.clearTemp();
 }
 
-function victimize(board, x, y, icon, dmgPercent, options) {
+function victimize(party, board, x, y, icon, dmgPercent, options) {
     //set temporary icon
     board[x][y].temp = icon;
 
@@ -383,7 +382,7 @@ function victimize(board, x, y, icon, dmgPercent, options) {
     if (victim && victim.hp && victim.hp > 0) {
         //deal percent of hp dmg
         const dmg = Math.round(dmgPercent / 100 * victim.max);
-        victim.hp -= dmg;
+        victim.takeDmg(dmg, null, party);
 
         if (options.burn) {
             victim.burning = 1;

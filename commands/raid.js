@@ -83,7 +83,7 @@ async function getResults(client, db, message, party, actions) {
         const xp = Math.round(Math.log(party.length) * 1000 / humans.length);
         humans.forEach(h => updateData(db, h.member.user, { xp: xp }));
         actions.push(`Each player gains ${xp} XP!`);
-        need(client, db, party, message.channel, { chances: [0, 7, 2, 1], pick: boss.type === 3 });
+        need(client, db, party, message.channel, { chances: [0, 3, 2, 1], pick: boss.type === 3 });
     }
 
     display(client, message, actions, party, actions.length - 1);
