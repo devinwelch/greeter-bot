@@ -143,6 +143,10 @@ module.exports.Fighter = class {
                         }
                         else if (this.turn === this.weapon.sequence.length - 1) {
                             dmg = this.getDmg();
+
+                            if (opponent.boss) {
+                                dmg /= 2;
+                            }
                         }
 
                         text = this.name + this.weapon.sequence[Math.min(this.turn, this.weapon.sequence.length - 1)]

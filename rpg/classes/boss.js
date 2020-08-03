@@ -126,7 +126,7 @@ module.exports.Boss = class extends Fighter {
         this.immune = false;
 
         //grant immunity once per raid
-        if (this.hp <= this.max / 4 && !this.drunk) {
+        if (this.hp <= 120 && !this.drunk) {
             this.immune = true;
             this.drunk = true;
             this.poisoned = 0;
