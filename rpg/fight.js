@@ -4,8 +4,9 @@
 
 const { getRandom, selectRandom, getOrder, format, react, delay } = require('../utils');
 const { Action } = require('./classes/action');
-let emojis = ['🔴', '🔵', '🟢', '🟡'];
-const extended = ['🟣','⚫','⚪','🟤','🟠'];
+let QTEs;
+const emojis = ['🔴', '🔵', '🟢', '🟡'];
+const extended = ['🔴', '🔵', '🟢', '🟡', '🟣','⚫','⚪','🟤','🟠'];
 const wish = '🌠';
 
 const self = module.exports;
@@ -39,11 +40,9 @@ self.fight = async function(client, party, message, actions) {
 
     //display before first QTE comes up
     if (message) {
-        if (party.some(enemy => enemy.enemy && enemy.creature.tricky)) {
-            emojis = emojis.concat(extended);
-        }
+        QTEs = party.some(enemy => enemy.enemy && enemy.creature.tricky) ? extended : emojis;
         
-        react(message, party.some(enemy => enemy.magic) ? emojis.concat(wish) : emojis);
+        react(message, party.some(enemy => enemy.magic) ? QTEs.concat(wish) : QTEs);
         count = await self.display(client, message, actions, party, count);
         await delay(3000);
     }
@@ -52,7 +51,7 @@ self.fight = async function(client, party, message, actions) {
     while (fighting(party)) {
         //determine QTE
         if (message) {
-            const qt = selectRandom(emojis);
+            const qt = selectRandom(QTEs);
             count = await self.display(client, message, actions, party, count, qt);
         }
         
