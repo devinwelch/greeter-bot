@@ -76,11 +76,11 @@
         "gun":      { "emoji": "🔫", "literal": "a gun",        "enemy": "🐌" , "left": true },
         "balloon":  { "emoji": "🎈", "literal": "a balloon",    "enemy": "👦" , "left": true },
         "rainbow":  { "emoji": "🏳️‍🌈", "literal": "gay",          "enemy": "🐸" , "left": true, "adjective": true, "musical": true },
-        "stinky":   { "emoji": "💩", "literal": "stinky",       "enemy": "🦧" , "left": true, "adjective": true, "musical": true },
+        "stinky":   { "emoji": "💩", "literal": "stinky",       "enemy": "🦧" , "left": true, "adjective": true, "musical": true, "chance": 75 },
         "hair":     { "emoji": "💇", "literal": "human hair",   "enemy": "🤖" , "musical": true },
         "vaccine":  { "emoji": "💉", "literal": "a vaccine",    "enemy": "👩‍⚕️", "chance": 75 },
         "metal":    { "emoji": "⚙",  "literal": "better metal", "enemy": "🐍", "left": true, "adjective": true, "musical": true },
-        "child":    { "emoji": "🧒", "literal": "a child",      "enemy": "🦍", "chance": 15 },
-        "magic":    { "emoji": "🌟", "literal": "magic",        "enemy": "🕷", "chance": 5, "adjective": true, "musical": true }
+        "child":    { "emoji": "🧒", "literal": "a child",      "enemy": "🦍", "chance": 25 },
+        "magic":    { "emoji": "🌟", "literal": "magic",        "enemy": "🕷", "chance": 10, "adjective": true, "musical": true }
     }
 }
