@@ -29,7 +29,12 @@ module.exports.Fighter = class {
 
         //skip turn if user failed QTE
         if (!options.skip) {
-            if (this.stumble) {
+            if (this.wished) {
+                const text = `${this.name} wished upon a spider!`;
+                this.opponents.forEach(opponent => opponent.hp = 0);
+                actions.push(new Action(text, this.position, party));
+            }
+            else if (this.stumble) {
                 const text = `${this.name} ${(this.cooldown || this.weapon.sequence) ? 'stumbled' : 'missed'}!`;
                 actions.push(new Action(text, this.position, party));
             }
@@ -282,7 +287,7 @@ module.exports.Fighter = class {
             if (this.shield > 0) {
                 this.shield -= dmg;
                 if (this.shield <= 0) {
-                    actions.push(new Action(`*${this.name}'s shield broke!`, this.position, party));
+                    actions.push(new Action(`${this.name}'s shield broke!`, this.position, party));
                 }
             }
             else {
@@ -303,6 +308,13 @@ module.exports.Fighter = class {
                 actions.push(new Action("*You popped the child's balloon...*", opponent.position, party, 3000));
                 actions.push(new Action("*Now he's crying!*", opponent.position, party, 5000));
                 actions.push(new Action('*You should feel ashamed.*', opponent.position, party));
+            }
+
+            //enraging the gorilla
+            if (opponent && !this.enraged && this.weapon.type === '🧒') {
+                actions.push(new Action(`${this.name} is **enraged**!`, this.position, party, 3000));
+                this.enraged = true;
+                this.weapon.zerk = 1;
             }
 
             //opponent kills

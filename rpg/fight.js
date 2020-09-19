@@ -4,7 +4,9 @@
 
 const { getRandom, selectRandom, getOrder, format, react, delay } = require('../utils');
 const { Action } = require('./classes/action');
-const emojis = ['🔴', '🔵', '🟢', '🟡'];
+let emojis = ['🔴', '🔵', '🟢', '🟡'];
+const extended = ['🟣','⚫','⚪','🟤','🟠'];
+const wish = '🌠';
 
 const self = module.exports;
 
@@ -37,7 +39,11 @@ self.fight = async function(client, party, message, actions) {
 
     //display before first QTE comes up
     if (message) {
-        react(message, emojis);
+        if (party.some(enemy => enemy.enemy && enemy.creature.tricky)) {
+            emojis = emojis.concat(extended);
+        }
+        
+        react(message, party.some(enemy => enemy.magic) ? emojis.concat(wish) : emojis);
         count = await self.display(client, message, actions, party, count);
         await delay(3000);
     }
@@ -147,7 +153,7 @@ function getHeader(client, party, hp, qt) {
         line += format(Math.ceil(hp ? hp[fighter.position].hp : fighter.hp), 4);
         line += '`';
 
-        if (!fighter.image) {
+        if (!fighter.image || fighter.magnetized) {
             const emoji = client.emojis.resolve(fighter.weapon.icon);
             line += emoji ? emoji.toString() : fighter.weapon.icon;
         }
@@ -178,8 +184,14 @@ async function getReactions(message, party, qt) {
         if (!fighter.reaction) {
             fighter.reaction = reaction.emoji.name;
 
+            //evasive enemy
+            const factor = fighter.opponents.some(o => o.creature.evasive) ? 3 : 1;
+
             //stumble
-            fighter.stumble = fighter.reaction !== qt || (time - start > fighter.weapon.reaction);
+            fighter.stumble = fighter.reaction !== qt || (time - start > Math.round(fighter.weapon.reaction / factor));
+
+            //wish
+            fighter.wished = fighter.reaction === wish && fighter.opponents.some(opponent => opponent.magic);
         }
 
         reaction.users.remove(user);

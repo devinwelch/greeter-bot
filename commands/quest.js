@@ -67,11 +67,16 @@ async function getResults(client, db, message, party, actions) {
         const xp = Math.round(enemy.bonus * (100 + (enemy.creature.xp || 0)));
         let awardText = `You win ${xp} XP and `;
 
-        let item;
+        let item, nanners = 0;
+
         if (enemy.weapon.type === '🎻') {
             item = generateWeapon(challenger.lvl, { chances: [0, 6, 3, 1], type: 'fiddle' });
             const colors = ['white', 'blue', 'purple', 'gold'];
             awardText += `this shiny fiddle made of ${colors[item.rarity]}!`;
+        }
+        else if (enemy.weapon.type === '🧒' && !enemy.enraged) {
+            nanners = getRandom(100, 500);
+            awardText += `${nanners} GBPs!`;
         }
         else if (!getRandom(19)) {
             item = { type: 'crack', id: uuidv4() };
@@ -79,18 +84,24 @@ async function getResults(client, db, message, party, actions) {
         }
         else {
             const options = {
-                chances: enemy.creature.emoji === '🦄' ? [0, 6, 3, 1] : null,
-                type: enemy.creature.emoji === '🕷' ? 'bag' : null
+                chances: 
+                    enemy.creature.emoji === '🦄' ? [0, 6, 3, 1] :
+                    challenger.wished ? [0, 0, 2, 1] : 
+                    null,
+                type: enemy.creature.emoji === '🕷' && !challenger.wished ? 'bag' : null
             };
             item = generateWeapon(challenger.lvl, options);
-            awardText += `a ${item.getRarity()} ${item.name}!`;
+            awardText += `a${item.rarity === 2 ? 'n' : ''} ${item.getRarity()} ${item.name}!`;
         }
 
-        updateData(db, challenger.member.user, { xp: xp });
-        const buyback = await addToInventory(client, db, challenger.member.user, item);
-        if (buyback) {
-            awardText += ' *(buyback)*';
+        updateData(db, challenger.member.user, { xp: xp, gbps: nanners });
+        if (item) {
+            const buyback = await addToInventory(client, db, challenger.member.user, item);
+            if (buyback) {
+                awardText += ' *(buyback)*';
+            }
         }
+        
         actions.push(awardText);
     }
     //lose a GBP

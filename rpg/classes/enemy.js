@@ -1,4 +1,4 @@
-const { getRandom, selectRandom, playSong, generateWeapon } = require('../../utils');
+const { getRandom, selectRandom, playSong, generateWeapon, getChance } = require('../../utils');
 const { Fighter } = require('./fighter');
 const { Weapon } = require('./weapon');
 const { Action } = require('./action');
@@ -24,11 +24,14 @@ module.exports.Enemy = class extends Fighter {
         if (options.modifier) {
             modifier = enemies.modifiers[options.modifier] || enemies.special[options.modifier];
         }
-        else if (Object.values(enemies.special).some(s => s.enemy === this.creature.emoji) && getRandom(1)) {
-            modifier = Object.values(enemies.special).find(s => s.enemy === this.creature.emoji);
-        }
         else {
-            modifier = enemies.modifiers[selectRandom(Object.keys(enemies.modifiers))];
+            const special = Object.values(enemies.special).find(s => s.enemy === this.creature.emoji);
+            if (special && getChance(special.chance || 50)) {
+                modifier = special;
+            }
+            else {
+                modifier = enemies.modifiers[selectRandom(Object.keys(enemies.modifiers))];
+            }
         }
 
         //assign a name
@@ -49,6 +52,7 @@ module.exports.Enemy = class extends Fighter {
         //hp
         this.max = this.bonus * (60 + this.creature.hp);
         this.hp = this.max;
+        this.shield += this.creature.shield || 0;
         
         //weapon
         this.weapon = new Weapon({
@@ -60,20 +64,23 @@ module.exports.Enemy = class extends Fighter {
             high: this.bonus * (modifier.emoji === '🔫' ? 80 : 30 + this.creature.dmg),
             hits: this.creature.hits,
             slow: this.creature.slow,
-            priority: this.creature.speed || 0
+            priority: (this.creature.speed + (modifier.speed || 0)) || 0,
+            lifeSteal: this.creature.lifesteal || 0
         });
         this.weapon.musical = modifier.musical;
         if (this.creature.emoji === '🐸' || this.creature.emoji === '🦀') {
             this.weapon.high /= 2;
         }
 
-
         //status effects
         if (this.weapon.type === '🦠') {
             this.infected = true;
         }
-        if (this.weapon.type === '🔥') {
+        else if (this.weapon.type === '🔥') {
             this.burning = 2;
+        }
+        else if (this.weapon.type === '🌟') {
+            this.magic = true;
         }
 
         //represent the enemy visually
@@ -89,6 +96,9 @@ module.exports.Enemy = class extends Fighter {
 
         //how do magnets work?
         if (this.weapon.type === '🧲' && opponent.weapon.steel) {
+            this.magnetized = true;
+            this.weapon = Object.assign({}, opponent.weapon);
+            this.name = this.name.replace('magnet', this.weapon.type);
             opponent.weapon = generateWeapon(opponent.lvl, { chances: [1, 0, 0, 0], type: 'fists' });
             opponent.cooldown = false;
             actions.push(new Action('The magnet stole your weapon!', this.position, party));
@@ -129,6 +139,32 @@ module.exports.Enemy = class extends Fighter {
         //doot
         else if (this.weapon.type === '🎺' && opponent.member.voice.channel) {
             playSong(client, opponent.member.voice.channel, 'Enemies/trumpet.mp3', true);
+        }
+
+        //dicks out
+        else if (this.weapon.type === '🧒' && !this.enraged) {
+            if (this.turn > 4) {
+                actions.push(new Action("You've been super cool, bro. Here, check out my banana hoard!", this.position, party));
+                this.hp = 0;
+            }
+            else {
+                const chillin = [
+                    "He's cradling the boy!",
+                    "They're just chillin'!",
+                    "They're hanging out, playing some Mario Kart",
+                    "He's throwing back a brewski and the kid has a juice box!",
+                    "He's treating the kid like his own son!",
+                    "They're playing some catch!",
+                    "He's giving the kid some sage advice!",
+                    "He's consoling the kid while waiting for the mother!",
+                    "They're pal-ing around!",
+                    "He's teaching the kid the ways of the jungle!"
+                ];
+
+                actions.push(new Action(selectRandom(chillin), this.position, party));
+            }
+            
+            skip = true;
         }
 
         return { actions: actions, skip: skip };
