@@ -1,6 +1,7 @@
 const { Weapon } = require('./rpg/classes/weapon');
 const { Item } = require('./rpg/classes/item');
 const { v4: uuidv4 } = require('uuid');
+const ytdl = require('ytdl-core');
 const items = require('./rpg/items.json');
 const config = require('./config.json');
 const fs = require('fs');
@@ -99,6 +100,33 @@ const self = module.exports = {
         }
         
         self.playSong(client, voiceChannel, path, noKnock);
+    },
+
+    playYouTube(client, voiceChannel, url, options) {
+        const streamOptions = {
+            seek: options.seek || 0,
+            volume: options.volume || 0.4
+        };
+
+        if (voiceChannel && 
+            ytdl.validateURL(url) && 
+            !client.voice.connections.get(voiceChannel.guild.id) &&
+            (!voiceChannel.parent || voiceChannel.parent.id !== config.ids.foil))
+        {
+            voiceChannel.join()
+            .then(async function(connection) {
+                const dispatcher = connection.play(ytdl(url), streamOptions);
+                dispatcher.on('start', () => {
+                    if (options.timeout) {
+                        setTimeout(() => dispatcher.end(), options.timeout);
+                    }
+                });
+                dispatcher.on('finish', () => {
+                    voiceChannel.leave();
+                });
+            })
+            .catch(console.error);
+        }
     },
 
     infect(client) {

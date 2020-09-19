@@ -1,4 +1,4 @@
-const { selectRandom, playSong, getData, updateData, generateWeapon, addToInventory, getRandom } = require('../utils.js');
+const { selectRandom, playSong, getData, updateData, generateWeapon, addToInventory, getRandom, playYouTube } = require('../utils.js');
 const { fight, display } = require('../rpg/fight');
 const { Human } = require('../rpg/classes/human');
 const { Enemy } = require('../rpg/classes/enemy');
@@ -35,13 +35,50 @@ module.exports = {
                 .then(() => setup(client, db, message.channel, challenger, enemy))
                 .catch(console.error);
 
-            if (enemy.weapon.musical && message.member.voice.channel && !message.member.voice.mute && !message.member.voice.deaf) {
-                const song = enemy.creature.emoji === '💀' ? 'spooky' : enemy.weapon.name;
-                playSong(client, message.member.voice.channel, `Enemies/${song}.mp3`, true);
+            if (enemy.weapon.musical && message.member.voice.channel && !message.member.voice.deaf) {
+                playMusic(client, db, message.member.voice.channel, enemy);
             }
         });   
     }
 };
+
+async function playMusic(client, db, voiceChannel, enemy) {
+    db.scan({ TableName: 'Songs' }, function(err, data) {
+        if(err) {
+            console.log(err);
+        }
+        else if (data.Count) {
+            const songs = [];
+
+            data.Items.forEach(song => {
+                if (song.Enemy) {
+                    if (song.Instrument) {
+                        if (song.Enemy === enemy.creature.emoji && song.Instrument === enemy.weapon.type) {
+                            for(let i = 0; i < 15; i++) {
+                                songs.push(song);
+                            }
+                        }
+                    }
+                    else {
+                        if (song.Enemy === enemy.creature.emoji) {
+                            for (let i = 0; i < 8; i++) {
+                                songs.push(song);
+                            }
+                        }
+                    }
+                }
+                else if (song.Instrument === enemy.weapon.type) {
+                    songs.push(song);
+                }
+            });
+
+            if (songs.length) {
+                const song = selectRandom(songs);
+                playYouTube(client, voiceChannel, song.URL, { seek: song.Seek, volume: 0.25 });
+            }
+        }
+    });
+}
 
 async function setup(client, db, channel, challenger, enemy) {
     challenger.opponents = [enemy];
