@@ -69,10 +69,7 @@ async function setup(client, config, db, message, leader, bets) {
             game.deck.deal(game.players[j].hand);
             await display(client, config, message, game);
         }
-        game.deck.deal(game.house.hand);
-        if (i) {
-            game.house.hand[1].down = true;
-        }
+        game.deck.deal(game.house.hand, 1, i === 1);
         await display(client, config, message, game);
     }
 

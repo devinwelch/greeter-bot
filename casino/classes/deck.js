@@ -19,13 +19,15 @@ module.exports.Deck = class {
     }
 
     //hand is array of cards
-    deal(hand, amount = 1) {
+    deal(hand, amount = 1, down = false) {
         for (let i = 0; i < amount; i++) {
             if (!this.cards.length) {
                 this.newDeck();
             }
 
-            hand.push(this.cards.pop());
+            const card = this.cards.pop();
+            card.down = down;
+            hand.push(card);
         }
     }
 };
