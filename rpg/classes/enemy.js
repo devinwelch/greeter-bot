@@ -138,7 +138,7 @@ module.exports.Enemy = class extends Fighter {
 
         //doot
         else if (this.weapon.type === '🎺' && opponent.member.voice.channel) {
-            playSong(client, opponent.member.voice.channel, 'Enemies/trumpet.mp3', true);
+            playSong(client, opponent.member.voice.channel, 'doot.mp3', true);
         }
 
         //dicks out
