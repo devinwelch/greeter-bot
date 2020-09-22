@@ -184,7 +184,7 @@ async function getReactions(message, party, qt) {
             fighter.reaction = reaction.emoji.name;
 
             //evasive enemy
-            const factor = fighter.opponents.some(o => o.creature.evasive) ? 3 : 1;
+            const factor = fighter.opponents.some(o => o.creature && o.creature.evasive) ? 3 : 1;
 
             //stumble
             fighter.stumble = fighter.reaction !== qt || (time - start > Math.round(fighter.weapon.reaction / factor));
