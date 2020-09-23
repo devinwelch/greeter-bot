@@ -332,7 +332,9 @@ module.exports.Fighter = class {
 
         //corona infection
         if (this.infected && !opponent.infected && getChance(coronaChance)) {
-            actions.push(opponent.infect(this.position, party));
+            if (!opponent.member || !config.ids.immune.includes(opponent.member.id)) {
+                actions.push(opponent.infect(this.position, party));    
+            }
         }
 
         //burn

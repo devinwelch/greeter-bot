@@ -52,7 +52,7 @@ module.exports.Enemy = class extends Fighter {
         //hp
         this.max = this.bonus * (60 + this.creature.hp);
         this.hp = this.max;
-        this.shield += this.creature.shield || 0;
+        this.shield += (this.bonus * this.creature.shield) || 0;
         
         //weapon
         this.weapon = new Weapon({

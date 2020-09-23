@@ -146,6 +146,10 @@ const self = module.exports = {
         
                 if (roll < chance) {
                     const victim = noninfected.random(1)[0];
+                    if (config.ids.immune.includes(victim.id)) {
+                        return;
+                    }
+                    
                     victim.roles.add(config.ids.corona);
 
                     const botchat = client.channels.cache.get(config.ids.botchat);
