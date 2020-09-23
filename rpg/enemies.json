@@ -16,7 +16,7 @@
         "tiger":    { "emoji": "🐯", "literal": "a :adj tiger",    "dmg": 0,  "hp": 0, "speed": 0.5, "xp": 50 },
         "lion":     { "emoji": "🦁", "literal": "a :adj lion",     "dmg": 5,  "hp": 0, "xp": 50 },
         "frogs":    { "emoji": "🐸", "literal": ":adj frogs",      "dmg": 0,  "hp": 0, "hits": 3, "xp": 50 },
-        "turtle":   { "emoji": "🐢", "literal": "a :adj turtle",   "dmg": 0,  "hp": -50, "shield": 100, "xp": 25 },
+        "turtle":   { "emoji": "🐢", "literal": "a :adj turtle",   "dmg": 0,  "hp": -50, "shield": 80, "xp": 25, "speed": -0.5 },
         "mosquito": { "emoji": "🦟", "literal": "a :adj mosquito", "dmg": 0,  "hp": -50, "evasive": true },
         "monke":    { "emoji": "🦧", "literal": "le :adj monke",   "dmg": 0,  "hp": 0 },
         "monkey":   { "emoji": "🐵", "literal": "a :adj monkey",   "dmg": 0,  "hp": -10, "speed": 0.5 },
