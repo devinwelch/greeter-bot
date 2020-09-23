@@ -81,6 +81,6 @@
         "vaccine":  { "emoji": "💉", "literal": "a vaccine",    "enemy": "👩‍⚕️", "chance": 75 },
         "metal":    { "emoji": "⚙",  "literal": "better metal", "enemy": "🐍", "left": true, "adjective": true, "musical": true },
         "child":    { "emoji": "🧒", "literal": "a child",      "enemy": "🦍", "chance": 25 },
-        "magic":    { "emoji": "🌟", "literal": "magic",        "enemy": "🕷", "chance": 10, "adjective": true, "musical": true }
+        "magic":    { "emoji": "🌟", "literal": "magic",        "enemy": "🕷", "chance": 20, "adjective": true, "musical": true }
     }
 }
