@@ -31,7 +31,7 @@ self.fight = async function(client, party, message, actions) {
         fighter.opponents.forEach(opponent => {
             const dmg = fighter.getDmg() * fighter.weapon.suckerPunch / 100;
             const text = `${fighter.name} sucker-punched ${opponent.name} for **${Math.round(dmg)}** dmg!`;
-            opponent.hp -= dmg;
+            opponent.takeDmg(dmg, fighter, party);
             actions.push(new Action(text, fighter.position, party));
         });
 
