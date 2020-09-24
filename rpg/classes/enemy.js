@@ -64,7 +64,7 @@ module.exports.Enemy = class extends Fighter {
             high: this.bonus * (modifier.emoji === '🔫' ? 80 : 30 + this.creature.dmg),
             hits: this.creature.hits,
             slow: this.creature.slow,
-            priority: (this.creature.speed + (modifier.speed || 0)) || 0,
+            priority: (this.creature.speed || 0) + (modifier.speed || 0),
             lifeSteal: this.creature.lifesteal || 0
         });
         this.weapon.musical = modifier.musical;
