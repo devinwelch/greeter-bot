@@ -40,6 +40,7 @@
         "snowman":  { "emoji": "⛄", "literal": "a :adj snowman",  "dmg": 0,  "hp": 0 },
         "gun":      { "emoji": "🔫", "literal": "a :adj gun",      "dmg": 20, "hp": -20, "xp": 100 },
         "magician": { "emoji": "🕴🏻",  "literal": "a :adj magician", "dmg": 0,  "hp": 30, "xp": 50, "tricky": true },
+        "shadow":   { "emoji": "👤", "literal": "a :adj shadow",   "dmg": 0,  "hp": -10, "xp": 100, "shadowy": true },
         "doctor":   { "emoji": "👩‍⚕️", "literal": "a :adj doctor",   "dmg": 0,  "hp": 0 }
     },
     "modifiers": {

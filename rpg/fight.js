@@ -7,6 +7,7 @@ const { Action } = require('./classes/action');
 let QTEs;
 const emojis = ['🔴', '🔵', '🟢', '🟡'];
 const extended = ['🔴', '🔵', '🟢', '🟡', '🟣','⚫','⚪','🟤','🟠'];
+const shadow = ['⬛','⚫','🖤','✴️'];
 const wish = '🌠';
 
 const self = module.exports;
@@ -40,7 +41,10 @@ self.fight = async function(client, party, message, actions) {
 
     //display before first QTE comes up
     if (message) {
-        QTEs = party.some(enemy => enemy.enemy && enemy.creature.tricky) ? extended : emojis;
+        QTEs =
+            party.some(enemy => enemy.enemy && enemy.creature.tricky) ? extended :
+            party.some(enemy => enemy.enemy && enemy.creature.shadowy) ? shadow :
+            emojis;
         
         react(message, party.some(enemy => enemy.magic) ? QTEs.concat(wish) : QTEs);
         count = await self.display(client, message, actions, party, count);
