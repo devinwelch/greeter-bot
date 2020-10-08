@@ -82,5 +82,5 @@ function buy(db, message, skill, data) {
     else {
         skills[skill] = 1;
     }
-    updateData(db, message.author, { skills: skills, message: message, emoji: skill === 'rumpaws' ? '🐾' : '🦿' });
+    updateData(db, message.author, { skills: skills, message: message, emoji: '🦿' });
 }

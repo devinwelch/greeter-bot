@@ -242,13 +242,6 @@
         "skillUpgrades": 5,
         "icon": "🍀"
     },
-    "rumpaws": {
-        "type": "rumpaws",
-        "name": "Rumpaws",
-        "upgrade": "Paws more harder and/or better to the outer limits of this world!",
-        "skillUpgrades": 1,
-        "icon": "🐾"
-    },
     "backpack": {
         "type": "backpack",
         "name": "Backpack",

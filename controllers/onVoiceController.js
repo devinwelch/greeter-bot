@@ -1,4 +1,4 @@
-const { playMe, getData, updateData } = require('../utils.js');
+const { playMe, updateData } = require('../utils.js');
 
 module.exports = {
     execute(client, db, oldState, newState) {
@@ -10,19 +10,8 @@ module.exports = {
             client.themeSongs.indexOf(newState.id) !== -1) {    //user has played song today
                 return;
         }
-
-        getData(db, newState.member.id)
-        .then(data => {
-            const paws = 
-                data.Responses && 
-                data.Responses.GBPs && 
-                data.Responses.GBPs.length && 
-                data.Responses.GBPs[0].Skills &&
-                data.Responses.GBPs[0].Skills.rumpaws;
-
-            playMe(client, newState.channel, newState.member.user.username, !paws, true, paws);
-        });
         
+        playMe(client, newState.channel, newState.member.user.username, true, true);
         client.themeSongs.push(newState.id);
         console.log(`${newState.member.user.username} entered the chat!`);
         updateData(db, newState.member.user, { gbps: 10 });
