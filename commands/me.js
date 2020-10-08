@@ -7,16 +7,28 @@ module.exports = {
     category: 'sound',
     usage: '[username]',
     execute(client, config, db, message, args) {
-        const user = message.mentions.members.size
-        ? message.mentions.members.first().user.username
-        : args.length
-            ? args.toLowerCase() === message.author.username.toLowerCase() 
-                ? 'congratulations'
-                : args.toLowerCase()
-            : message.author.username.toLowerCase();
-    
-        if (fs.existsSync(`./Sounds/Friends/${user}.mp3`)) {
-            playMe(client, message.member.voice.channel, user);
+        let username;
+
+        if (args.length) {
+            if (message.mentions.members.size) {
+                username = message.mentions.members.first().user.username;
+            }
+            else if (args.toLowerCase() === 'random') {
+                username = '';
+            }
+            else if (args.toLowerCase() === message.author.username.toLowerCase()) {
+                username = 'congratulations';
+            }
+            else {
+                username = args.toLowerCase();
+            }
+        }
+        else {
+            username = message.author.username.toLowerCase();
+        }
+
+        if (!username.length || fs.existsSync(`./Sounds/Friends/${username}.mp3`)) {
+            playMe(client, message.member.voice.channel, username);
         }
         else {
             message.reply('Song not found; find a sound clip and give it to Bus!');

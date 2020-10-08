@@ -49,7 +49,7 @@ const self = module.exports = {
         }
     },
 
-    playSong(client, voiceChannel, song, noKnock = false) {
+    playSong(client, voiceChannel, song, noKnock) {
         if (voiceChannel && !client.voice.connections.get(voiceChannel.guild.id) &&
            (!voiceChannel.parent || voiceChannel.parent.id !== config.ids.foil)) {
             //APRIL PRANKS
@@ -76,10 +76,10 @@ const self = module.exports = {
         }
     },
 
-    playMe(client, voiceChannel, name, gnomed = false, noKnock = false) {
+    playMe(client, voiceChannel, name, options = {}) {
         let path;
         
-        if (gnomed && voiceChannel.members.size > 1 && self.getChance(8)) {
+        if (options.gnomed && voiceChannel.members.size > 1 && self.getChance(8)) {
             path = 'gnomed.mp3';
         }
         else {
@@ -93,7 +93,7 @@ const self = module.exports = {
             path = 'Friends/' + self.selectRandom(files);
         }
         
-        self.playSong(client, voiceChannel, path, noKnock);
+        self.playSong(client, voiceChannel, path, options.noKnock);
     },
 
     playYouTube(client, voiceChannel, url, options) {
