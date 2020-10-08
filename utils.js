@@ -221,7 +221,8 @@ const self = module.exports = {
                 Team        : 'none',
                 Lvl         : getLvl(db.xp, options.xp || 1),
                 XP          : options.xp || 0,
-                Skills      : {}
+                Skills      : {},
+                Faith       : 0
             }
         };
 
@@ -344,6 +345,11 @@ const self = module.exports = {
                 if (options.team) {
                     expressions.push('Team = :team');
                     attributes[':team'] = options.team;
+                }
+
+                if (options.faith) {
+                    expressions.push('Faith = Faith + :faith');
+                    attributes[':faith'] = options.faith;
                 }
 
                 if (user.username && user.username.toLowerCase() !== d.Username) {
