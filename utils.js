@@ -79,7 +79,7 @@ const self = module.exports = {
     playMe(client, voiceChannel, name, options = {}) {
         let path;
         
-        if (options.gnomed && voiceChannel.members.size > 1 && self.getChance(8)) {
+        if (options.gnomed && voiceChannel.members.size > 1 && self.getChance(5)) {
             path = 'gnomed.mp3';
         }
         else {

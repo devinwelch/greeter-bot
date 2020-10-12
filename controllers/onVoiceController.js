@@ -11,7 +11,7 @@ module.exports = {
                 return;
         }
         
-        playMe(client, newState.channel, newState.member.user.username, true, true);
+        playMe(client, newState.channel, newState.member.user.username, { gnomed: true, noKnock: true });
         client.themeSongs.push(newState.id);
         console.log(`${newState.member.user.username} entered the chat!`);
         updateData(db, newState.member.user, { gbps: 10 });
