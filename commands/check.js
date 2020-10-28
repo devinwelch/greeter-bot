@@ -3,7 +3,7 @@ const { getData } = require('../utils');
 module.exports = {
     name: 'whatarethechancesthatiwillberedeemedpleasegreetyboyireallyneedyourhelpiwasinabadplacebutiambetternow',
     description: 'Check your faith!',
-    category: 'gbps',
+    category: 'faith',
     execute(client, config, db, message, args) {
         getData(db, message.author.id).then(data =>  {
             if (data.Responses && data.Responses.GBPs && data.Responses.GBPs.length) {
