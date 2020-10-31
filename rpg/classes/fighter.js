@@ -310,6 +310,14 @@ module.exports.Fighter = class {
                 actions.push(new Action('*You should feel ashamed.*', opponent.position, party));
             }
 
+            //child with costume
+            if (opponent && !this.revealed && this.weapon.type === '🛍️') {
+                this.revealed = true;
+                actions.push(new Action(`*It was just a child in a ${this.creature.literal.replace(':adj ', '')} costume!*`, opponent.position, party, 3000));
+                actions.push(new Action('*What is wrong with you?!*', opponent.position, party, 5000));
+                actions.push(new Action("*Maybe you're the real monster.*", opponent.position, party));
+            }
+
             //enraging the gorilla
             if (opponent && !this.enraged && this.weapon.type === '🧒') {
                 actions.push(new Action(`${this.name} is **enraged**!`, this.position, party, 3000));

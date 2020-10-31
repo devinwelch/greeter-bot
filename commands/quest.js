@@ -1,4 +1,4 @@
-const { selectRandom, playSong, getData, updateData, generateWeapon, addToInventory, getRandom, playYouTube } = require('../utils.js');
+const { selectRandom, getData, updateData, generateWeapon, addToInventory, getRandom, playYouTube } = require('../utils.js');
 const { fight, display } = require('../rpg/fight');
 const { Human } = require('../rpg/classes/human');
 const { Enemy } = require('../rpg/classes/enemy');
@@ -101,7 +101,7 @@ async function getResults(client, db, message, party, actions) {
     }
     //award 
     else if (challenger.hp > 0) {
-        const xp = Math.round(enemy.bonus * (100 + (enemy.creature.xp || 0)));
+        const xp = enemy.getXP();
         let awardText = `You win ${xp} XP and `;
 
         let item, nanners = 0;

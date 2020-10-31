@@ -44,6 +44,7 @@
         "doctor":   { "emoji": "👩‍⚕️", "literal": "a :adj doctor",   "dmg": 0,  "hp": 0 }
     },
     "modifiers": {
+        "bag":          { "emoji": "🛍️", "literal": "a bag of candy",   "left": true },
         "bow":          { "emoji": "🏹", "literal": "a bow",            "left": true, "speed": 1 },
         "robotArm":     { "emoji": "🦾", "literal": "a cyborg arm",     "left": true },
         "hearingAid":   { "emoji": "🦻", "literal": "a hearing aid" },
@@ -82,6 +83,6 @@
         "vaccine":  { "emoji": "💉", "literal": "a vaccine",    "enemy": "👩‍⚕️", "chance": 75 },
         "metal":    { "emoji": "⚙",  "literal": "better metal", "enemy": "🐍", "left": true, "adjective": true, "musical": true },
         "child":    { "emoji": "🧒", "literal": "a child",      "enemy": "🦍", "chance": 25 },
-        "magic":    { "emoji": "🌟", "literal": "magic",        "enemy": "🕷", "chance": 20, "adjective": true, "musical": true }
+        "magic":    { "emoji": "🪄", "literal": "magic",         "enemy": "🕷", "left": true, "chance": 20, "adjective": true, "musical": true }
     }
 }

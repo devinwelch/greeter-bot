@@ -50,7 +50,7 @@ module.exports.Enemy = class extends Fighter {
         }
 
         //hp
-        this.max = this.bonus * (60 + this.creature.hp);
+        this.max = modifier.emoji === '🛍️' ? 100 : this.bonus * (60 + this.creature.hp);
         this.hp = this.max;
         this.shield += (this.bonus * this.creature.shield) || 0;
         
@@ -137,7 +137,7 @@ module.exports.Enemy = class extends Fighter {
         }
 
         //doot
-        else if (this.weapon.type === '🎺' && opponent.member.voice.channel) {
+        else if (this.weapon.type === '🎺' && opponent.member && opponent.member.voice.channel) {
             playSong(client, opponent.member.voice.channel, 'doot.mp3', true);
         }
 
@@ -168,5 +168,13 @@ module.exports.Enemy = class extends Fighter {
         }
 
         return { actions: actions, skip: skip };
+    }
+
+    getXP() {
+        if (this.weapon.type === '🛍️') {
+            return 0;
+        }
+        
+        return Math.round(this.bonus * (100 + (this.creature.xp || 0)));
     }
 };
