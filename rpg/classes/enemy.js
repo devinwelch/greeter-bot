@@ -79,7 +79,7 @@ module.exports.Enemy = class extends Fighter {
         else if (this.weapon.type === '🔥') {
             this.burning = 2;
         }
-        else if (this.weapon.type === '🌟') {
+        else if (this.weapon.type === '🪄') {
             this.magic = true;
         }
 
