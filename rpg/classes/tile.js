@@ -1,4 +1,4 @@
-const { selectRandom } = require('../../utils');
+const config = require('../../config.json');
 
 module.exports.Tile = class {
     constructor(x, y) {
@@ -8,64 +8,59 @@ module.exports.Tile = class {
         this.toEmpty();
     }
 
+    toFighter(fighter) {
+        fighter.x = this.x;
+        fighter.y = this.y;
+        this.occupied = fighter;
+        this.icon = fighter.icon;
+    }
+
+    toFort() {
+        this.occupied = true;
+        this.icon = '🟫';
+        this.fort = true;
+    }
+
+    toStick() {
+        this.occupied = false;
+        this.icon = '🌿';
+    }
+
     toEmpty() {
         this.occupied = false;
-        this.flat = true;
-        this.icon = '¯¯¯'; //~same size as emoji on desktop, other options: ▫,⠀⠀,⬜
-
-        this.water = false;
-        this.tree = false;
+        this.icon = '¯¯¯';
     }
 
-    toWater() {
-        this.occupied = true;
-        this.flat = true;
-        this.icon = '🟦'; //other option: 🌊
-
-        this.water = true;
-        this.tree = false;
+    takeDmg(dmg) {
+        if (this.occupied && !isNaN(this.occupied)) {
+            this.occupied -= dmg;
+            if (this.occupied <= 0) {
+                this.toEmpty();
+            }
+        }
     }
 
-    toTree() {
-        this.occupied = true;
-        this.flat = false;
-        this.icon = selectRandom(['🌳', '🌲', '🌴']);
-
-        this.water = false;
-        this.tree = true;
+    toString(client) {
+        return this.temp ||
+        ((this.occupied && this.occupied.fighter)
+            ? this.occupied.getIcon(client, config)
+            : this.icon
+        );
     }
 
-    toFighter(fighter) {
-        this.occupied = fighter;
-        this.flat = false;
-        this.icon = fighter.icon;
-
-        this.water = false;
-        this.tree = false;
-    }
-
-    toCrater() {
-        this.occupied = true;
-        this.flat = true;
-        this.icon = '🕳';
-
-        this.water = false;
-        this.tree = false;
-    }
-
-    clear() {
-        this.temp = null;
-    }
-
-    toString() {
-        if (this.temp) {
-            return this.temp;
+    getWeight() {
+        if (!this.occupied) {
+            return 1;
         }
 
-        if (this.occupied && this.occupied.fighter && this.occupied.hp <= 0) {
-            return '☠️';
+        if (this.occupied.nonplayer) {
+            return Math.ceil(this.occupied.hp / 50) * 2;
         }
 
-        return this.icon;
+        return 0;
+    }
+
+    isEnemy() {
+        return this.occupied && this.occupied.enemy;
     }
 };

@@ -14,6 +14,6 @@ self.execute = async function(client, config, db, message, args) {
     
     const info = await ytdl.getBasicInfo(args[0]);
     message.delete()
-        .then(msg => console.log(`${msg.author.username} sang ${info.title} (${info.video_url})`))
+        .then(msg => console.log(`${msg.author.username} sang ${info.videoDetails.title} (${info.videoDetails.video_url})`))
         .catch(console.error);
 };

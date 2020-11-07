@@ -604,7 +604,7 @@ const self = module.exports = {
                         msg.reactions.removeAll();
                         
                         if (reaction.emoji.id === config.ids.yeehaw) {
-                            resolve({ party: invite.party, data: data });
+                            resolve({ party: invite.party, data: data, msg: msg });
                         }
                         else {
                             msg.edit(msg.content + '\n\n**Party leader canceled**');

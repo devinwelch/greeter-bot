@@ -25,7 +25,7 @@ module.exports.Enemy = class extends Fighter {
             modifier = enemies.modifiers[options.modifier] || enemies.special[options.modifier];
         }
         else {
-            const special = Object.values(enemies.special).find(s => s.enemy === this.creature.emoji);
+            const special = Object.values(enemies.special).filter(s => !(options.ban && s.banned)).find(s => s.enemy === this.creature.emoji);
             if (special && getChance(special.chance || 50)) {
                 modifier = special;
             }

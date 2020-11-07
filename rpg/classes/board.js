@@ -1,20 +1,21 @@
-const { getRandom, selectRandom } = require('../../utils');
+const { getRandom } = require('../../utils');
 const { Graph } = require('../astar');
 const { Tile } = require('./tile');
+const { Tree } = require('./nonplayer');
 
 module.exports.Board = class {
-    constructor(party) {
-        const colors = [
-            '🔴', '🟢', '🟡', '🟣', '🟤', '🟠',
-            '🟥', '🟩', '🟨', '🟪', '🟫', '🟧'
-        ];
-        let playerCount = 0;
+    constructor(party, bananas) {
+        //swarm stats
+        this.stats = {
+            enemies: 0,
+            xp: 0
+        };
 
-        const partySize = Math.round(party.length / 2);
-        this.height = 2 * Math.min(10, partySize + 2);
-        this.width  = 2 * Math.min(10, 2 * partySize + 1);
+        //map size
+        this.height = 15;
+        this.width  = 15;
 
-        //each tile represented by an icon
+        //initialize board with empty tiles
         for (let y = 1; y <= this.height; y++) {
             for (let x = 1; x <= this.width; x++) {
                 if (!this[x]) {
@@ -24,71 +25,72 @@ module.exports.Board = class {
             }
         }
 
-        //generate a body of water
-        const source = this.getRandomTile(Math.floor(this.height / 3) + 1, Math.ceil(this.height * 2 / 3));
-        this[source.x][source.y].toWater();
-        const lakeSize = 2 * partySize;
-        for (let i = 0; i < lakeSize; i++) {
-            selectRandom(this.getCoast()).toWater();
+        //trees
+        const trees = Math.ceil(this.width * this.height / 4);
+        for (let i = 0; i < trees; i++) {
+            this.getRandomTile().toFighter(new Tree(100));
         }
 
-        //add each fighter/enemy to bottom/top of board
+        //fort
+        for (let x = 5; x <= 11; x++) {
+            for (let y = 5; y <= 11; y++) {
+                this[x][y].toEmpty();
+            }
+        }
+
+        let layout = [
+            [5 ,5 ], [6 ,5 ], [5 ,6 ],
+            [10,5 ], [11,5 ], [11,6 ],
+            [5 ,10], [5 ,11], [6 ,11],
+            [11,10], [11,11], [10,11]
+        ];
+
+        if (party.length < 6) {
+            layout = layout.concat([[7,5], [11,7], [9,11], [5,9]]);
+            if (party.length < 3) {
+                layout = layout.concat([[5,7], [9,5], [11,9], [7,11]]);
+            }
+        }
+
+        layout.forEach(coord => this[coord[0]][coord[1]].toFort());
+
+        //nanner nexus
+        this[8][8].toFighter(bananas);
+
+        //players
+        const colors = ['🔴','🔵','🟢','🟡','🟣','🟤','🟠','♾️'];
+        let playerCount = 0;
         party.forEach(p => {
-            p.icon = p.enemy
-                ? '🦄'
-                : colors[playerCount++];
-
-            const tile = p.enemy
-                ? this.getRandomTile(1, Math.floor(this.height / 3))
-                : this.getRandomTile(Math.ceil(this.height * 2 / 3) + 1);
-
+            p.icon = colors[playerCount++];
+            const tile = this.getRandomTile(6, 10);
             tile.toFighter(p);
-
             p.x = tile.x;
             p.y = tile.y;
         });
-
-        //add trees
-        const trees = Math.ceil(this.width * this.height / 10);
-        for (let i = 0; i < trees; i++) {
-            this.getRandomTile().toTree();
-        }
-
-        //randdom chance for loot
-        const loot = Math.ceil(partySize / 2);
-        for (let i = 0; i < loot; i++) {
-            if (!getRandom(2)) {
-                this.getRandomTile().icon = '💰';
-            }
-
-            if (!getRandom(2)) {
-                this.getRandomTile().icon = '🎁';
-            }
-        }
-    }
-
-    //clear temporary icon overlays
-    clearTemp() {
-        for (let y = 1; y <= this.height; y++) {
-            for (let x = 1; x <= this.width; x++) {
-                this[x][y].clear();
-            }
-        }
     }
 
     //move a character
     moveFighter(to, from) {
+        let resource;
+
         if (to === from) {
             return;
         }
 
-        if (to.icon === '💰') {
-            from.occupied.money++;
-            from.occupied.money = 1;
-        }
-
-        if (to.icon === '🎁') {
-            from.occupied.presents++;
+        if (!to.occupied) {
+            if (to.icon === '💊') {
+                const heal = Math.min(from.occupied.max - from.occupied.hp, from.occupied.max * 0.25);
+                from.occupied.hp += heal;
+                resource = { type: '💊', amount: heal };
+            }
+            else if (to.icon === '🌿') {
+                from.occupied.wood = from.occupied.wood || 0;
+                from.occupied.wood++;
+                resource = { type: '🌿', amount: 1 };
+            }
+            else if (to.icon === '💰') {
+                resource = { type: '💰', amount: getRandom(1, 50) };
+            }
         }
 
         from.occupied.x = to.x;
@@ -96,6 +98,8 @@ module.exports.Board = class {
 
         to.toFighter(from.occupied);
         from.toEmpty();
+
+        return resource;
     }
 
     //gets a random blank tile within specified height range
@@ -103,7 +107,7 @@ module.exports.Board = class {
         let x;
         let y;
 
-        //Best: O(1)
+        //Best:  O(1)
         //Worst: O(∞) lmao
         do {
             x = getRandom(1, this.width);
@@ -114,86 +118,62 @@ module.exports.Board = class {
         return this[x][y];
     }
 
-    //return array of coastal tiles, weighted towards tiles surrounded by water
-    getCoast() {
-        const coast = [];
-
-        for (let y = 1; y <= this.height; y++) {
-            for (let x = 1; x <= this.width; x++) {
-                if (this[x][y].water) {
-                    this.getSurrounding(x, y).forEach(a => {
-                        if (!a.water) {
-                            const count = this.getSurrounding(a.x, a.y).filter(c => c.water).length;
-                            for(let i = 0; i < 2 ** count; i++) {
-                                coast.push(this[a.x][a.y]);
-                            }
-                        }
-                    });
-                }   
-            }
-        }
-
-        return coast;
-    }
-
-    //returns array of tiles surrounding defined origin
-    getSurrounding(x, y, options) {
+    //returns array of tiles adjacent/surrounding origin
+    getSurrounding(x, y, diagonal) {
         const surrounding = [];
 
-        for (let i = -1; i <= 1; i++) {
-            for(let j = -1; j <= 1; j++) {
-                if (i === 0 && j === 0) {
-                    continue;
-                }
-
-                const newX = x + i;
-                const newY = y + j;
-
-                if (newX > 0 && newX <= this.width &&
-                    newY > 0 && newY <= this.height) 
-                {
-                    surrounding.push(this[newX][newY]);
-                }
-            }
+        if (x < 1 || y < 1 || x > this.width || y > this.height) {
+            return surrounding;
         }
+        
+        if (x - 1 >= 1)
+            surrounding.push(this[x-1][y]);
+        if (x + 1 <= this.width)
+            surrounding.push(this[x+1][y]);
+        if (y - 1 >= 1)
+            surrounding.push(this[x][y-1]);
+        if (y + 1 <= this.height)
+            surrounding.push(this[x][y+1]);
 
-        if (options && options.far) {
-            if (x + 2 <= this.width)  surrounding.push(this[x + 2][y]);
-            if (x - 2 > 0)            surrounding.push(this[x - 2][y]);
-            if (y + 2 <= this.height) surrounding.push(this[x][y + 2]);
-            if (y - 2 > 0)            surrounding.push(this[x][y - 2]);
+        if (diagonal) {
+            if (x - 1 >= 1 && y - 1 >= 1)
+                surrounding.push(this[x-1][y-1]);
+            if (x - 1 >= 1 && y + 1 <= this.height)
+                surrounding.push(this[x-1][y+1]);
+            if (x + 1 <= this.width && y - 1 >= 1)
+                surrounding.push(this[x+1][y-1]);
+            if (x + 1 <= this.width && y + 1 <= this.height)
+                surrounding.push(this[x+1][y+1]);
         }
 
         return surrounding;
     }
 
-    toString() {
-        const rows = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-        const double = this.height > 10;
-
-        let board = double ? '🟦🟦' : '🟦';
-        for (let i = 0; i < this.width; i++) {
-            board += `:regional_indicator_${String.fromCharCode(97 + i)}:`;
-        }
+    toString(client) {
+        let board = '';
 
         for (let y = 1; y <= this.height; y++) {
-            const row = double ? this.getDouble(rows, y) : rows[y];
-            board += '\n' + row;
+            board += '\n';
             for (let x = 1; x <= this.width; x++) {
-                board += this[x][y].toString();
+                board += this[x][y].toString(client);
             }
         }
 
         return board;
     }
 
-    getDouble(arr, n) {
-        if (n < 10) {
-            return arr[0] + arr[n];
+    display(client) {
+        const arr = [];
+
+        for (let y = 1; y <= this.height; y++) {
+            let row = '';
+            for (let x = 1; x <= this.width; x++) {
+                row += this[x][y].toString(client);
+            }
+            arr.push(row);
         }
 
-        const s = n.toString();
-        return arr[Number(s[0])] + arr[Number(s[1])];
+        return arr;
     }
 
     getGraph() {
@@ -206,12 +186,33 @@ module.exports.Board = class {
                     row.push(0);
                     continue;
                 }
-                
-                row.push(this[x][y].occupied ? 0 : 1);
+                row.push(this[x][y].getWeight());
             }
             graph.push(row);
         }
 
-        return new Graph(graph, { diagonal: true });
+        return new Graph(graph);
+    }
+
+    getPerimeter() {
+        const perimeter = [];
+        for (let x = 1; x <= this.width; x++) {
+            perimeter.push(this[x][1]);
+            perimeter.push(this[x][this.height]);
+        }
+        for (let y = 2; y <= this.height - 2; y++) {
+            perimeter.push(this[1][y]);
+            perimeter.push(this[this.width][y]);
+        }
+
+        return perimeter;
+    }
+
+    clearTemp() {
+        for (let x = 1; x <= this.width; x++) {
+            for (let y = 1; y <= this.height; y++) {
+                this[x][y].temp = null;
+            }
+        }
     }
 };

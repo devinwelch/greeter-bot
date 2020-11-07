@@ -21,6 +21,12 @@ module.exports.Fighter = class {
         this.presents = 0;
     }
 
+    getIcon() {
+        return this.hp > 0
+            ? this.icon || '🥴'
+            : '🪦';
+    }
+
     //executes fighter's turn and returns array of Actions
     getTurn(client, party, targets, options) {
         let actions = [];
@@ -122,13 +128,22 @@ module.exports.Fighter = class {
     getAction(client, party, targets, options) {
         let actions = [];
 
-        //skip hits if weapon on cooldown
         if (this.cooldown) {
             const text = this.cracked
                 ? `${this.name} is high on crack!`
                 : `${this.name} is winding up...`;
             actions.push(new Action(text, this.position, party));
             this.cooldown = false;
+        }
+        else if (!targets.length) {
+            if (this.weapon.sequence) {
+                const maths = this.turn % 3;
+                const words = ['kame...', '*hame...*', '**ha!**'];
+                actions.push(new Action(words[maths], this.position, party));
+            }
+            else {
+                actions.push(new Action(`${this.name} missed!`, this.position, party));
+            }
         }
         else {
             targets.forEach(opponent => {
@@ -143,26 +158,39 @@ module.exports.Fighter = class {
     
                 if (!results.skip) {
                     if (this.weapon.sequence) {
-                        if (this.turn >= this.weapon.sequence.length) {
-                            dmg = this.turn * 5;
-                        }
-                        else if (this.turn === this.weapon.sequence.length - 1) {
-                            dmg = this.getDmg();
-
-                            if (opponent.boss) {
-                                dmg /= 2;
+                        if (options.tres) {
+                            const maths = this.turn % 3;
+                            const words = ['kame...', '*hame...*', '**ha!**'];
+                            text = words[maths];
+                            if (maths === 2) {
+                                dmg = this.getDmg();
                             }
                         }
+                        else {
+                            if (this.turn >= this.weapon.sequence.length) {
+                                dmg = this.turn * 5;
+                            }
+                            else if (this.turn === this.weapon.sequence.length - 1) {
+                                dmg = this.getDmg();
 
-                        text = this.name + this.weapon.sequence[Math.min(this.turn, this.weapon.sequence.length - 1)]
-                            .replace('A', 'A'.repeat(Math.max(this.turn - 5, 1)));
-        
+                                if (opponent.boss) {
+                                    dmg /= 2;
+                                }
+                            }
+
+                            text = this.name + this.weapon.sequence[Math.min(this.turn, this.weapon.sequence.length - 1)]
+                                .replace('A', 'A'.repeat(Math.max(this.turn - 5, 1)));
+                        }
+            
                         if (dmg) {
                             text += ' (**<dmg>** dmg)';
                         }
                     }
                     else if (this.weapon.spidermin) {
-                        const amount = getRandom(this.weapon.spidermin, this.weapon.spidermax);
+                        let amount = getRandom(this.weapon.spidermin, this.weapon.spidermax);
+                        if (options.modifySpiders && options.modifySpiders.targets.includes(opponent)) {
+                            amount = Math.max(1, amount + options.modifySpiders.modifiers[options.modifySpiders.targets.indexOf(opponent)]); 
+                        }
                         text = `${this.name} threw **${amount}** spiders${(options && options.named) ? ` at ${opponent.name}` : '' }`;
 
                         if (opponent.enemy && opponent.creature.emoji === '🕷') {
@@ -173,39 +201,50 @@ module.exports.Fighter = class {
                             opponent.spiders += amount * this.getDmg();
                         }
                     }
-                    else if (getChance(this.weapon.instakill)) {
-                        if (this.weapon.cursed) {
-                            text = `${this.name} is just another victim of the bad girl's curse`;
-                            this.hp = 0;
+                    else {
+                        let chance = this.weapon.instakill;
+                        if (options.modifyCrit && options.modifyCrit.targets.includes(opponent)) {
+                            chance *= options.modifyCrit.modifiers[options.modifyCrit.targets.indexOf(opponent)]; 
                         }
-                        else {
-                            text = `${this.name} called upon dark magicks`;
-        
-                            if (opponent.boss) {
-                                dmg = Math.round(40 * this.bonus);
-                                text += ' (**<dmg>** dmg)';
+
+                        if (getChance(chance)) {
+                            if (this.weapon.cursed) {
+                                text = `${this.name} is just another victim of the bad girl's curse`;
+                                this.hp = 0;
                             }
                             else {
-                                dmg = opponent.hp;
+                                text = `${this.name} called upon dark magicks`;
+            
+                                if (opponent.boss) {
+                                    dmg = Math.round(40 * this.bonus);
+                                    text += ' (**<dmg>** dmg)';
+                                }
+                                else {
+                                    dmg = opponent.hp;
+                                }
                             }
                         }
-                    }
-                    else {
-                        //standard calculation
-                        dmg = this.getDmg();
-        
-                        //required to balance battleaxe v. kamehameha matchup
-                        if (this.weapon.zerk) {
-                            if (opponent.weapon.sequence) {
-                                opponent.shield = 0;
-                                dmg += 4;
+                        else {
+                            //standard calculation
+                            dmg = this.getDmg();
+
+                            if (options.modifyDmg && options.modifyDmg.targets.includes(opponent)) {
+                                dmg *= options.modifyDmg.modifiers[options.modifyDmg.targets.indexOf(opponent)]; 
                             }
-                            else if (opponent.weapon.spidermin) {
-                                dmg += 2;
+            
+                            //required to balance battleaxe v. kamehameha matchup
+                            if (this.weapon.zerk) {
+                                if (opponent.weapon.sequence) {
+                                    opponent.shield = 0;
+                                    dmg += 4;
+                                }
+                                else if (opponent.weapon.spidermin) {
+                                    dmg += 2;
+                                }
                             }
-                        }
-        
-                        text = `${this.name} hit ${(options && options.named) ? opponent.name + ' ' : '' }for **<dmg>** dmg`;
+            
+                            text = `${this.name} hit ${(options && options.named) ? opponent.name + ' ' : '' }for **<dmg>** dmg`;
+                            }
                     }
         
                     //dmg calculation finalized
@@ -313,7 +352,7 @@ module.exports.Fighter = class {
             //child with costume
             if (opponent && !this.revealed && this.weapon.type === '🛍️') {
                 this.revealed = true;
-                actions.push(new Action(`*It was just a child in a ${this.creature.literal.replace(':adj ', '')} costume!*`, opponent.position, party, 3000));
+                actions.push(new Action(`*It was just a child in ${this.creature.literal.replace(':adj ', '')} costume!*`, opponent.position, party, 3000));
                 actions.push(new Action('*What is wrong with you?!*', opponent.position, party, 5000));
                 actions.push(new Action("*Maybe you're the real monster.*", opponent.position, party));
             }
