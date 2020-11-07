@@ -188,8 +188,8 @@ module.exports.Fighter = class {
                     }
                     else if (this.weapon.spidermin) {
                         let amount = getRandom(this.weapon.spidermin, this.weapon.spidermax);
-                        if (options.modifySpiders && options.modifySpiders.targets.includes(opponent)) {
-                            amount = Math.max(1, amount + options.modifySpiders.modifiers[options.modifySpiders.targets.indexOf(opponent)]); 
+                        if (options.modifySpiders) {
+                            amount = Math.max(1, amount + options.modifiers[targets.indexOf(opponent)]); 
                         }
                         text = `${this.name} threw **${amount}** spiders${(options && options.named) ? ` at ${opponent.name}` : '' }`;
 
@@ -203,11 +203,11 @@ module.exports.Fighter = class {
                     }
                     else {
                         let chance = this.weapon.instakill;
-                        if (options.modifyCrit && options.modifyCrit.targets.includes(opponent)) {
-                            chance *= options.modifyCrit.modifiers[options.modifyCrit.targets.indexOf(opponent)]; 
+                        if (options.modifyCrit) {
+                            chance *= options.modifiers[targets.indexOf(opponent)]; 
                         }
 
-                        if (getChance(chance)) {
+                        if (getChance(Math.round(chance))) {
                             if (this.weapon.cursed) {
                                 text = `${this.name} is just another victim of the bad girl's curse`;
                                 this.hp = 0;
@@ -228,8 +228,8 @@ module.exports.Fighter = class {
                             //standard calculation
                             dmg = this.getDmg();
 
-                            if (options.modifyDmg && options.modifyDmg.targets.includes(opponent)) {
-                                dmg *= options.modifyDmg.modifiers[options.modifyDmg.targets.indexOf(opponent)]; 
+                            if (options.modifyDmg) {
+                                dmg *= options.modifiers[targets.indexOf(opponent)]; 
                             }
             
                             //required to balance battleaxe v. kamehameha matchup

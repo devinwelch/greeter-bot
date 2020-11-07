@@ -324,8 +324,8 @@ function act(client, party, board, actions, turn, action, direction) {
         board.clearTemp();
         targets = results.targets || results;
 
-        if (results.modifiers) {
-            Object.assign(options, results);
+        if (results.options) {
+            Object.assign(options, results.options);
         }
 
         options.skip = false;

@@ -34,20 +34,67 @@ function bag(player, board, direction) {
         }
     }
 
-    return { targets: [target], modifiers: [[1, 0, 0, -1][distance - 1]] };
+    return { targets: [target], options:  { modifySpiders: true, modifiers: [[1, 0, 0, -1][distance - 1]] } };
 }
 
-//AOE 3 in line
-function kamehameha(player, board, direction) {
+//◧▢ 
+//⬚▢ AOE, 50% dmg on sides
+//◧▢
+function battleaxe(player, board, direction) {
+    let x = player.x;
+    let y = player.y;
+    const targets = [];
+    const options = { modifyDmg: true, modifiers: [] };
+    
+    if (direction === '⬅️' || direction === '➡️') {
+        if (direction === '⬅️') {
+            add(targets, board, x - 1, y, options, 1);
+            add(targets, board, x - 1, y + 1, options, 1);
+            add(targets, board, x - 1, y - 1, options, 1);
+        }
+        else {
+            add(targets, board, x + 1, y, options, 1);
+            add(targets, board, x + 1, y + 1, options, 1);
+            add(targets, board, x + 1, y - 1, options, 1);
+        }
+
+        add(targets, board, x, y - 1, options, 0.5);
+        add(targets, board, x, y + 1, options, 0.5);
+    }
+    else {
+        if (direction === '⬆️') {
+            add(targets, board, x, y - 1, options, 1);
+            add(targets, board, x + 1, y - 1, options, 1);
+            add(targets, board, x - 1, y - 1, options, 1);
+        }
+        else {
+            add(targets, board, x, y + 1, options, 1);
+            add(targets, board, x + 1, y + 1, options, 1);
+            add(targets, board, x - 1, y + 1, options, 1);
+        }
+
+        add(targets, board, x + 1, y, options, 0.5);
+        add(targets, board, x - 1, y, options, 0.5);
+    }
+
+    return { targets: targets, options: options };
+}
+
+//first hit in 1-4 range
+function bow(player, board, direction) {
     let x = player.x;
     let y = player.y;
     const targets = [];
     
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 4; i++) {
         if (direction === '⬅️') add(targets, board, x - i, y);
         if (direction === '⬆️') add(targets, board, x, y - i);
         if (direction === '⬇️') add(targets, board, x, y + i);
         if (direction === '➡️') add(targets, board, x + i, y);
+
+        if (targets.length) {
+            break;
+        }
     }
 
     return targets;
@@ -73,99 +120,22 @@ function daggers(player, board, direction) {
     return targets;
 }
 
-//◧▢ 
-//⬚▢ AOE, 50% dmg on sides
-//◧▢
-function battleaxe(player, board, direction) {
-    let x = player.x;
-    let y = player.y;
-    const targets = [];
-    const modifiers = [];
-    
-    if (direction === '⬅️' || direction === '➡️') {
-        if (direction === '⬅️') {
-            add(targets, board, x - 1, y, modifiers, 1);
-            add(targets, board, x - 1, y + 1, modifiers, 1);
-            add(targets, board, x - 1, y - 1, modifiers, 1);
-        }
-        else {
-            add(targets, board, x + 1, y, modifiers, 1);
-            add(targets, board, x + 1, y + 1, modifiers, 1);
-            add(targets, board, x + 1, y - 1, modifiers, 1);
-        }
-
-        add(targets, board, x, y - 1, modifiers, 0.5);
-        add(targets, board, x, y + 1, modifiers, 0.5);
-    }
-    else {
-        if (direction === '⬆️') {
-            add(targets, board, x, y - 1, modifiers, 1);
-            add(targets, board, x + 1, y - 1, modifiers, 1);
-            add(targets, board, x - 1, y - 1, modifiers, 1);
-        }
-        else {
-            add(targets, board, x, y + 1, modifiers, 1);
-            add(targets, board, x + 1, y + 1, modifiers, 1);
-            add(targets, board, x - 1, y + 1, modifiers, 1);
-        }
-
-        add(targets, board, x + 1, y, modifiers, 0.5);
-        add(targets, board, x - 1, y, modifiers, 0.5);
-    }
-
-    return { targets: targets, modifiers: modifiers };
-}
-
-//single target
-function warhammer(player, board, direction) {
-    let x = player.x;
-    let y = player.y;
-    const targets = [];
-    
-    if (direction === '⬅️') add(targets, board, x - 1, y);
-    if (direction === '⬆️') add(targets, board, x, y - 1);
-    if (direction === '⬇️') add(targets, board, x, y + 1);
-    if (direction === '➡️') add(targets, board, x + 1, y);
-
-    return targets;
-}
-
 //AOE, 4 in line, 100/50/25/0 % crit chance
 function fiddle(player, board, direction) {
     let x = player.x;
     let y = player.y;
     const targets = [];
-    const modifiers = [];
+    const options = { modifyCrit: true, modifiers: [] };
     const crit = [1, 0.5, 0.25, 0];
     
     for (let i = 1; i <= 4; i++) {
-        if (direction === '⬅️') add(targets, board, x - i, y, modifiers, crit[i - 1]);
-        if (direction === '⬆️') add(targets, board, x, y - i, modifiers, crit[i - 1]);
-        if (direction === '⬇️') add(targets, board, x, y + i, modifiers, crit[i - 1]);
-        if (direction === '➡️') add(targets, board, x + i, y, modifiers, crit[i - 1]);
+        if (direction === '⬅️') add(targets, board, x - i, y, options, crit[i - 1]);
+        if (direction === '⬆️') add(targets, board, x, y - i, options, crit[i - 1]);
+        if (direction === '⬇️') add(targets, board, x, y + i, options, crit[i - 1]);
+        if (direction === '➡️') add(targets, board, x + i, y, options, crit[i - 1]);
     }
 
-    return { targets: targets, modifiers: modifiers };
-}
-
-//first hit in 1-4 range
-function bow(player, board, direction) {
-    let x = player.x;
-    let y = player.y;
-    const targets = [];
-    
-    for (let i = 1; i <= 4; i++) {
-        if (direction === '⬅️') add(targets, board, x - i, y);
-        if (direction === '⬆️') add(targets, board, x, y - i);
-        if (direction === '⬇️') add(targets, board, x, y + i);
-        if (direction === '➡️') add(targets, board, x + i, y);
-
-        if (targets.length) {
-            break;
-        }
-    }
-
-    return targets;
+    return { targets: targets, options: options };
 }
 
 //AOE, 4 adjacent
@@ -178,6 +148,55 @@ function fists(player, board) {
     add(targets, board, x + 1, y);
     add(targets, board, x, y - 1);
     add(targets, board, x, y + 1);
+
+    return targets;
+}
+
+//AOE 3 in line
+function kamehameha(player, board, direction) {
+    let x = player.x;
+    let y = player.y;
+    const targets = [];
+    
+    for (let i = 1; i <= 3; i++) {
+        if (direction === '⬅️') add(targets, board, x - i, y);
+        if (direction === '⬆️') add(targets, board, x, y - i);
+        if (direction === '⬇️') add(targets, board, x, y + i);
+        if (direction === '➡️') add(targets, board, x + i, y);
+    }
+
+    return targets;
+}
+
+//    ▢ 
+//⬞▢▢   AOE
+function scythe(player, board, direction) {
+    let x = player.x;
+    let y = player.y;
+    const targets = [];
+    
+    switch (direction) {
+        case '⬅️': 
+            add(targets, board, x - 1, y);
+            add(targets, board, x - 2, y);
+            add(targets, board, x - 3, y + 1);
+            break;
+        case '➡️':
+            add(targets, board, x + 1, y);
+            add(targets, board, x + 2, y);
+            add(targets, board, x + 3, y - 1);
+            break;
+        case '⬆️':
+            add(targets, board, x, y - 1);
+            add(targets, board, x, y - 2);
+            add(targets, board, x - 1, y - 3);
+            break;
+        case '⬇️':
+            add(targets, board, x, y + 1);
+            add(targets, board, x, y + 2);
+            add(targets, board, x + 1, y + 3);
+            break;
+    }
 
     return targets;
 }
@@ -220,44 +239,25 @@ function sword(player, board, direction) {
     return targets;
 }
 
-//    ▢ 
-//⬞▢▢   AOE
-function scythe(player, board, direction) {
+//single target
+function warhammer(player, board, direction) {
     let x = player.x;
     let y = player.y;
     const targets = [];
     
-    switch (direction) {
-        case '⬅️': 
-            add(targets, board, x - 1, y);
-            add(targets, board, x - 2, y);
-            add(targets, board, x - 3, y + 1);
-            break;
-        case '➡️':
-            add(targets, board, x + 1, y);
-            add(targets, board, x + 2, y);
-            add(targets, board, x + 3, y - 1);
-            break;
-        case '⬆️':
-            add(targets, board, x, y - 1);
-            add(targets, board, x, y - 2);
-            add(targets, board, x - 1, y - 3);
-            break;
-        case '⬇️':
-            add(targets, board, x, y + 1);
-            add(targets, board, x, y + 2);
-            add(targets, board, x + 1, y + 3);
-            break;
-    }
+    if (direction === '⬅️') add(targets, board, x - 1, y);
+    if (direction === '⬆️') add(targets, board, x, y - 1);
+    if (direction === '⬇️') add(targets, board, x, y + 1);
+    if (direction === '➡️') add(targets, board, x + 1, y);
 
     return targets;
 }
 
-function add(targets, board, x, y, modifiers, mod) {
+function add(targets, board, x, y, options, modifier) {
     if (check(board, x, y)) {
         targets.push(board[x][y].occupied);
-        if (modifiers) {
-            modifiers.push(mod);
+        if (options) {
+            options.modifiers.push(modifier);
         }
     }
 }
