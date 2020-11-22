@@ -46,6 +46,12 @@ let self = module.exports = {
                 return react(message, config.ids.brownie);
             }
 
+            if (['gbp', 'rpg'].includes(command.category) && 
+                [config.ids.mainChat, config.ids.botchat].includes(message.channel.id))
+            {
+                    return;
+            }
+
             if (command.args && !args.length) {
                 return message.reply(`Please use: \`${config.prefix}${command.name} ${command.usage}\``);
             }
