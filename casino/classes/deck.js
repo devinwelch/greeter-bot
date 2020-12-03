@@ -2,19 +2,21 @@ const { shuffle } = require('../../utils');
 const { Card } = require('./card');
 
 module.exports.Deck = class {
-    constructor() {
-        this.newDeck();
+    constructor(count) {
+        this.newDeck(count);
     }
 
-    newDeck() {
+    newDeck(count = 1) {
         this.cards = [];
 
-        for (let rank = 1; rank <= 13; rank++) {
-            for(let suit = 0; suit < 4; suit++) {
-                this.cards.push(new Card(rank, suit));
+        for (let deck = 0; deck < count; deck++) {
+            for (let rank = 1; rank <= 13; rank++) {
+                for(let suit = 0; suit < 4; suit++) {
+                    this.cards.push(new Card(rank, suit));
+                }
             }
         }
-
+        
         shuffle(this.cards);
     }
 

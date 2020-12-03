@@ -22,7 +22,7 @@ async function bet(client, config, db, message, leader) {
         `${check} Ready up`
     ].join('\n');
 
-    const bets = await takeBets(client, config, message, leader, directions);
+    const bets = await takeBets(client, config, message, leader, directions, { blackjack: true });
     let data = await getData(db, Object.keys(bets));
 
     if (!data.Responses || !data.Responses.GBPs) {
@@ -47,7 +47,7 @@ async function bet(client, config, db, message, leader) {
 
 async function setup(client, config, db, message, leader, bets) {
     const game = { 
-        deck: new Deck(),
+        deck: new Deck(4),
         players: [],
         house: { 
             user: client.user,
@@ -56,9 +56,16 @@ async function setup(client, config, db, message, leader, bets) {
         turn: -1
     };
 
-    Object.keys(bets).forEach(id => {
+    const ids = Object.keys(bets);
+    const data = await getData(db, ids);
+    if (!data.Responses || !data.Responses.GBPs) {
+        return message.edit('Something went wrong.');
+    }
+
+    ids.forEach(id => {
         game.players.push({
             user: client.users.resolve(id),
+            originalBet: bets[id],
             bet: bets[id],
             hand: []
         });
@@ -113,8 +120,7 @@ async function play(client, config, db, message, leader, game) {
             continue;
         }
 
-        await display(client, config, message, game);
-        await getTurn(client, config, message, game);
+        await getTurn(client, config, db, message, game);
     }
 
     game.house.hand[1].down = false;
@@ -179,21 +185,42 @@ async function getResults(client, config, db, message, leader, game) {
     });
 }
 
-async function getTurn(client, config, message, game) {
-    const filter = (reaction, user) => 
-        user === game.players[game.turn].user &&
-        (reaction.emoji.name === check || reaction.emoji.name === circle);
-    const collector = message.createReactionCollector(filter, { idle: 30000 });
+async function getTurn(client, config, db, message, game) {
+    const player = game.players[game.turn];
+    const filter = (reaction, user) => user === player.user;
+    const collector = message.createReactionCollector(filter, { idle: 60000 });
+
+    checkSplitOrDouble(db, game);
+    await display(client, config, message, game);
 
     collector.on('collect', async function(reaction, user) {
         reaction.users.remove(user);
 
-        if (reaction.emoji.name === check) {
+        if (reaction.emoji.id === config.ids.split && player.canSplit) {
+            const split = {};
+            Object.assign(split, player);
+            split.bet = split.originalBet;
+            split.hand = player.hand.splice(1, 1);
+            game.players.splice(game.players.indexOf(player) + 1, 0, split);
+            
+            for (let i = 0; i < 2; i++) {
+                await display(client, config, message, game);
+                game.deck.deal(game.players[game.turn + i].hand);
+            }
+
+            checkSplitOrDouble(db, game);
+            await display(client, config, message, game);
+        }
+        else if (reaction.emoji.id === config.ids.double && player.canDouble) {
+            player.bet += player.originalBet;
+            game.deck.deal(player.hand);
+            collector.stop();
+        } else if (reaction.emoji.name === check) {
             collector.stop();
         }
-        else {
-            game.deck.deal(game.players[game.turn].hand);
-            if (getTotal(game.players[game.turn].hand) > 21) {
+        else if (reaction.emoji.name === circle) {
+            game.deck.deal(player.hand);
+            if (getTotal(player.hand) > 21) {
                 collector.stop();
             }
         }
@@ -206,11 +233,35 @@ async function getTurn(client, config, message, game) {
     });
 }
 
+async function checkSplitOrDouble(db, game) {
+    const player = game.players[game.turn];
+    const hardTotal = getTotal(player.hand);
+    const softTotal = getTotal(player.hand);
+    const data = await getData(db, player.user.id);
+
+    const totalBets = game.players
+        .filter(p => p.user.id = player.user.id)
+        .reduce((a, b) => a + b.bet, 0);
+
+    if (!data.Responses ||
+        !data.Responses.GBPs ||
+        !data.Responses.GBPs.length ||
+        player.hand.length !== 2 ||
+        data.Responses.GBPs[0].GBPs - totalBets < player.originalBet)
+    {
+        player.canDouble = false;
+        player.canSplit = false;
+        return;
+    }
+
+    player.canDouble = (hardTotal >= 9 && hardTotal <= 11) || (softTotal >= 9 && softTotal <= 11);
+    player.canSplit = player.hand[0].getValue() === player.hand[1].getValue();
+}
+
 async function display(client, config, message, game, over) {
     await delay(1500);
 
     const text = [];
-
     const players = game.players.concat(game.house);
     players.forEach(p => {
         text.push([
@@ -226,14 +277,23 @@ async function display(client, config, message, game, over) {
             text.push(`Play again?\t${circle} No\t${check} Yes`);
         }
         else {
-            text.push(`${circle} Hit\t${check} Stand`);
+            let buttons = `${circle} Hit\t${check} Stand`;
+            if (game.turn < game.players.length) {
+                if (game.players[game.turn].canSplit) {
+                    buttons += `\t${client.emojis.resolve(config.ids.split)} Split`;
+                }
+                if (game.players[game.turn].canDouble) {
+                    buttons += `\t${client.emojis.resolve(config.ids.double)} Double down`;
+                }
+            }
+            text.push(buttons);
         }
     }
 
     await message.edit(text);
 }
 
-function getTotal(hand) {
+function getTotal(hand, soft) {
     let total;
 
     if (!hand.length) {
@@ -243,7 +303,7 @@ function getTotal(hand) {
         total = hand.map(card => card.getValue()).reduce((a, b) => a + b);
     }
 
-    if (hand.some(card => card.rank === 1) && total < 12) {
+    if (hand.some(card => card.rank === 1) && total < 12 && !soft) {
         total += 10;
     }
 

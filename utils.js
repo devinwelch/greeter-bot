@@ -398,10 +398,7 @@ const self = module.exports = {
             userIDs = [userIDs];
         }
 
-        const params = { RequestItems: { 'GBPs': { Keys: [] } }};
-        userIDs.forEach(id => {
-            params.RequestItems['GBPs'].Keys.push({ UserID: id });
-        });
+        const params = { RequestItems: { 'GBPs': { Keys: userIDs.map(id => { return { UserID : id }; }) } }};
 
         return db.batchGet(params).promise();
         //returns { Responses { GBPS: [{user1}, {user2}, ...] } }

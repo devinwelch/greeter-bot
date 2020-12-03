@@ -5,9 +5,16 @@ const self = module.exports = {
     check : '✅'
 };
 
-self.takeBets = async function(client, config, message, leader, directions) {
+self.takeBets = async function(client, config, message, leader, directions, options) {
+    options = options || {};
     const chips = [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000];
-    react(message, [self.circle, self.check].concat(chips));
+    let emojis = [self.circle, self.check];
+
+    if (options.blackjack) {
+        emojis = emojis.concat([config.ids.split, config.ids.double]);
+    }
+    
+    react(message, emojis.concat(chips));
 
     const filter = (reaction, user) => 
         user !== client.user &&
