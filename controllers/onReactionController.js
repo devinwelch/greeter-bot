@@ -2,6 +2,8 @@ const { updateData, getRandom, playSong } = require('../utils.js');
 
 let self = module.exports = {
     execute(client, config, db, reaction, user) {
+        client.users.fetch(user.id);
+        
         if (reaction.message.member.id === client.user.id) {
             //emoji game
             //I should re-do this game with a Collector
