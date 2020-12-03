@@ -1,4 +1,4 @@
-const { shuffle } = require('../../utils');
+const { shuffle, getChance } = require('../../utils');
 const { Card } = require('./card');
 
 module.exports.Deck = class {
@@ -21,14 +21,19 @@ module.exports.Deck = class {
     }
 
     //hand is array of cards
-    deal(hand, amount = 1, down = false) {
-        for (let i = 0; i < amount; i++) {
+    deal(hand, options) {
+        options = options || {};
+        options.amount = options.amount || 1;
+
+        for (let i = 0; i < options.amount; i++) {
             if (!this.cards.length) {
                 this.newDeck();
             }
 
-            const card = this.cards.pop();
-            card.down = down;
+            const card = options.luck && getChance(options.luck / 10)
+                ? new Card(0, 4) : this.cards.pop();
+
+            card.down = options.down;
             hand.push(card);
         }
     }

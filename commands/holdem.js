@@ -74,7 +74,7 @@ async function setup(client, config, db, message, leader, bets) {
             game.deck.deal(game.players[j].hand);
             await display(client, config, message, game);
         }
-        game.deck.deal(game.house.hand, 1, true);
+        game.deck.deal(game.house.hand, { down: true });
         await display(client, config, message, game);
     }
 

@@ -67,16 +67,17 @@ async function setup(client, config, db, message, leader, bets) {
             user: client.users.resolve(id),
             originalBet: bets[id],
             bet: bets[id],
-            hand: []
+            hand: [],
+            luck: data.Responses.GBPs.find(d => d.UserID === id).Skills.luck || 0
         });
     });
 
     for (let i = 0; i < 2; i++) {
         for(let j = 0; j < game.players.length; j++) {
-            game.deck.deal(game.players[j].hand);
+            game.deck.deal(game.players[j].hand, { luck: game.players[j].luck });
             await display(client, config, message, game);
         }
-        game.deck.deal(game.house.hand, 1, i === 1);
+        game.deck.deal(game.house.hand, { down: i === 1 });
         await display(client, config, message, game);
     }
 
@@ -205,7 +206,7 @@ async function getTurn(client, config, db, message, game) {
             
             for (let i = 0; i < 2; i++) {
                 await display(client, config, message, game);
-                game.deck.deal(game.players[game.turn + i].hand);
+                game.deck.deal(game.players[game.turn + i].hand, { luck: player.luck });
             }
 
             checkSplitOrDouble(db, game);
@@ -213,13 +214,13 @@ async function getTurn(client, config, db, message, game) {
         }
         else if (reaction.emoji.id === config.ids.double && player.canDouble) {
             player.bet += player.originalBet;
-            game.deck.deal(player.hand);
+            game.deck.deal(player.hand, { luck: player.luck });
             collector.stop();
         } else if (reaction.emoji.name === check) {
             collector.stop();
         }
         else if (reaction.emoji.name === circle) {
-            game.deck.deal(player.hand);
+            game.deck.deal(player.hand, { luck: player.luck });
             if (getTotal(player.hand) > 21) {
                 collector.stop();
             }
@@ -305,6 +306,10 @@ function getTotal(hand, soft) {
 
     if (hand.some(card => card.rank === 1) && total < 12 && !soft) {
         total += 10;
+    }
+
+    if (hand.some(card => card.rank === 0)) {
+        total = 21;
     }
 
     return total;
