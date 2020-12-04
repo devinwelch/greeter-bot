@@ -30,7 +30,7 @@ module.exports.Deck = class {
                 this.newDeck();
             }
 
-            const card = options.luck && getChance(options.luck / 10)
+            const card = options.luck && getChance(options.luck / 4)
                 ? new Card(0, 4) : this.cards.pop();
 
             card.down = options.down;
