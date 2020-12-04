@@ -82,7 +82,7 @@
             "727568980205633537",
             "727568980570800188"
         ],
-        "description": "Always attacks first! Range increased during invasion.",
+        "description": "Always attacks first!",
         "upgrade": "Multishot: +7/10% chance per skill point to loose an extra arrow!",
         "win": ":w 360 no-scoped :l!",
         "weapon": true,
@@ -119,7 +119,7 @@
             "727568980130267278",
             "728346493190275173"
         ],
-        "description": "Sit down in that chair right there and let me show you how it's done!",
+        "description": "7% base chance to insta-kill!",
         "upgrade": "Demonic power: increase instakill chance +1.5/2% per skill point!",
         "win": "He told you once, you son of a bitch, :w is the best that's ever been!",
         "weapon": true,
@@ -170,7 +170,7 @@
             "727568980499365958",
             "727568980201570367"
         ],
-        "description": "7% chance to insta-kill!",
+        "description": "7% base chance to insta-kill!",
         "upgrade": "Lifesteal: heal for 9/12% of dmg dealt per skill point!",
         "win": ":w harvested :l's soul!",
         "weapon": true,
@@ -207,7 +207,7 @@
             "727568980155433135",
             "727568979761168455"
         ],
-        "description": "Hits second, requires wind-up between swings. Can 2-shot!",
+        "description": "Hits second, requires wind-up between swings.",
         "upgrade": "Reckless swing: gain +6/8% dmg and recoil for +2% hp per skill point!",
         "win": ":w smashed :l's face!",
         "weapon": true,
