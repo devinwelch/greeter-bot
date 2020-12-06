@@ -221,7 +221,7 @@ async function getTurn(client, config, db, message, game) {
         }
         else if (reaction.emoji.name === circle) {
             game.deck.deal(player.hand, { luck: player.luck });
-            if (getTotal(player.hand) > 21) {
+            if (getTotal(player.hand) >= 21) {
                 collector.stop();
             }
         }
