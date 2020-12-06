@@ -9,6 +9,8 @@ module.exports = {
     category: 'rpg',
     usage: '[mute]',
     execute(client, config, db, message, args) {
+        return message.reply('A recent Discord API change broke me and caused a huge bug, so this table is closed until further notice :(.'); //BUG
+
         //voice channel for boss music
         const voice = args.toLowerCase().includes('mute') ? false : message.member.voice.channel;
 

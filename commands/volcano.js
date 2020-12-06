@@ -11,6 +11,8 @@ module.exports = {
     category: 'fun',
     usage: '[wager] [klok]',
     execute(client, config, db, message, args) {
+        return message.reply('A recent Discord API change broke me and caused a huge bug, so this table is closed until further notice :(.'); //BUG
+
         const wager = Math.min(/\d+.*/.test(args) ? Math.max(Math.floor(args.trim().split(/\D/, 1)[0]), 0) : 0, 100);
         const klok = args.toLowerCase().indexOf('klok') !== -1 ? message.member.voice.channel : false;
 

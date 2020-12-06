@@ -4,7 +4,7 @@ module.exports.execute = async function(client, config, db, reaction, user) {
     await client.users.fetch(user.id);
     await client.guilds.cache.get(reaction.message.guild.id).members.fetch(user.id);
     
-    if (reaction.message.member.id === client.user.id) {
+    if (false && reaction.message.member.id === client.user.id) { //BUG
         //emoji game
         //I should re-do this game with a Collector
         if (reaction.message.content.startsWith('**Guess the emoji**')) {

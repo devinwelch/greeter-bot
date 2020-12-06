@@ -25,6 +25,8 @@ module.exports = {
     aliases: ['invasion', 'defense'],
     usage: '[# of characters per player (1-4)]',
     execute(client, config, db, message, args) {
+        return message.reply('A recent Discord API change broke me and caused a huge bug, so this table is closed until further notice :(.'); //BUG
+
         //send invite
         const invite = [];
         invite.push(`Join ${message.member.displayName} in the fray as you defend your banana hoard from a swarm of monsters!`);
