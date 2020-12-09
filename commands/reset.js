@@ -13,6 +13,7 @@ module.exports = {
     description: 'Start a vote to reset the economy. If top 3 good boys™ concur, all user GBPs are set to 0 at midnight EST. Items are kept. Maximum of 1 reset per week.',
     category: 'gbp',
     execute(client, config, db, message, args) {
+        return message.reply('A recent Discord API change broke me and caused a huge bug, so this game is closed until further notice :(.'); //BUG
         start(client, config, db, message, args);
     }
 };

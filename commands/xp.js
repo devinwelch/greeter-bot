@@ -4,7 +4,7 @@ module.exports = {
     name: 'xp',
     description: "Check a user's current level!",
     category: 'rpg',
-    aliases: ['experience', 'level', 'lvl'],
+    aliases: ['experience', 'exp', 'level', 'lvl'],
     usage: '[user|tag]',
     execute(client, config, db, message, args) {
         const userIDs = message.mentions.members.size
