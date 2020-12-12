@@ -8,8 +8,6 @@ module.exports = {
     category: 'rpg',
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
-        return message.reply('A recent Discord API change broke me and caused a huge bug, so this table is closed until further notice :(.'); //BUG
-
         if (!message.mentions.members.size) {
             return message.reply('Please @ a user!');
         }

@@ -8,8 +8,6 @@ module.exports = {
     category: 'fun',
     aliases: ['21'],
     execute(client, config, db, message, args) {
-        return message.reply('A recent Discord API change broke me and caused a huge bug most commonly set off by blackjack, so this table is closed until further notice :(.'); //BUG
-
         message.channel.send('<reserved>')
         .then(msg => bet(client, config, db, msg, message.author))
         .catch(console.error);
@@ -243,7 +241,7 @@ async function checkSplitOrDouble(db, game) {
     const data = await getData(db, player.user.id);
 
     const totalBets = game.players
-        .filter(p => p.user.id = player.user.id)
+        .filter(p => p.user.id === player.user.id)
         .reduce((a, b) => a + b.bet, 0);
 
     if (!data.Responses ||

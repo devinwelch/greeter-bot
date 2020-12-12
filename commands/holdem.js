@@ -9,8 +9,6 @@ module.exports = {
     category: 'fun',
     aliases: ['poker'],
     execute(client, config, db, message, args) {
-        return message.reply('A recent Discord API change broke me and caused a huge bug, so this table is closed until further notice :(.'); //BUG
-
         message.channel.send('<reserved>')
         .then(msg => bet(client, config, db, msg, message.author))
         .catch(console.error);

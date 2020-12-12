@@ -12,8 +12,6 @@ module.exports = {
     aliases: ['challenge'],
     usage: '[wager] <@user>',
     execute(client, config, db, message, args) {
-        return message.reply('A recent Discord API change broke me and caused a huge bug, so this game is closed until further notice :(.'); //BUG
-
         //input sanitization
         if (!message.mentions.members.size) {
             return message.reply('Please @ a user!');

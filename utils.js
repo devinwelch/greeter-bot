@@ -495,7 +495,7 @@ const self = module.exports = {
     giveaway(client, db) {
         const members = client.guilds.cache.get(config.ids.hooliganHouse).members.cache;
         
-        const jackpot = members.size * 10;
+        const jackpot = members.size * 3;
         const winner = members.random(1)[0].user;
         self.updateData(db, winner, { gbps: jackpot });
 
