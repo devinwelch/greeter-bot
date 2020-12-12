@@ -156,7 +156,7 @@ async function fight(client, db, party, board, header, map) {
             }
 
             await display(client, db, party, board, actions, turn, header, map);
-            await delay(1000);
+            await delay(750);
         }
     }
 
@@ -381,7 +381,7 @@ async function getAITurn(client, db, party, board, actions, turn, header, map) {
     const steps = Math.min(choice.length, 2);
 
     //"think" for 2-3 seconds
-    await delay(getRandom(2000, 3000));
+    await delay(getRandom(750, 1500));
 
     for (let i = 0; i < steps; i++) {
         if (choice[i].weight > 1) {
@@ -471,7 +471,7 @@ async function display(client, db, party, board, actions, turn, header, map, opt
 
         //edit message and pause for effect
         await map.edit(message);
-        await delay(1000);
+        await delay(500);
 
         //increment displayed action count unless we are caught up already
         if (count < actions.length) {
