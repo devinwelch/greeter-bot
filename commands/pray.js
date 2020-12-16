@@ -23,7 +23,7 @@ self.execute = async function(client, config, db, message, args) {
                     const params = {
                         TableName: 'GBPs',
                         Key: { 'UserID': message.author.id },
-                        UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z, Loan = :z, Faith = :z',
+                        UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z, Loan = :z, Faith = :z, Coins = :z',
                         ExpressionAttributeValues: { ':z': 0 }
                     };
 
