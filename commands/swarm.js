@@ -526,6 +526,7 @@ function getResults(client, db, party, board, actions, header, map) {
     actions.push(`**Enemies killed: ${board.stats.enemies}**`);
     actions.push(`**XP earned: ${board.stats.xp}**`);
     actions.push(`**GBPs earned: ${gbps}**`);
+    actions.push('');
 
     display(client, db, party, board, actions, null, header, map);
     new Set(party.filter(p => p.member).map(p => p.member.user))

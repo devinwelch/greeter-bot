@@ -216,6 +216,7 @@ const self = module.exports = {
                 HighScore   : options.gbps || 0,
                 Stash       : 0,
                 Loan        : 0,
+                Coins       : 0,
                 Inventory   : [self.generateWeapon(1, { type: 'fists', chances: [1, 0, 0, 0], plain: true })],
                 Equipped    : 0,
                 Team        : 'none',
@@ -278,6 +279,11 @@ const self = module.exports = {
                 if (!isNaN(options.loan)) {
                     expressions.push('Loan = :loan');
                     attributes[':loan'] = options.loan;
+                }
+
+                if (options.coins) {
+                    expressions.push('Coins = Coins + :coins');
+                    attributes[':coins'] = options.coins;
                 }
 
                 if (options.xp) {
@@ -461,7 +467,7 @@ const self = module.exports = {
                                 const gbpParams = {
                                     TableName: 'GBPs',
                                     Key: { 'UserID': user.UserID },
-                                    UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z, Loan = :z',
+                                    UpdateExpression: 'set GBPs = :z, Stash = :z, HighScore = :z, Loan = :z, Coins = :z',
                                     ExpressionAttributeValues: { ':z': 0 }
                                 };
                                 db.update(gbpParams, function(err) {
@@ -469,6 +475,20 @@ const self = module.exports = {
                                         console.error('Unable to zero user. Error JSON:', JSON.stringify(err, null, 2));
                                     }
                                 });
+                            });
+
+                            const coinParams = { 
+                                TableName: 'Coin', 
+                                Key: { Key: 0 },
+                                UpdateExpression: 'set #v = :v',
+                                ExpressionAttributeNames: { '#v': 'Values' },
+                                ExpressionAttributeValues: { ':v': [100, 100] }
+                            };
+
+                            db.update(coinParams, function(err) {
+                                if (err) {
+                                    console.error('Unable to update coin. Error JSON:', JSON.stringify(err, null, 2));
+                                }
                             });
                         }
                     });
@@ -653,6 +673,51 @@ const self = module.exports = {
         }
 
         return arr;
+    },
+
+    getCoinData: async function(db) {
+        const data = await db.get({ TableName: 'Coin', Key: { Key: 0 }}).promise();
+        if (!data || !data.Item) {
+            return null;
+        }
+
+        return data.Item.Values;
+    },
+
+    wsb: async function(db) {
+        const data = await self.getCoinData(db);
+        if (!data) {
+            return;
+        }
+
+        const current = data[data.length - 1];
+        let delta = 0;
+        let iterations = 3;
+
+        for (let i = 0; i < iterations; i++) {
+            delta += self.getRandom(-24, 25);
+        }
+
+        delta = 1 + delta / iterations / 100;
+
+        data.push(Math.ceil(current * delta));
+
+        const params = {
+            TableName: 'Coin',
+            Key: { Key: 0 },
+            UpdateExpression: 'set #v = :d',
+            ExpressionAttributeNames: { '#v': 'Values' },
+            ExpressionAttributeValues: { ':d': data }
+        };
+
+        db.update(params, function(err) {
+            if (err) {
+                console.log('Unable to update coin. Error:', JSON.stringify(err, null, 2));
+            }
+            else {
+                console.log(`Coin value change: ${(100 * (delta - 1)).toFixed(2)}%`);
+            }
+        });
     }
 };
 
