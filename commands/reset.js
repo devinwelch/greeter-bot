@@ -6,7 +6,9 @@
 
 //TODO: Make sure they are still top 3 after vote passes
 
-const { react } = require('../utils.js');
+const { react, getCoinData } = require('../utils.js');
+const { Item } = require('../rpg/classes/item');
+const { Weapon } = require('../rpg/classes/weapon');
 
 module.exports = {
     name: 'reset',
@@ -35,10 +37,18 @@ async function start(client, config, db, message, args) {
             }
         }
 
+        let coin = await getCoinData(db);
+        if (coin) {
+            coin = coin[coin.length - 1];
+        }
+        else {
+            return;
+        }
+
         const gbpData  = await db.scan({ TableName: 'GBPs' }).promise();
         const goodBoys = gbpData.Items
             .filter(gbp => gbp.Username !== 'greeter-bot')
-            .sort((a, b) => getTotal(b) - getTotal(a))
+            .sort((a, b) => getTotal(b, coin) - getTotal(a, coin))
             .map(gbp => message.guild.members.cache.get(gbp.UserID))
             .filter(mbr => mbr)
             .slice(0, 3);
@@ -89,8 +99,13 @@ async function start(client, config, db, message, args) {
     }
 }
 
-function getTotal(user) {
-    return user.GBPs + user.Stash - user.Loan;
+function getTotal(user, coin) {
+    let items = user.Inventory.slice(1).reduce((a, b) => {
+        const item = b.weapon ? new Weapon(b) : new Item(b);
+        return a + item.sell();
+    }, 0);
+    const coins = user.Coins * coin;
+    return user.GBPs + user.Stash + coins + items - user.Loan;
 }
 
 function reset(db, gbpData, channel) {
