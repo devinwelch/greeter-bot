@@ -29,7 +29,7 @@ module.exports = {
             }
 
             data.Responses.GBPs.forEach(user =>  {
-                let text = `${user.Username} has ${user.GBPs} good boy points (GBPs)`;
+                let text = `${user.Username} has ${user.GBPs} good boy points`;
 
                 if (user.Stash) {
                     text += `, ${user.Stash} GBPs stashed away`;
@@ -50,6 +50,16 @@ module.exports = {
 
                 if (user.Loan) {
                     text += `, ${user.Loan} GBPs in loans`;
+                }
+
+                const count = (text.match(/, /g) || []).length;
+
+                if (count === 1) {
+                    text = text.replace(', ', ' and ');
+                }
+                if (count > 1) {
+                    const i = text.lastIndexOf(', ') + 2;
+                    text = text.slice(0, i) + 'and ' + text.slice(i);
                 }
 
                 text += '!';
