@@ -1,12 +1,18 @@
 const QuickChart = require('quickchart-js');
 const { getData, getCoinData, updateData } = require('../utils');
 
+/*TODO:
+    max
+    !buy
+    update every minute, have each day as row in DB
+*/ 
+
 module.exports = {
     name: 'nannercoin',
     description: 'invest in Nannercoins using GBPs!',
     category: 'gbp',
     aliases: ['coin', 'bananacoin'],
-    usage: '[buy|sell <amount>]',
+    usage: '[buy|sell <amount>] | [give <amount> @mention]',
     execute: async function(client, config, db, message, args) {
         if (args) {
             args = args.split(' ');
@@ -26,6 +32,19 @@ module.exports = {
                     const value = coinData[coinData.length - 1] * amount;
                     if (coinData && gbpData && value) {
                         updateData(db, message.author, { gbps: value, coins: -amount, message: message, emoji: '🪙' });
+                    }
+                }
+                else if (args[0].toLowerCase() === 'give') {
+                    if (message.mentions.members.size) {
+                        const recipient = message.mentions.members.first().user;
+                        const gbpData = await getGBPData(db, message.author.id);
+                        if (gbpData.Coins >= amount) {
+                            updateData(db, message.author, { coins: -amount, message: message, emoji: '🪙' });
+                            updateData(db, recipient, { coins: amount, message: message, emoji: config.ids.drops });
+                        }
+                    }
+                    else {
+                        message.reply('Please use the format: `!nannercoin give X @user`');
                     }
                 }
             }

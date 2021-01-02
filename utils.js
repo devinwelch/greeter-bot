@@ -216,7 +216,7 @@ const self = module.exports = {
                 HighScore   : options.gbps || 0,
                 Stash       : 0,
                 Loan        : 0,
-                Coins       : 0,
+                Coins       : options.coins || 0,
                 Inventory   : [self.generateWeapon(1, { type: 'fists', chances: [1, 0, 0, 0], plain: true })],
                 Equipped    : 0,
                 Team        : 'none',
