@@ -30,7 +30,7 @@ module.exports = {
                     const coinData = await getCoinData(db);
                     const gbpData = await getGBPData(db, message.author.id);
                     const value = coinData[coinData.length - 1] * amount;
-                    if (coinData && gbpData && value) {
+                    if (coinData && gbpData && value && gbpData.Coins >= amount) {
                         updateData(db, message.author, { gbps: value, coins: -amount, message: message, emoji: '🪙' });
                     }
                 }
