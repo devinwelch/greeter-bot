@@ -1,14 +1,4 @@
-//Other concepts for voting:
-//  Pure Democracy
-//  Shareholder votes
-//  Shareholder chance
-//      would require vote cooldown
-
-//TODO: Make sure they are still top 3 after vote passes
-
-const { react, getCoinData } = require('../utils.js');
-const { Item } = require('../rpg/classes/item');
-const { Weapon } = require('../rpg/classes/weapon');
+const { react, getRanks } = require('../utils.js');
 
 module.exports = {
     name: 'reset',
@@ -37,61 +27,59 @@ async function start(client, config, db, message, args) {
             }
         }
 
-        let coin = await getCoinData(db);
-        if (coin) {
-            coin = coin[coin.length - 1];
-        }
-        else {
+        let data = await getRanks(db);
+        
+        if (!data) {
             return;
         }
 
-        const gbpData  = await db.scan({ TableName: 'GBPs' }).promise();
-        const goodBoys = gbpData.Items
-            .filter(gbp => gbp.Username !== 'greeter-bot')
-            .sort((a, b) => getTotal(b, coin) - getTotal(a, coin))
-            .map(gbp => message.guild.members.cache.get(gbp.UserID))
-            .filter(mbr => mbr)
-            .slice(0, 3);
+        if (!getMember(message, data[0]) ||
+            !getMember(message, data[1]) ||
+            !getMember(message, data[2])  )
+        {
+            return message.reply('Not all good boys are here right now!');
+        }
         
         const text = [];
         text.push(`${message.member.displayName} is calling for an economy reset!`);
-        text.push(`${goodBoys.join(', ')}: we need your unanimous concurrence for the motion to pass. You have 3 minutes to decide.`);
+        text.push(`${getName(client, message, data[0])}, ${getName(client, message, data[1])}, ${getName(client, message, data[2])}:`);
+        text.push('We need your unanimous concurrence for the motion to pass. You have 3 minutes to decide.');
         text.push(`Vote here: 🦀 to accept, ${client.emojis.resolve(config.ids.drops)} to decline.`);
         
-        message.channel.send(text)
-        .then(msg => {
-            react(msg, ['🦀', config.ids.drops]);
+        client.resets.push(message.author.id);
 
-            const gbIDs = goodBoys.map(g => g.id);
+        const msg = await message.channel.send(text);
+        react(msg, ['🦀', config.ids.drops]);
 
-            const filter = (reaction, user) => (gbIDs.includes(user.id)) &&
-                (reaction.emoji.name === '🦀' || reaction.emoji.id === config.ids.drops);
+        const filter = (reaction, user) => 
+            (reaction.emoji.name === '🦀' || reaction.emoji.id === config.ids.drops) &&
+            (user.id === data[0].UserID || user.id === data[1].UserID ||user.id === data[2].UserID);
+        const collector = msg.createReactionCollector(filter, { time: 180000 });
+        let pass = false;
 
-            const collector = msg.createReactionCollector(filter, { time: 180000 });
-            const yepCount = {};
-            yepCount[gbIDs[0]] = yepCount[gbIDs[1]] = yepCount[gbIDs[2]] = false;
-            let fail = true;
-
-            collector.on('collect', (reaction, user) => {
-                if (reaction.emoji.name === '🦀') {
-                    yepCount[user.id] = true;
-                    if ((yepCount[gbIDs[0]] && yepCount[gbIDs[1]] && yepCount[gbIDs[2]])) {
-                        fail = false;
-                        reset(db, gbpData, message.channel);
-                        collector.stop();
-                    }
+        collector.on('collect', (reaction, user) => {
+            if (reaction.emoji.name === '🦀') {
+                const datum = data.find(d => d.UserID === user.id);
+                if (datum) {
+                    datum.yep = true;
                 }
-                else {
+
+                if (data[0].yep && data[1].yep && data[2].yep) {
+                    pass = true;
+                    reset(db, data, message.channel);
                     collector.stop();
                 }
-            });
-
-            collector.on('end', function() { 
-                if (fail) {
-                    msg.edit(msg.content + '\n\n**The motion failed. Please continue to be good boys.**');
-                }
-            }); 
+            }
+            else {
+                collector.stop();
+            }
         });
+
+        collector.on('end', function() { 
+            if (!pass) {
+                msg.edit(msg.content + '\n\n**The motion failed. Please continue to be good boys.**');
+            }
+        }); 
     }
     catch (err) {
         console.log(err);
@@ -99,24 +87,27 @@ async function start(client, config, db, message, args) {
     }
 }
 
-function getTotal(user, coin) {
-    let items = user.Inventory.slice(1).reduce((a, b) => {
-        const item = b.weapon ? new Weapon(b) : new Item(b);
-        return a + item.sell();
-    }, 0);
-    const coins = user.Coins * coin;
-    return user.GBPs + user.Stash + coins + items - user.Loan;
+function getMember(message, user) {
+    return message.guild.members.cache.get(user.UserID);
 }
 
-function reset(db, gbpData, channel) {
+function getName(client, message, user) {
+    if (client.resets.includes(message.author.id)) {
+        return user.Username;
+    }
+
+    return getMember(message, user);
+}
+
+function reset(db, data, channel) {
     const economy = {};
-    gbpData.Items.forEach(e => { 
+    data.forEach(e => { 
         economy[e.UserID] = {
-            GBPs: e.GBPs + e.Stash,
+            GBPs: e.Worth,
             HighScore: e.HighScore
         };
     });
-    
+    console.log(economy);
     const params = {
         TableName: 'Resets',
         Item: {
@@ -128,7 +119,7 @@ function reset(db, gbpData, channel) {
     db.put(params, function(err) {
         if (err) {
             console.error('Unable to schedule reset. Error:', JSON.stringify(err, null, 2));
-            channel.send('Unable to schedule reset. Pleae try again.');
+            channel.send('Unable to schedule reset. Please try again.');
         }
         else {
             console.log('Reset scheduled');

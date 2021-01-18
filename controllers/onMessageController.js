@@ -116,8 +116,8 @@ module.exports.execute = async function(client, config, db, message) {
     }
 
     //Random chance to make fun of you or scream at you
-    else if (!getRandom(29)) {
-        if (!getRandom(9) && message.member.voice.channel) {
+    else if (!getRandom(49)) {
+        if (!getRandom(6) && message.member.voice.channel) {
             playSong(client, message.member.voice.channel, 'Ree.mp3');
             react(message, config.ids.ree);
         }

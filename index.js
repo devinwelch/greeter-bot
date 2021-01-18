@@ -26,6 +26,7 @@ for (const file of commandFiles) {
 client.swears = fs.readFileSync('./swears.txt').toString().split(',');
 client.themeSongs = [];
 client.prayers = [];
+client.resets = [];
 client.buybacks = {};
 
 AWS.config.update({

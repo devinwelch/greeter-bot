@@ -410,6 +410,42 @@ const self = module.exports = {
         //returns { Responses { GBPS: [{user1}, {user2}, ...] } }
     },
 
+    getRanks: async function(db, includeRobots) {
+        let coinData = await self.getCoinData(db);
+        if (!coinData) {
+            return null;
+        }
+        coinData = coinData[coinData.length - 1];
+
+        let gbpData = await db.scan({ TableName: 'GBPs' }).promise();
+        if (!gbpData || !gbpData.Items || !gbpData.Items.length) {
+            return null;
+        }
+
+        gbpData = gbpData.Items.map(user => {
+            const items = user.Inventory.slice(1).reduce((a, b) => {
+                const item = b.weapon ? new Weapon(b) : new Item(b);
+                return a + item.sell();
+            }, 0);
+
+            const coins = user.Coins * coinData;
+
+            return {
+                Username: user.Username,
+                UserID: user.UserID,
+                HighScore: user.HighScore,
+                Worth: user.GBPs + user.Stash - user.Loan + coins + items
+            };
+        });
+
+        gbpData.sort((a, b) => b.Worth - a.Worth);
+        if (!includeRobots) {
+            gbpData = gbpData.filter(user => user.Username !== 'greeter-bot');
+        }
+
+        return gbpData;
+    },
+
     midnight(client, db) {
         db.scan({ TableName: 'Resets' }, function (err, data) {
             if (err) {
