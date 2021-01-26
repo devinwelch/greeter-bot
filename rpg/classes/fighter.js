@@ -220,7 +220,7 @@ module.exports.Fighter = class {
                                     text += ' (**<dmg>** dmg)';
                                 }
                                 else {
-                                    dmg = opponent.hp;
+                                    dmg = Math.max(opponent.hp, opponent.shield);
                                 }
                             }
                         }

@@ -217,6 +217,7 @@ const self = module.exports = {
                 Stash       : 0,
                 Loan        : 0,
                 Coins       : options.coins || 0,
+                Boxes       : 0,
                 Inventory   : [self.generateWeapon(1, { type: 'fists', chances: [1, 0, 0, 0], plain: true })],
                 Equipped    : 0,
                 Team        : 'none',
@@ -284,6 +285,11 @@ const self = module.exports = {
                 if (options.coins) {
                     expressions.push('Coins = Coins + :coins');
                     attributes[':coins'] = options.coins;
+                }
+
+                if (options.boxes) {
+                    expressions.push('Boxes = Boxes + :boxes');
+                    attributes[':boxes'] = options.boxes;
                 }
 
                 if (options.xp) {
@@ -375,24 +381,8 @@ const self = module.exports = {
                     if (err) {
                         console.log('Unable to update user. Error JSON:', JSON.stringify(err, null, 2));
                     }
-                    else {
-                        if (attributes[':xp'] >= 100 || Object.keys(attributes).some(a => a !== ':xp')) {
-                            if (attributes[':inventory']) {
-                                for (let i = 0; i < attributes[':inventory'].length; i++) {
-                                    attributes[':inventory'][i] = {
-                                        rarity: attributes[':inventory'][i].rarity,
-                                        type: attributes[':inventory'][i].type
-                                    };
-                                }
-                            }
-                            attributes[':fists'] = undefined;
-                            console.log(`Updated ${user.username || user}:`, JSON.stringify(attributes));
-                        }
-                        
-                        //optional confirmation to user
-                        if (options.message && options.emoji) {
-                            self.react(options.message, options.emoji);
-                        }
+                    else if (options.message && options.emoji) {
+                        self.react(options.message, options.emoji);
                     }
                 });
             }
@@ -727,14 +717,15 @@ const self = module.exports = {
         }
 
         const current = data[data.length - 1];
+        const iterations = 3, divider = 3;
         let delta = 0;
-        let iterations = 3;
+
 
         for (let i = 0; i < iterations; i++) {
-            delta += self.getRandom(-24, 25);
+            delta += self.getRandom(-19 * divider, 20 * divider);
         }
 
-        delta = 1 + delta / iterations / 100;
+        delta = 1 + delta / divider / iterations / 100;
 
         data.push(Math.ceil(current * delta));
 
