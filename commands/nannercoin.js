@@ -11,7 +11,7 @@ module.exports = {
     name: 'nannercoin',
     description: 'invest in Nannercoins using GBPs!',
     category: 'gbp',
-    aliases: ['coin', 'bananacoin'],
+    aliases: ['coin', 'bananacoin', 'gme'],
     usage: '[buy|sell <amount>] | [give <amount> @mention]',
     execute: async function(client, config, db, message, args) {
         if (args) {
