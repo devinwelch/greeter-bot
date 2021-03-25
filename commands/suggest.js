@@ -1,12 +1,10 @@
+const { react } = require('../utils');
+
 module.exports = {
-    name: 'begone',
-    description: 'Kick greeter-bot out of the voice channel.',
-    category: 'sound',
-    aliases: ['begonebot'],
+    name: 'suggest',
+    description: 'Make a suggestion for how to update greeter-bot.',
+    category: 'misc',
     execute(client, config, db, message, args) {
-        const channel = message.guild.me.voice.channel;
-        if (channel && !client.rocking) {   
-            channel.leave();
-        }
+        react(message, config.ids.trash);
     }
 };
