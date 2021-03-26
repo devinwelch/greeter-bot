@@ -3,7 +3,7 @@
         "type": "antidote",
         "name": "Antidote",
         "cost": 25,
-        "description": "Use to cure the coronavirus",
+        "description": "Use to cure the coronavirus.",
         "icon": "728620380646014996"
     },
     "potion": {
@@ -16,7 +16,7 @@
     "respec": {
         "type": "respec",
         "name": "Respec",
-        "cost": 500,
+        "cost": 200,
         "description": "Clears and returns all used skill points.",
         "icon": "728620380427649106"
     },
@@ -31,9 +31,15 @@
     "crack": {
         "type": "crack",
         "name": "Crack",
-        "description": "Smoke before your next fight to increase dmg dealt and reduce dmg taken by 10%. Or be a Good Boy and turn it in to the authorities.",
+        "description": "Smoke before your next fight to increase dmg dealt and reduce dmg taken by 10%.",
         "cost": 100,
         "icon": "731581605583388823"
+    },
+    "coin": {
+        "name": "Nannercoin",
+        "description": "Buy high, sell higher.",
+        "cost": "???",
+        "coin": true
     },
 
     "bag": {
@@ -70,8 +76,7 @@
         "steel": true,
         "low": 10,
         "high": 11.5,
-        "zerk": 1,
-        "cost": 100
+        "zerk": 1
     },
     "bow": {
         "type": "bow",
@@ -88,8 +93,7 @@
         "weapon": true,
         "low": 5,
         "high": 25,
-        "priority": 1,
-        "cost": 100
+        "priority": 1
     },
     "daggers": {
         "type": "daggers",
@@ -107,8 +111,7 @@
         "steel": true,
         "low": 1,
         "high": 15,
-        "hits": 2,
-        "cost": 100
+        "hits": 2
     },
     "fiddle": {
         "type": "fiddle",
@@ -158,8 +161,7 @@
         "sequence":[" is just standing there...", " is gathering energy", ": ka", ": Me", ": HA", ": *ME*", ": HA"],
         "weapon": true,
         "low": 100,
-        "high": 120,
-        "cost": 40
+        "high": 120
     },
     "scythe": {
         "type": "scythe",
@@ -177,8 +179,7 @@
         "steel": true,
         "low": 7,
         "high": 20,
-        "instakill": 7,
-        "cost": 100
+        "instakill": 7
     },
     "sword": {
         "type": "sword",
@@ -195,8 +196,7 @@
         "weapon": true,
         "steel": true,
         "low": 12,
-        "high": 20,
-        "cost": 100
+        "high": 20
     },
     "warhammer": {
         "type": "warhammer",
@@ -216,8 +216,7 @@
         "low": 10,
         "high": 55,
         "priority": -1,
-        "hits": 1,
-        "cost": 100
+        "hits": 1
     },
     "cursedScythe": {
         "type": "cursedScythe",
