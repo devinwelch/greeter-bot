@@ -30,12 +30,17 @@ module.exports = {
             return message.channel.send(reply, { split: true });
         }
 
-        let product, amount, text;
-        const pattern = /\d+/;
+        let product, amount;
+        const pattern = /^\d+/;
 
-        if (args.test(pattern)) {
+        if (pattern.test(args)) {
             const match = args.match(pattern);
             amount = Number(match[0]);
+
+            if (!amount) {
+                return;
+            }
+
             product = (args.substring(0, match.index) + args.substring(match.index + match[0].length, args.length)).trim();
         }
         else {
@@ -46,35 +51,42 @@ module.exports = {
         const item = items[product.toLowerCase()] || Object.values(items).find(i => i.name.toLowerCase() === args.toLowerCase());
 
         if (!item || !item.cost || item.hide) {
-            text = 'Item not found.';
+            return message.reply('Item not found.');
         }
 
-        const data = await getData(db, message.author.id);
+        let data = await getData(db, message.author.id);
         if (!data || !data.Responses || !data.Responses.GBPs || !data.Responses.GBPs.length) {
-            text = 'Something went wrong.';
+            return message.reply('Something went wrong.');
         }
-        else if (data.Responses.GBPs[0].GBPs < item.cost * amount) {
-            text = "You can't afford this!";
+            
+        data = data.Responses.GBPs[0];   
+
+        if (!item.lootbox && !item.coin) {
+            amount = Math.min(amount, 11 + 5 * (data.Skills.backpack || 0) - data.Inventory.length);
+            if (amount < 1) {
+                return message.reply('Your inventory is full!');
+            }
+        }        
+                
+        if (data.GBPs < item.cost * amount) {
+            return message.reply("You can't afford this!");
         }
-        else if (data.Responses.GBPs[0].Inventory.length > 9 + amount + 5 * (data.Responses.GBPs[0].Skills.backpack || 0)) {
-            text = 'Your inventory is full!';
+
+        const params = { gbps: -item.cost * amount };
+        if (item.lootbox) {
+            params.boxes = amount;
+        }
+        else if (item.coin) {
+            params.coins = amount;
         }
         else {
-            const params = { gbps: -item.cost * amount };
-            if (item.lootbox) {
-                params.boxes = amount;
+            params.inventory = [];
+            for (let i = 0; i < amount; i++) {
+                params.inventory.push({ type: item.type, id: uuidv4() });
             }
-            else if (item.coin) {
-                params.coins = amount;
-            }
-            else {
-                params.inventory = { type: item.type, id: uuidv4() };
-            }
-            
-            updateData(db, message.author, params);
-            text = `Thank you for purchasing: ${amount}x ${item.name}`;
         }
-
-        message.reply(text);
+        
+        updateData(db, message.author, params);
+        return message.reply(`Thank you for purchasing: ${amount}x ${item.name}`);
     }
 };
