@@ -39,6 +39,17 @@ self.fight = async function(client, party, message, actions) {
         actions[actions.length - 1].turnEnd = true;
     });
 
+    //trolleddub
+    party.filter(fighter => fighter.weapon.type === '🦻').forEach(enemy => {
+        if (enemy.opponents.some(opponent => opponent.weapon.type === 'fiddle')) {
+            const shieldBonus = 60 * enemy.bonus;
+            enemy.shield += shieldBonus;
+            actions.push(new Action(`${enemy.name} turned down its hearing aid!`, enemy.position, party));
+        }
+
+        actions[actions.length - 1].turnEnd = true;
+    });
+
     //display before first QTE comes up
     if (message) {
         QTEs =
