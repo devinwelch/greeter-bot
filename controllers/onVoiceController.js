@@ -11,7 +11,10 @@ module.exports = {
                 return;
         }
         
-        playMe(client, newState.channel, newState.member.user.username, { gnomed: true, noKnock: true });
+        const date = new Date();
+        const chud = newState.member.user.username.toUpperCase() === 'CHUD' && date.getMonth() === 4 && date.getDate() === 14;
+
+        playMe(client, newState.channel, newState.member.user.username, { gnomed: true, noKnock: true, chud: chud });
         client.themeSongs.push(newState.id);
         console.log(`${newState.member.user.username} entered the chat!`);
         updateData(db, newState.member.user, { gbps: 10 });

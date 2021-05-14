@@ -82,6 +82,9 @@ const self = module.exports = {
         if (options.gnomed && voiceChannel.members.size > 1 && self.getChance(5)) {
             path = 'gnomed.mp3';
         }
+        else if (options.chud) {
+            path = 'Friends/chud5.mp3';
+        }
         else {
             const regex = RegExp('^' + name.toLowerCase());
             const files = fs.readdirSync('./Sounds/Friends/').filter(file => regex.test(file));
