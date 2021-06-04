@@ -7,7 +7,7 @@ const self = module.exports = {
 
 self.takeBets = async function(client, config, message, leader, directions, options) {
     options = options || {};
-    const chips = [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000];
+    const chips = [config.ids.c1, config.ids.c5, config.ids.c10, config.ids.c25, config.ids.c100, config.ids.c500, config.ids.c1000, config.ids.c100000, config.ids.c250000];
     let emojis = [self.circle, self.check];
 
     if (options.blackjack) {
