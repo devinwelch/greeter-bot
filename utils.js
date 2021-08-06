@@ -785,7 +785,7 @@ self.generateWeapon = function(lvl, options) {
         roll < chances[0] + chances[1] + chances[2] + chances[3] ? 3 : 4;
 
     //do not award common fists (randomly)
-    let weapons = Object.values(items).filter(item => item.weapon && !item.cursed);
+    let weapons = Object.values(items).filter(item => item.weapon && !item.hidden);
     if (!rarity) {
         weapons = weapons.filter(w => w.type !== 'fists');
     }
