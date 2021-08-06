@@ -66,7 +66,7 @@ function setup(client, db, guild, channel, party, data) {
     shuffle(party).forEach(user => {
         const userData = data.find(d => d.UserID === user.id);
         const member = guild.members.resolve(user);
-        const human = new Human(member, userData);
+        const human = new Human(member, userData, db);
         human.wood = 2;
         human.position = position++;
         human.weapon.slow = false;

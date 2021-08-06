@@ -101,8 +101,8 @@ async function setup(client, db, channel, challenger, target, challengerData, ta
     }
 
     //convert to fighter
-    challenger = new Human(challenger, challengerData);
-    target = new Human(target, targetData);
+    challenger = new Human(challenger, challengerData, db);
+    target = new Human(target, targetData, db);
 
     //buff sequence weapons if opponent is infected
     challenger.turn = target.infected ? getRandom(1) : 0;

@@ -1,12 +1,15 @@
-const { selectRandom, getRandom, getChance, getBonus } = require('../../utils');
+const { selectRandom, getRandom, getChance, getBonus, updateData } = require('../../utils');
 const { Action } = require('./action');
 const config = require('../../config.json');
 
 module.exports.Fighter = class {
-    constructor(lvl, member) {
+    constructor(lvl, member, db, gbp=0) {
         this.fighter = true;
         this.lvl = lvl;
         this.member = member;
+
+        this.db = db;
+        this.gbp = gbp;
 
         this.bonus = getBonus(this.lvl);
         this.infected = this.member && this.member.roles && this.member.roles.cache.has(config.ids.corona);
@@ -129,11 +132,19 @@ module.exports.Fighter = class {
         let actions = [];
 
         if (this.cooldown) {
-            const text = this.cracked
-                ? `${this.name} is high on crack!`
-                : `${this.name} is winding up...`;
+            let text = `${this.name} is `;
+            if (this.cracked) {
+                text +=  'high on crack!';
+            }
+            else if (this.stunned) {
+                text += 'stunned!';
+            }
+            else {
+                text += 'is winding up...';
+            }
             actions.push(new Action(text, this.position, party));
             this.cooldown = false;
+            this.stunned = false;
         }
         else if (!targets.length) {
             if (this.weapon.sequence) {
@@ -231,6 +242,17 @@ module.exports.Fighter = class {
                             if (options.modifyDmg) {
                                 dmg *= options.modifiers[targets.indexOf(opponent)]; 
                             }
+
+                            //treasure gun
+                            if (this.weapon.type === 'treasureGun') {
+                                const bananamunition = Math.max(0, Math.round(this.gbp / 100));
+                                dmg += bananamunition;
+
+                                if (this.db) {
+                                    const cost = Math.max(0, Math.round(bananamunition * (1 - this.weapon.discount / 100)));
+                                    updateData(this.db, this.member.id, { gbps: -cost });
+                                }
+                            }
             
                             //required to balance battleaxe v. kamehameha matchup
                             if (this.weapon.zerk) {
@@ -244,7 +266,7 @@ module.exports.Fighter = class {
                             }
             
                             text = `${this.name} hit ${(options && options.named) ? opponent.name + ' ' : '' }for **<dmg>** dmg`;
-                            }
+                        }
                     }
         
                     //dmg calculation finalized
@@ -387,9 +409,16 @@ module.exports.Fighter = class {
         //burn
         if (this.burning) {
             if (!opponent.burning) {
-                actions.push(new Action(`${opponent.name} caught on fire!`, this.position, party));
+                actions.push(new Action(`${opponent.name} caught on fire!`, opponent.position, party));
             }
             opponent.burning = Math.max(opponent.burning, 2);
+        }
+
+        //stun
+        if (getChance(this.weapon.stun) && !opponent.stunned) {
+            actions.push(new Action(`${opponent.name} was stunned!`, opponent.position, party));
+            opponent.stunned = true;
+            opponent.cooldown = true;
         }
 
         return actions;

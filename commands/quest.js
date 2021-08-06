@@ -16,7 +16,7 @@ module.exports = {
             }
 
             data = data.Responses.GBPs[0];
-            const challenger = new Human(message.member, data);
+            const challenger = new Human(message.member, data, db);
             challenger.turn = 2;
 
             //determine random enemy
@@ -105,9 +105,10 @@ async function getResults(client, db, message, party, actions) {
         let awardText = `You win ${xp} XP and `;
 
         let item, nanners = 0;
+        const rareChances = [0, 59, 30, 10, 1];
 
         if (enemy.weapon.type === '🎻') {
-            item = generateWeapon(challenger.lvl, { chances: [0, 6, 3, 1], type: 'fiddle' });
+            item = generateWeapon(challenger.lvl, { chances: rareChances, type: 'fiddle' });
             const colors = ['white', 'blue', 'purple', 'gold'];
             awardText += `this shiny fiddle made of ${colors[item.rarity]}!`;
         }
@@ -122,10 +123,11 @@ async function getResults(client, db, message, party, actions) {
         else {
             const options = {
                 chances: 
-                    enemy.creature.emoji === '🦄' ? [0, 6, 3, 1] :
-                    challenger.wished ? [0, 0, 2, 1] : 
+                    enemy.creature.emoji === '🦄' ? rareChances :
+                    challenger.wished ? [0, 0, 20, 10, 1] :
                     null,
-                type: enemy.creature.emoji === '🕷' && !challenger.wished ? 'bag' : null
+                type: enemy.creature.emoji === '🕷' && !challenger.wished ? 'bag' : null,
+                treasureHunter: challenger.weapon.treasureHunter
             };
             item = generateWeapon(challenger.lvl, options);
             awardText += `a${item.rarity === 2 ? 'n' : ''} ${item.getRarity()} ${item.name}!`;

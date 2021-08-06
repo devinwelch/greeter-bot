@@ -2,8 +2,8 @@ const { Fighter } = require('./fighter');
 const { Weapon } = require('./weapon');
 
 module.exports.Human = class extends Fighter {
-    constructor(member, data) {
-        super(data.Lvl, member);
+    constructor(member, data, db) {
+        super(data.Lvl, member, db, data.GBPs);
 
         this.human = true;
         this.name = member.displayName;
@@ -28,38 +28,32 @@ module.exports.Human = class extends Fighter {
     }
 
     getWeaponBonus(bonus) {
-        const epic = this.weapon.isEpic();
-
         let multiplier = 0;
         let amount = 0;
-        let dmg = 0;
 
         switch(this.weapon.type) {
             case 'bag':
-                if (epic) {
-                    this.weapon.spidermax += 1;
-                }
                 this.weapon.spidermin += bonus;
                 break;
             case 'battleaxe':
-                this.weapon.zerk += (epic ? .3 : .2) * bonus;
+                this.weapon.zerk += .3 * bonus;
                 break;
             case 'bow':
-                this.weapon.multihit = (epic ? 10 : 7) * bonus;
+                this.weapon.multihit += 10 * bonus;
                 break;
             case 'daggers':
-                this.weapon.poisonChance = epic ? 20 : 12.5;
+                this.weapon.poisonChance += 20;
                 this.weapon.maxPoison = bonus;
                 break;
             case 'fiddle':
-                this.weapon.instakill += (epic ? 2 : 1.5) * bonus;
+                this.weapon.instakill += 2 * bonus;
                 break;
             case 'fists':
-                this.weapon.suckerPunch = 30 + (epic ? 40 : 30) * bonus;
+                this.weapon.suckerPunch += 30 + 40 * bonus;
                 break;
             case 'kamehameha':
                 multiplier = bonus > 2 ? bonus - 1 : bonus;
-                amount = (epic ? 20 : 10) * multiplier;
+                amount =  20 * multiplier;
                 if (bonus > 2) {
                     this.shield += amount;
                 }
@@ -68,16 +62,16 @@ module.exports.Human = class extends Fighter {
                 }
                 break;
             case 'scythe':
-                this.weapon.lifeSteal = (epic ? 12 : 9) * bonus;
+                this.weapon.lifeSteal += 12 * bonus;
                 break;
             case 'sword':
-                this.weapon.parry = (epic ? 8 : 6) * bonus;
+                this.weapon.parry += 8 * bonus;
+                break;
+            case 'treasure':
+                this.weapon.discount += 20 * bonus;
                 break;
             case 'warhammer':
-                dmg = 1 + ((epic ? 9 : 6) * bonus / 100);
-                this.weapon.low *= dmg;
-                this.weapon.high *= dmg;
-                this.weapon.recoil = 2 * bonus;
+                this.weapon.stun += 5 * bonus;
                 break;
         }
     }

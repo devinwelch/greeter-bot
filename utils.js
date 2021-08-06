@@ -1,4 +1,4 @@
-const { Weapon } = require('./rpg/classes/weapon');
+const { Weapon, enchantingKey, enchantingTable } = require('./rpg/classes/weapon');
 const { Item } = require('./rpg/classes/item');
 const { v4: uuidv4 } = require('uuid');
 const ytdl = require('ytdl-core');
@@ -221,7 +221,7 @@ const self = module.exports = {
                 Loan        : 0,
                 Coins       : options.coins || 0,
                 Boxes       : 0,
-                Inventory   : [self.generateWeapon(1, { type: 'fists', chances: [1, 0, 0, 0], plain: true })],
+                Inventory   : [self.generateWeapon(1, { type: 'fists', chances: [1, 0, 0, 0, 0], plain: true })],
                 Equipped    : 0,
                 Team        : 'none',
                 Lvl         : getLvl(db.xp, options.xp || 1),
@@ -305,7 +305,7 @@ const self = module.exports = {
                         attributes[':lvl'] = lvl;
 
                         expressions.push('Inventory[0] = :fists');
-                        attributes[':fists'] = self.generateWeapon(lvl, { type: 'fists', chances: [1, 0, 0, 0], plain: true });
+                        attributes[':fists'] = self.generateWeapon(lvl, { type: 'fists', chances: [1, 0, 0, 0, 0], plain: true });
                         
                         //announce to the world
                         const botchat = user.client.channels.cache.get(config.ids.botchat);
@@ -769,14 +769,22 @@ self.generateWeapon = function(lvl, options) {
     const id = options.id || uuidv4();
 
     //determine rarity
-    const chances = options.chances || [75, 17, 7, 1];
+    const chances = options.chances || [65, 23, 10, 2, 0];
+    if (options.treasureHunter) {
+        chances[0] = Math.round(0.75 * chances[0]);
+        chances[1] = Math.round(0.75 * chances[1]);
+        chances[2] = Math.round(1.25 * chances[2]);
+        chances[3] = Math.round(1.25 * chances[3]);
+        chances[4] = Math.round(1.50 * chances[4]);
+    }
     const roll = self.getRandom(chances.reduce((a, b) => a + b) - 1);
     const rarity = 
         roll < chances[0] ? 0 :
         roll < chances[0] + chances[1] ? 1 :
-        roll < chances[0] + chances[1] + chances[2] ? 2 : 3;
+        roll < chances[0] + chances[1] + chances[2] ? 2 : 
+        roll < chances[0] + chances[1] + chances[2] + chances[3] ? 3 : 4;
 
-    //do not award comon fists (randomly)
+    //do not award common fists (randomly)
     let weapons = Object.values(items).filter(item => item.weapon && !item.cursed);
     if (!rarity) {
         weapons = weapons.filter(w => w.type !== 'fists');
@@ -810,98 +818,144 @@ self.generateWeapon = function(lvl, options) {
         slow:           w.slow
     });
 
-    //get random bonuses for rare+
-    if (weapon.rarity) {
-        const stats = self.shuffle(['dmg', 'speed', 'reaction', 'hp', 'insta', 'priority']);
-        const bonuses = {};
-
-        stats.forEach(stat => bonuses[stat] = 0);
-
-        let points = self.getRandom(10, 20);
-        let s = 0;
-        
-        while (points > 0 && s < stats.length) {
-            switch(stats[s]) {
-                case 'dmg':
-                    bonuses.dmg = getWeaponBonus(1, 5, 2, points);
-                    if (!bonuses.dmg) break;
-                    points -= 2 * bonuses.dmg;
-                    weapon.low *= 1 + bonuses.dmg / 100;
-                    weapon.high *= 1 + bonuses.dmg / 100;
-                    weapon.bonuses.push(`+${bonuses.dmg}% dmg`);
-                    break;
-                case 'speed':
-                    bonuses.speed = getWeaponBonus(1, 5, 1, points);
-                    if (!bonuses.speed) break;
-                    points -= bonuses.speed;
-                    weapon.speed = 5 * bonuses.speed;
-                    weapon.bonuses.push(`+${5 * bonuses.speed} speed`);
-                    break;
-                case 'reaction':
-                    bonuses.reaction = getWeaponBonus(1, 4, 1, points);
-                    if (!bonuses.reaction) break;
-                    points -= bonuses.reaction;
-                    weapon.reaction = 1500 + 250 * bonuses.reaction;
-                    weapon.bonuses.push(`+${bonuses.reaction === 4 ? '1s' : 250 * bonuses.reaction + 'ms'} reaction time`);
-                    break;
-                case 'hp':
-                    bonuses.hp = getWeaponBonus(1, 3, 5, points);
-                    if (!bonuses.hp) break;
-                    points -= 5 * bonuses.hp;
-                    weapon.hpRegen = bonuses.hp;
-                    weapon.bonuses.push(`+${bonuses.hp} hp regen`);
-                    break;
-                case 'insta':
-                    bonuses.insta = getWeaponBonus(1, 2, 10, points);
-                    if (!bonuses.insta || weapon.sequence) break;
-                    points -= 10 * bonuses.insta;
-                    weapon.instakill += bonuses.insta;
-                    weapon.bonuses.push(`+${bonuses.insta}% instakill chance`);
-                    break;
-                case 'priority':
-                    bonuses.priority = getWeaponBonus(1, 2, 10, points);
-                    if (!bonuses.priority) break;
-                    points -= 10 * bonuses.priority;
-                    weapon.priority += bonuses.priority / 2;
-                    weapon.bonuses.push(`+${bonuses.priority / 2} priority`);
-                    break;
-            }
-
-            s++;
-        }
-    }
-    //common, stat modified (use 'plain' to force no modifiers)
-    else if (!options.plain && self.getRandom(1)) {
-        //light weapon
-        if (self.getRandom(1)) {
-            weapon.low *= .97;
-            weapon.high *= .97;
-            weapon.reaction = 2000;
-            weapon.speed = 20;
-
-            weapon.bonuses = ['-3% dmg', '+10 speed', '+500ms reaction time'];
-        }
-        //heavy weapon
-        else {
-            weapon.low *= 1.05;
-            weapon.high *= 1.05;
-            weapon.speed = -20;
-
-            weapon.bonuses = ['+5% dmg', '-20 speed'];
-        }
-    }
-
     weapon.lvl = Math.round(0.9 * lvl);
-    const bonus = self.getBonus(lvl);
+    let bonus = self.getBonus(lvl);
     weapon.low *= bonus;
     weapon.high *= bonus;
+    weapon.bonuses = [];
+
+    if (options.plain) {
+        return weapon;
+    }
+
+    let points =
+        rarity === 0 ? self.getRandom( 0, 15) :
+        rarity === 1 ? self.getRandom(10, 20) :
+        rarity === 2 ? self.getRandom(15, 30) :
+        rarity === 3 ? self.getRandom(20, 30) : 40;
+
+    let stats = [];
+    for (let i = 0; i < enchantingKey.length; i++) {
+        const weight = Math.pow(enchantingTable[weapon.type][i], 2);
+        for (let j = 0; j < weight; j++) {
+            stats.push(enchantingKey[i]);
+        }
+    } 
+    stats = [...new Set(self.shuffle(stats))];
+
+    for (let i = 0; i < stats.length; i++) {
+        switch(stats[i]) {
+            case 'react':
+                bonus = getBonus(4, 1);
+                if (!bonus) break;
+                weapon.reaction = 1500 + 250 * bonus;
+                weapon.bonuses.push(`+${bonus === 4 ? '1s' : 250 * bonus + 'ms'} reaction time`);
+                break;
+            case 'trhu':
+                bonus = getBonus(1, 15);
+                if (!bonus) break;
+                weapon.treasureHunter = true;
+                weapon.bonuses.push('Treasure Hunter');
+                break;
+            case 'dmg':
+                bonus = getBonus(5, 2);
+                if (!bonus) break;
+                weapon.low *= 1 + bonus / 100;
+                weapon.high *= 1 + bonus / 100;
+                weapon.bonuses.push(`+${bonus}% dmg`);
+                break;
+            case 'spd':
+                bonus = getBonus(5, 1);
+                if (!bonus) break;
+                weapon.speed = 5 * bonus;
+                weapon.bonuses.push(`+${weapon.speed} speed`);
+                break;
+            case 'pri':
+                bonus = getBonus(2, 10);
+                if (!bonus) break;
+                weapon.priority += bonus / 2;
+                weapon.bonuses.push(`+${bonus / 2} priority`);
+                break;
+            case 'insta':
+                bonus = getBonus(3, 10);
+                if (!bonus) break;
+                weapon.instakill += bonus;
+                weapon.bonuses.push(`+${bonus}% instakill chance`);
+                break;
+            case 'zerk':
+                bonus = getBonus(3, 8);
+                if (!bonus) break;
+                weapon.zerk += bonus * .1;
+                weapon.bonuses.push(`+${bonus * .1}% dmg per 1% hp missing`);
+                break;
+            case 'multi':
+                bonus = getBonus(2, 10);
+                if (!bonus) break;
+                weapon.multi += bonus * 10;
+                weapon.bonuses.push(`+${bonus * 10}% chance to attack twice`);
+                break;
+            case 'ls':
+                bonus = getBonus(3, 5);
+                if (!bonus) break;
+                weapon.lifeSteal += bonus * 4;
+                weapon.bonuses.push(`+${bonus * 4}% life steal`);
+                break;
+            case 'parry':
+                bonus = getBonus(4, 4);
+                if (!bonus) break;
+                weapon.parry += bonus * 3;
+                weapon.bonuses.push(`+${bonus * 3}% dmg returned to attacker`);
+                break;
+            case 'stun':
+                bonus = getBonus(1, 12);
+                if (!bonus) break;
+                weapon.zerk += 5;
+                weapon.bonuses.push('+5% stun chance');
+                break;
+            case 'spimin':
+                bonus = getBonus(2, 8);
+                if (!bonus) break;
+                weapon.spidermin += bonus;
+                weapon.bonuses.push(`+${bonus} minimum spiders thrown`);
+                break;
+            case 'spimax':
+                bonus = getBonus(2, 8);
+                if (!bonus) break;
+                weapon.spidermax += bonus;
+                weapon.bonuses.push(`+${bonus} maximum spiders thrown`);
+                break;
+            case 'pois':
+                bonus = getBonus(2, 8);
+                if (!bonus) break;
+                weapon.poisonChance += 5 * bonus;
+                weapon.bonuses.push(`+${5 * bonus}% poison chance`);
+                break;
+            case 'sucpun':
+                bonus = getBonus(5, 4);
+                if (!bonus) break;
+                weapon.suckerPunch += 5;
+                weapon.bonuses.push(`+${bonus * 5}% sucker punch dmg`);
+                break;
+            case 'discount':
+                bonus = getBonus(4, 4);
+                if (!bonus) break;
+                weapon.discount += 5 * bonus;
+                weapon.bonuses.push(`+${bonus * 5}% discount on bananamunition`);
+                break;
+        }
+
+        if (!points) {
+            break;
+        }
+    }
 
     return weapon;
 
-    function getWeaponBonus(min, max, weight, available) {
-        const roll = self.getRandom(min, max);
-        for(let i = roll; i >= 0; i--) {
-            if (i * weight <= available) {
+    function getBonus(max, weight) {
+        const roll = self.getRandom(1, max);
+        for (let i = roll; i >= 0; i--) {
+            if (i * weight <= points) {
+                points -= i * weight;
                 return i;
             }
         }
@@ -1044,7 +1098,7 @@ self.need = async function(client, db, party, channel, options) {
         const winner = self.selectRandom(Array.from(arr));
 
         if (item.weapon) {
-            const options = { type: item.type, chances: [0, 0, 0, 0] };
+            const options = { type: item.type, chances: [0, 0, 0, 0, 0] };
             options.chances[item.rarity] = 1;
             item = self.generateWeapon(party.find(fighter => fighter.member.id === winner.id).lvl || 1, options);
         }

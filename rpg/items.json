@@ -52,13 +52,13 @@
             "728333137238556703"
         ],
         "description": "Throw a bunch of spiders at your foe! Spiders stack and deal dmg each turn.",
-        "upgrade": "Swarm: increase minimum thrown spiders by +1 per skill point! (+1 to max for epic+ bags)",
+        "upgrade": "Swarm: increase minimum thrown spiders by +1 per skill point!",
         "win": ":l was devoured by spiders!",
         "weapon": true,
         "low": 1,
         "high": 1,
         "spidermin": 1,
-        "spidermax": 9
+        "spidermax": 10
     },
     "battleaxe": {
         "type": "battleaxe",
@@ -70,7 +70,7 @@
             "727568980297908226"
         ],
         "description": "Increases 1% dmg per 1% max hp missing!",
-        "upgrade": "Berserker's rage: increase rage dmg bonus 0.2/0.3% per skill point!",
+        "upgrade": "Berserker's rage: increase rage dmg bonus 0.3% per skill point!",
         "win": ":w split :l's skull!",
         "weapon": true,
         "steel": true,
@@ -88,7 +88,7 @@
             "727568980570800188"
         ],
         "description": "Always attacks first!",
-        "upgrade": "Multishot: +7/10% chance per skill point to loose an extra arrow!",
+        "upgrade": "Multishot: +10% chance per skill point to loose an extra arrow!",
         "win": ":w 360 no-scoped :l!",
         "weapon": true,
         "low": 5,
@@ -105,7 +105,7 @@
             "727568980423737465"
         ],
         "description": "Hits twice per turn!",
-        "upgrade": "Poisoned blades: 12.5/20% chance poison enemy dealing 5% max HP each turn, stacking +1 times per skill point!",
+        "upgrade": "Poisoned blades: 20% chance poison enemy dealing 5% max HP each turn, stacking +1 times per skill point!",
         "win": ":w sliced and diced :l!",
         "weapon": true,
         "steel": true,
@@ -123,7 +123,7 @@
             "728346493190275173"
         ],
         "description": "7% base chance to insta-kill!",
-        "upgrade": "Demonic power: increase instakill chance +1.5/2% per skill point!",
+        "upgrade": "Demonic power: increase instakill chance +2% per skill point!",
         "win": "He told you once, you son of a bitch, :w is the best that's ever been!",
         "weapon": true,
         "low": 1,
@@ -140,7 +140,7 @@
             "727568980188987474"
         ],
         "description": "Ol' reliable!",
-        "upgrade": "Sucker punch: at the start of the match, hit for 30% +30/40% dmg per skill point!",
+        "upgrade": "Sucker punch: at the start of the match, hit for 30% +40% dmg per skill point!",
         "win": ":w beat :l to a pulp!",
         "weapon": true,
         "low": 2,
@@ -156,7 +156,7 @@
             "728346562089975888"
         ],
         "description": "Sits around for 6 episodes before unleashing a devastating attack!",
-        "upgrade": "Tank: start with +10/20 hp per skill point. Max rank: bonus hp becomes a shield!",
+        "upgrade": "Tank: start with +20 hp per skill point. 3rd rank: bonus hp becomes a shield!",
         "win": ":w triumphs over :l, but is this the end of their conflict? Find out next time...",
         "sequence":[" is just standing there...", " is gathering energy", ": ka", ": Me", ": HA", ": *ME*", ": HA"],
         "weapon": true,
@@ -170,10 +170,11 @@
             "727568980528726158",
             "727568980520206387",
             "727568980499365958",
-            "727568980201570367"
+            "727568980201570367",
+            "727569056319799297"
         ],
         "description": "7% base chance to insta-kill!",
-        "upgrade": "Lifesteal: heal for 9/12% of dmg dealt per skill point!",
+        "upgrade": "Lifesteal: heal for +12% of dmg dealt per skill point!",
         "win": ":w harvested :l's soul!",
         "weapon": true,
         "steel": true,
@@ -191,12 +192,31 @@
             "727568980209958944"
         ],
         "description": "30x cold-rolled American steel!",
-        "upgrade": "Parry: reflect +6/8% of dmg taken per skill point!",
+        "upgrade": "Parry: reflect +8% of dmg taken per skill point!",
         "win": ":w eviscerated :l!",
         "weapon": true,
         "steel": true,
         "low": 12,
         "high": 20
+    },
+    "treasureGun": {
+        "type": "treasureGun",
+        "name": "Treasure Gun",
+        "icons": [
+            "",
+            "",
+            "",
+            "812865443224223744",
+            ""
+        ],
+        "description": "Shoot actual GBPs at the enemy (base dmg + 1% of your GBPs)!",
+        "upgrade": "Frugal: GBP damage is discounted 20% per skill point!",
+        "win": ":w killed :l and drank some rum!",
+        "weapon": true,
+        "steel": true,
+        "low": 8,
+        "high": 12,
+        "hidden": true
     },
     "warhammer": {
         "type": "warhammer",
@@ -208,7 +228,7 @@
             "727568979761168455"
         ],
         "description": "Hits second, requires wind-up between swings.",
-        "upgrade": "Reckless swing: gain +6/8% dmg and recoil for +2% hp per skill point!",
+        "upgrade": "Hammer smashed face: +5% stun chance per skill point!",
         "win": ":w smashed :l's face!",
         "weapon": true,
         "steel": true,
@@ -217,21 +237,6 @@
         "high": 55,
         "priority": -1,
         "hits": 1
-    },
-    "cursedScythe": {
-        "type": "cursedScythe",
-        "name": "Cursed Scythe",
-        "icons": [
-            "727569056319799297"
-        ],
-        "description": "A scythe with an ancient curse...",
-        "win": ":w embarrassed :l!",
-        "weapon": true,
-        "steel": true,
-        "cursed": true,
-        "low": 7,
-        "high": 20,
-        "instakill": 7
     },
 
     "luck": {

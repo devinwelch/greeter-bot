@@ -3,7 +3,7 @@ const { Human } = require('../rpg/classes/human');
 
 module.exports = {
     buildHuman(weapon, skills = 1, lvl = 15, rarity = 1) {
-        const options = { chances: [0,0,0,0], plain: true, type: weapon };
+        const options = { chances: [0,0,0,0,0], plain: true, type: weapon };
         options.chances[rarity] = 1;
     
         const data = {
