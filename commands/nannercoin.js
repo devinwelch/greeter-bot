@@ -58,6 +58,10 @@ module.exports = {
 async function getChart(db, message) {
     const coinData = await getCoinData(db);
 
+    if (coinData.length > 7 * 24) {
+        coinData = coinData.slice(-7 * 24);
+    }
+    
     if (!coinData) {
         return message.reply('An error occured.');
     }
