@@ -1,6 +1,4 @@
-const config = require('../../config.json');
-
-module.exports.Tile = class {
+export class Tile {
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -43,7 +41,7 @@ module.exports.Tile = class {
     toString(client) {
         return this.temp ||
         ((this.occupied && this.occupied.fighter)
-            ? this.occupied.getIcon(client, config)
+            ? this.occupied.getIcon(client)
             : this.icon
         );
     }
@@ -63,4 +61,4 @@ module.exports.Tile = class {
     isEnemy() {
         return this.occupied && this.occupied.enemy;
     }
-};
+}

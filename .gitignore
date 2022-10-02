@@ -1,7 +1,6 @@
 /node_modules
 .env
-config.json
 ideas.txt
-.vscode/launch.json
-commands/test.js
-.vscode/workspace.code-workspace
+.vscode
+src/commands/test.js
+.gitignore

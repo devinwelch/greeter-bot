@@ -1,4 +1,12 @@
-module.exports.aim = function(player, board, direction) {
+/**
+ * Returns a targets (and modifiers if applicable) based on weapon and aim
+ * @param player Human Fighter
+ * @param board Board
+ * @param {string} direction ⬅️, ⬆️, ⬇️, or ➡️
+ * @returns \{ targets<Fighter[]>, modifiers } or targets<Fighter[]>
+ */
+
+export function aim(player, board, direction) {
     switch(player.weapon.type) {
         case 'bag':         return bag(player, board, direction); 
         case 'kamehameha':  return kamehameha(player, board, direction); 
@@ -12,7 +20,7 @@ module.exports.aim = function(player, board, direction) {
         case 'scythe':      return scythe(player, board, direction); 
         default:            return fists(player, board, direction);
     }
-};
+}
 
 //first hit in 1-4 range
 //+1 spider if adjacent, -1 spider at max range

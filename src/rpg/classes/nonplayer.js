@@ -1,6 +1,6 @@
-const { selectRandom } = require('../../utils');
-const { Fighter } = require('./fighter');
-const { Weapon } = require('./weapon');
+import { selectRandom } from '../../utils/random.js';
+import { Fighter } from './fighter.js';
+import { Weapon } from './weapon.js';
 
 const Nonplayer = module.exports.Nonplayer = class extends Fighter {
     constructor(hp) {
@@ -13,7 +13,7 @@ const Nonplayer = module.exports.Nonplayer = class extends Fighter {
     }
 };
 
-module.exports.Bananas = class extends Nonplayer {
+export class Bananas extends Nonplayer {
     constructor(hp) {
         super(hp);
 
@@ -22,18 +22,18 @@ module.exports.Bananas = class extends Nonplayer {
         this.icon = '🍌';
     }
 
-    getIcon(client, config) {
+    getIcon(client) {
         const health = this.hp > this.max / 2
             ? 0
             : this.hp > this.max / 4
                 ? 1
                 : 2;
 
-        return client.emojis.resolve(config.ids.bananas[health]).toString();
+        return client.emojis.resolve(client.ids.emojis.bananas[health]).toString();
     }
-};
+}
 
-module.exports.Tree = class extends Nonplayer {
+export class Tree extends Nonplayer {
     constructor(hp) {
         super(hp);
 
@@ -41,9 +41,9 @@ module.exports.Tree = class extends Nonplayer {
         this.name = 'the tree';
         this.icon = selectRandom(['🌳', '🌲', '🌴']);
     }
-};
+}
 
-module.exports.Wall = class extends Nonplayer {
+export class Wall extends Nonplayer {
     constructor(hp) {
         super(hp);
 
@@ -51,4 +51,4 @@ module.exports.Wall = class extends Nonplayer {
         this.name = 'the wall';
         this.icon = '🪵';
     }
-};
+}
