@@ -6,7 +6,7 @@ import { getRandom } from './random.js';
  */
 
 export function infect(client) {
-    client.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').array().forEach(voiceChannel => {
+    client.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').forEach(voiceChannel => {
         const noninfected = voiceChannel.members.filter(member => !member.roles.cache.has(client.ids.roles.corona));
         
         if (noninfected.size) { 

@@ -5,7 +5,8 @@ import {
     createAudioResource,
     StreamType,
     AudioPlayerStatus
- } from '@discordjs/voice';
+} from '@discordjs/voice';
+import ffmpeg from 'fluent-ffmpeg';
 
  /**
   * @param {*} options  //seek, volume, timeout, rocking
@@ -34,6 +35,9 @@ export function play(client, voiceChannel, source, options) {
         inputType: StreamType.Arbitrary,
         inlineVolume: true
     };
+
+    //seek
+    source = ffmpeg(source).toFormat('mp3').setStartTime(options?.seek || 0);
 
     //play
     const resource = createAudioResource(source, audioOptions);

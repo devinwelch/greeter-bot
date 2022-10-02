@@ -1,5 +1,4 @@
 import { play } from './play.js';
-import fluent from 'fluent-ffmpeg';
 import ytdl from 'ytdl-core';
 
 /**
@@ -9,11 +8,9 @@ import ytdl from 'ytdl-core';
 
 export function playYouTube(client, voiceChannel, url, options) {
     if (ytdl.validateURL(url)) {
-        options.seek = options.seek || 0;
-        options.volume = options.volume || 0.4;
+        options.volume = options.volume || 0.35;
 
-        const song = fluent({ source: ytdl(url, { filter: 'audioonly' }) }).toFormat('mp3').setStartTime(options.seek);
-        play(client, voiceChannel, song, options);
+        play(client, voiceChannel, ytdl(url, { filter: 'audioonly' }), options);
 
         return true;
     }

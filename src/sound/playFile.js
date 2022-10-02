@@ -6,6 +6,6 @@ import { play } from './play.js';
  * @returns void
  */
 
-export function playFile(client, voiceChannel, pathToFile) {
-    play(client, voiceChannel, join('audio/', pathToFile));
+export function playFile(client, voiceChannel, pathToFile, options) {
+    play(client, voiceChannel, join('audio/', pathToFile), options);
 }
