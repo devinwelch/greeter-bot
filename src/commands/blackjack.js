@@ -135,7 +135,7 @@ async function takeBets(db, interaction, directions) {
         !isNaN(buttonInteraction.customId)) &&
         buttonInteraction.message.id === interaction.messageID;
 
-    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
 
     const bets = {};
     const leader = interaction.user;

@@ -1,5 +1,11 @@
-import { reset } from '../gbp/reset.js';
+import { resetEconomy } from '../gbp/resetEconomy.js';
 import { collectLoans } from '../gbp/collectLoans.js';
+
+/**
+ * performs economy reset, collects loans, and refreshes cache of temporary variables
+ * @param client 
+ * @param db 
+ */
 
 export function midnight(client, db) {
     //check for resets otherwise collect on outstanding loans
@@ -8,7 +14,7 @@ export function midnight(client, db) {
             console.log('Unable to check for resets:', JSON.stringify(err, null, 2));
         }
         else if (data.Items.some(e => !e.Executed)) {
-            reset(client, db, data);
+            resetEconomy(client, db, data);
         }
         else {
             collectLoans(client, db);

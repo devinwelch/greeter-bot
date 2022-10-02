@@ -16,7 +16,7 @@ import { stonks } from './stonks.js';
  * @param db 
  */
 
-export function scheduleJobs(client, config, db) {
+export function scheduleJobs(client, db) {
     //Hourly
     scheduleJob({ minute: 0 }, function() {
         infect(client);
@@ -29,7 +29,7 @@ export function scheduleJobs(client, config, db) {
     });
 
     //Midnight
-    scheduleJob({ minute: 0, hour: 0, tz: config.timezone }, function() {
+    scheduleJob({ minute: 0, hour: 0, tz: client.timezone }, function() {
         console.log('Nightly reset');
         client.themeSongs = [];
         client.prayers = [];
@@ -42,7 +42,7 @@ export function scheduleJobs(client, config, db) {
     // });
 
     //Tell the time
-    scheduleJob({ minute: 0, dayOfWeek: 3, tz: config.timezone }, async function() {
+    scheduleJob({ minute: 0, dayOfWeek: 3, tz: client.timezone }, async function() {
         const c = await getPopularChannel(client);
         playFile(client, c, 'other/wednesday.mp3', true);
     });

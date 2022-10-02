@@ -16,6 +16,6 @@ export default {
             response = "You can't kill the metal. The metal will live on.";
         }
         
-        interaction.reply({ content: response, ephemeral: true });
+        interaction.reply(response);
     }
 };

@@ -8,11 +8,11 @@ export default {
     options: [{
         type: 6, //USER
         name: 'user',
-        description: "Name of user or 'random'",
+        description: 'Name of user',
         required: false
     }],
     async execute(client, db, interaction) {
-        let username = interaction.options.getUser('user').username.toLowerCase();
+        let username = interaction.options.getUser('user')?.username.toLowerCase();
 
         if (username) {
             if (username === 'random') {

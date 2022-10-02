@@ -1,5 +1,5 @@
 //TODO
-    //ctrl+shift+f 'client.ids' to make sure they are all properly checked
+    //ctrl+shift+f '.ids' to make sure they are all properly checked
 
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
@@ -20,6 +20,7 @@ const client = new Client({
     partials: ['MESSAGE', 'REACTION'],
 });
 
+client.timezone = config.timezone;
 client.ids = config.ids;
 client.themeSongs = [];
 client.prayers = [];
@@ -98,4 +99,4 @@ dotenv.config();
 client.login(process.env.BOT_TOKEN);
 
 //schedule events
-scheduleJobs(client, config, db);
+scheduleJobs(client, db);
