@@ -1,7 +1,7 @@
-const { shuffle, getChance } = require('../../utils');
-const { Card } = require('./card');
+import { shuffle, getChance } from '../../utils/random.js';
+import { Card } from './card.js';
 
-module.exports.Deck = class {
+export class Deck {
     constructor(count) {
         this.newDeck(count);
     }
@@ -37,4 +37,4 @@ module.exports.Deck = class {
             hand.push(card);
         }
     }
-};
+}

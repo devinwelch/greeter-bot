@@ -1,4 +1,4 @@
-module.exports.Card = class {
+export class Card {
     constructor(rank, suit) {
         this.rank = rank;
         this.suit = suit;
@@ -17,13 +17,13 @@ module.exports.Card = class {
         return Math.min(10, this.rank);
     }
 
-    top(client, config) {
-        const emoji = client.emojis.resolve(this.down ? config.ids.cardTop : config.ids.ranks[this.rank]);
+    top(client) {
+        const emoji = client.emojis.resolve(this.down ? client.ids.emojis.cardTop : client.ids.emojis.ranks[this.rank]);
         return emoji.toString();
     }
 
-    bot(client, config) {
-        const emoji = client.emojis.resolve(this.down ? config.ids.cardBottom : config.ids.suits[this.suit]);
+    bot(client) {
+        const emoji = client.emojis.resolve(this.down ? client.ids.emojis.cardBottom : client.ids.emojis.suits[this.suit]);
         return emoji.toString();
     }
-};
+}
