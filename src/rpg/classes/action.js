@@ -1,4 +1,4 @@
-module.exports.Action = class {
+export class Action {
     constructor(text, turn, party, delay) {
         this.text = text;
         this.turn = turn;
@@ -22,4 +22,4 @@ module.exports.Action = class {
     toString(tabs = 2) {
         return '\t'.repeat(tabs * this.turn) + this.text; 
     }
-};
+}

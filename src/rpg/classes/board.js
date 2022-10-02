@@ -1,9 +1,9 @@
-const { getRandom } = require('../../utils');
-const { Graph } = require('../astar');
-const { Tile } = require('./tile');
-const { Tree } = require('./nonplayer');
+import { getRandom } from '../../utils/random.js';
+import { Graph } from '../astar.js';
+import { Tile } from './tile.js';
+import { Tree } from './nonplayer.js';
 
-module.exports.Board = class {
+export class Board {
     constructor(party, bananas) {
         //swarm stats
         this.stats = {
@@ -215,4 +215,4 @@ module.exports.Board = class {
             }
         }
     }
-};
+}

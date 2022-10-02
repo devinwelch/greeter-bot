@@ -1,6 +1,7 @@
 /node_modules
 .env
 ideas.txt
-.vscode
+.vscode/
+TODO/
 src/commands/test.js
 .gitignore
