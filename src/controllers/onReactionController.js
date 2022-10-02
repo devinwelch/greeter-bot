@@ -1,37 +1,20 @@
-const { updateData, getRandom, playSong } = require('../utils.js');
+import { getChance } from '../utils/random.js';
+import { playFile } from '../sound/playFile.js';
+import { updateData } from '../data/updateData.js';
 
-module.exports.execute = async function(client, config, db, reaction, user) {
-    if (reaction.message.member.id === client.user.id) {
-        //emoji game
-        //I should re-do this game with a Collector
-        if (reaction.message.content.startsWith('**Guess the emoji**')) {
-            const newEmoji = reaction.message.guild.emojis.cache.random(1)[0];
-
-            if (newEmoji.id === reaction.emoji.id) {
-                const award = 10;
-                const xp = 250;
-                reaction.message.edit(`**${user.username}** wins ${award} GBPs and ${xp} xp! ${newEmoji.toString()}`); 
-                updateData(db, user, { gbps: award, xp: xp });
-            }
-            else {
-                reaction.message.reactions.removeAll();
-                reaction.message.edit(`**Guess the emoji** again (using reactions): ${newEmoji}`);
-            }
-        }
-    }
-    
-    else if (reaction.emoji.id === config.ids.nanners &&
+export async function onReaction(client, db, reaction, user) {
+    if (reaction.emoji.id === client.ids.emojis.nanners &&
         reaction.message.author.id !== user.id) {
         giveNanners(db, reaction, user);
     }
     
-    else if (reaction.emoji.id === config.ids.brownie && !getRandom(49)) {
+    else if (reaction.emoji.id === client.ids.emojis.brownie && getChance(2)) {
         const voiceChannel = reaction.message.member.voice.channel;
         if (voiceChannel) {
-            playSong(client, voiceChannel, 'Alert.mp3');
+            playFile(client, voiceChannel, 'alert.mp3');
         }
     }
-};
+}
 
 function giveNanners(db, reaction, user) {
     const params = {
