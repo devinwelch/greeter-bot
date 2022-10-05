@@ -124,7 +124,7 @@ self.display = async function(client, message, actions, party, count, qt) {
         }
         
         //add actions
-        for(let i = Math.max(0, count - 20); i < count; i++) {
+        for(let i = Math.max(0, count - 12); i < count; i++) {
             text.push(actions[i].toString());
         }
 
