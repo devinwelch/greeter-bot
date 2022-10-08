@@ -16,7 +16,7 @@ import { onInteraction } from './controllers/onInteractionController.js';
 const client = new Client({
     allowedMentions: { parse: ['users', 'roles', 'everyone'], repliedUser: true },
     presence: { activity: { type: 'WATCHING', name: 'total degeneration' } },
-    intents: ['GUILDS', 'GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'],
+    intents: ['GUILDS', 'GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'DIRECT_MESSAGE_REACTIONS', 'MESSAGE_CONTENT'],
     partials: ['MESSAGE', 'REACTION'],
 });
 

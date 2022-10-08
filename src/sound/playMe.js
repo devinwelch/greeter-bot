@@ -10,13 +10,15 @@ import { getChance, selectRandom } from '../utils/random.js';
  */
 
 export function playMe(client, voiceChannel, name, options) {
-    let file;
+    let file, path;
 
-    if (options?.gnomed && getChance(15)) {
-        file = 'other/gnomed.mp3';
+    if (options?.gnomed && getChance(150)) {
+        path = 'other';
+        file = 'gnomed.mp3';
     }
     else if (options?.chud) {
-        file = 'friends/chud5.mp3';
+        path = 'friends';
+        file = 'chud5.mp3';
     }
     else {
         const regex = RegExp('^' + name.toLowerCase());
@@ -26,10 +28,11 @@ export function playMe(client, voiceChannel, name, options) {
             return;
         }
         
+        path = 'friends';
         file = selectRandom(files);
     }
 
-    playFile(client, voiceChannel, join('friends', file), options);
+    playFile(client, voiceChannel, join(path, file), options);
 
     return file;
 }

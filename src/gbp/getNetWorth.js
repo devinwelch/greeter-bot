@@ -21,7 +21,7 @@ export async function getNetWorth(db, userData, includeInventory=true, coinValue
     }
     
     const items = userData.Inventory.slice(1).reduce((a, b) => {
-        const item = b.weapon ? new Weapon(b) : new Item(b);
+        const item = b.weapon ? new Weapon(null, b) : new Item(b);
         return a + item.sell();
     }, 0);
 

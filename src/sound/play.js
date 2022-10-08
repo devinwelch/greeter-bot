@@ -63,10 +63,8 @@ export function play(client, voiceChannel, source, options) {
     });
 
     //disconnect at end of audio track
-    audioPlayer.on(AudioPlayerStatus.Idle, oldState => {
-        if (oldState.status === AudioPlayerStatus.Playing) {
-            destroy(client, audioPlayer, connection);
-        }
+    audioPlayer.on(AudioPlayerStatus.Idle, () => {
+        destroy(client, audioPlayer, connection);
     });
 }
 
@@ -78,5 +76,6 @@ function destroy(client, audioPlayer, connection) {
     }
     catch (error) {
         //I don't actually care
+        console.error(error);
     }
 }

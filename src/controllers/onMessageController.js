@@ -33,7 +33,7 @@ export async function onMessage(client, db, message) {
     if (!message.guild || !message.author.dorseProtection && message.guild.id === client.ids.guilds.hooliganHouse) {
         message.channel.messages.fetch({ limit: 10 })
         .then(messages => {
-            const filteredMessages = messages.array().filter(msg => msg.author.id === message.author.id);
+            const filteredMessages = messages.filter(msg => msg.author.id === message.author.id);
             if (filteredMessages.length > 1 &&
                 filteredMessages[0].content === filteredMessages[1].content &&
                 !filteredMessages[0].attachments.size &&

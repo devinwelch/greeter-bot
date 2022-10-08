@@ -50,7 +50,7 @@ export default {
 
         if (attribute === 'gbp' || all) {
             //raw gbp
-            lines.push(`• ${data.GBPs} good boy points`);
+            lines.push(`• ${data.GBPs} good boy points (GBPs)`);
 
             //stash
             if (data.Stash) {
@@ -66,13 +66,13 @@ export default {
                 else {
                     return databaseError(interaction, 'Coin');
                 }
-                lines.push(`• ${data.Coins} NNC = ${data.Coins * coin} GBPs`);
+                lines.push(`• ${data.Coins} NNC (${data.Coins * coin} GBPs)`);
             }
 
             //inventory value
             if (data.Inventory.length > 1) {
                 let assets = data.Inventory.slice(1).reduce((a, b) => {
-                    const item = b.weapon ? new Weapon(b) : new Item(b);
+                    const item = b.weapon ? new Weapon(null, b) : new Item(b);
                     return a + item.sell();
                 }, 0);
                 lines.push(`• An inventory worth ${assets} GBPs`);
@@ -91,7 +91,7 @@ export default {
 
         //renown
         if (attribute === 'renown' || all) {
-            lines.push(`• ${data.Renown} quests`);
+            lines.push(`• attempted ${data.Renown} quests`);
         }
 
         //lvl + xp

@@ -53,6 +53,23 @@ export class Weapon {
         this[stat] = this.data[stat] || def;
     }
 
+    toString(client, sell = true) {
+        const arr = [
+            `**${this.getRarity()} ${this.name}** ${client.emojis.resolve(this.icon)}`,
+            `Description: ${this.description}`,
+            `Lvl Requirement: ${this.lvl}`,
+            `Dmg: ${this.low.toFixed(2)} - ${this.high.toFixed(2)}`
+        ];
+
+        if (this.bonuses.length) {
+            arr.push(`Bonuses:\n  • ${this.bonuses.join('\n  • ')}`);
+        }
+
+        arr.push(`${sell ? 'Sells for' : 'Cost'}: ${this.sell()} GBPs`);
+
+        return arr.join('\n');
+    }
+
     sell() {
         return [5, 25, 75, 200, 69][this.rarity];
     }
@@ -116,18 +133,18 @@ export class Weapon {
 }
 
 export const enchantingKey = 
-['insta', 'zerk', 'multi', 'ls', 'parry', 'stun', 'spimin', 'spimax', 'pois', 'sucpun'];
+['insta', 'zerk', 'multi', 'ls', 'parry', 'stun', 'spimin', 'spimax', 'pois', 'sucpun', 'trhu', 'pri', 'speed', 'regen', 'flame'];
 
 export const enchantingTable = {
-    //           Insta   Zerk    Multi   LS      Parry   Stun    SpiMin  SpiMax  Pois%   SucPun  TrHu
-    bag:        [0,      0,      0,      0,      1,      0,      3,      3,      0,      0,      1],
-    battleaxe:  [1,      3,      1,      2,      1,      1,      0,      0,      0,      0,      1],
-    bow:        [1,      1,      3,      2,      1,      1,      0,      0,      0,      0,      1],
-    daggers:    [1,      1,      0,      2,      1,      1,      0,      0,      3,      0,      1],
-    fiddle:     [3,      1,      1,      2,      1,      1,      0,      0,      0,      0,      1],
-    fists:      [1,      1,      1,      2,      1,      1,      0,      0,      0,      3,      1],
-    kamehameha: [0,      1,      1,      0,      1,      0,      0,      0,      0,      0,      1],
-    scythe:     [3,      1,      1,      3,      1,      1,      0,      0,      0,      0,      1],
-    sword:      [1,      1,      1,      2,      3,      1,      0,      0,      0,      0,      1],
-    warhammer:  [1,      1,      1,      2,      1,      3,      0,      0,      0,      0,      1]
+    //           Insta  Zerk    Multi   LS      Parry   Stun    SpiMin  SpiMax  Pois%   SucPun  TrHu    Pri     Speed   Regen   Flame
+    bag:        [0,     0,      0,      0,      1,      0,      3,      3,      0,      0,      1,      1,      2,      2,      0],
+    battleaxe:  [1,     3,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    bow:        [1,     1,      3,      2,      1,      1,      0,      0,      0,      0,      1,      0,      0,      2,      1],
+    daggers:    [1,     1,      0,      2,      1,      1,      0,      0,      3,      0,      1,      1,      2,      2,      1],
+    fiddle:     [3,     1,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    fists:      [1,     1,      1,      2,      1,      1,      0,      0,      0,      3,      1,      1,      2,      2,      1],
+    kamehameha: [0,     1,      1,      0,      1,      0,      0,      0,      0,      0,      1,      1,      2,      2,      0],
+    scythe:     [3,     1,      1,      3,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    sword:      [1,     1,      1,      2,      3,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    warhammer:  [1,     1,      1,      2,      1,      3,      0,      0,      0,      0,      1,      0,      0,      2,      1]
 };
