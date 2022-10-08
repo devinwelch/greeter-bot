@@ -1,4 +1,6 @@
 import { getCoinData } from '../data/getCoinData.js';
+import { updateData } from '../data/updateData.js';
+import { getNetWorth } from '../gbp/getNetWorth.js';
 import { getRandom } from '../utils/random.js';
 
 /**
@@ -42,4 +44,21 @@ export async function stonks(db) {
             console.log(`Coin value change: ${(100 * (delta - 1)).toFixed(2)}%`);
         }
     });
+
+    //update holders' net worth if coin value increases
+    if (data[data.length - 1] > data[data.length - 1] ) {
+        const gbpData = await db.scan({ TableName: 'GBPs' }).promise();
+        if (!gbpData || !gbpData.Items || !gbpData.Items.length) {
+            return null;
+        }
+
+        gbpData.Items.forEach(user => {
+            if (user.Coins) {
+                const worth = getNetWorth(db, user, true, data[data.length - 1]);
+                if (worth > user.HighScore) {
+                    updateData(db, user.UserID, { HighScore: worth });
+                }
+            }
+        });
+    }
 }

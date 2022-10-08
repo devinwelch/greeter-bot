@@ -1,6 +1,7 @@
 import { getData } from '../data/getData.js';
 import { getChance } from '../utils/random.js';
 import { updateData } from '../data/updateData.js';
+import { getNetWorth } from '../gbp/getNetWorth.js';
 import { databaseError } from '../utils/databaseError.js';
 
 export default {
@@ -17,7 +18,7 @@ export default {
                 return databaseError(interaction, 'prayer');
             }
 
-            if (data.GBPs + data.Stash - data.Loan < 0) {
+            if (await getNetWorth(db, data, false) < 0) {
                 client.prayers.push(interaction.user.id);
 
                 if (getChance(data.Faith || 1)) {

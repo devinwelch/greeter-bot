@@ -1,4 +1,5 @@
 import { MessageActionRow, MessageButton } from 'discord.js';
+import { databaseError } from '../utils/databaseError.js';
 import { getRanks } from '../data/getRanks.js';
 
 export default {
@@ -28,10 +29,10 @@ export default {
             if (!data) {
                 return;
             }
-    
-            if (!getMember(interaction, data[0]) ||
-                !getMember(interaction, data[1]) ||
-                !getMember(interaction, data[2])  )
+            
+            if (!(await getMember(interaction, data[0])) ||
+                !(await getMember(interaction, data[1])) ||
+                !(await getMember(interaction, data[2]))  )
             {
                 return interaction.reply('Not all good boys are here right now!');
             }
@@ -111,7 +112,12 @@ export default {
 };
     
 async function getMember(interaction, user) {
-    return await interaction.guild.members.fetch(user.UserID);
+    try {
+        return await interaction.guild.members.fetch(user.UserID).catch(() => null);
+    }
+    catch (error) {
+        console.error(error);
+    }
 }
 
 async function getName(client, interaction, user) {

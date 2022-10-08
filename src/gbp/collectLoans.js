@@ -6,17 +6,13 @@ import { updateData } from '../data/updateData.js';
  */
 
 export function collectLoans(client, db) {
-    const interest = 0.1;
-
     db.scan({ TableName: 'GBPs' }, function(err, data) {
         data.Items.filter(d => d.Loan > 0).forEach(d => {
-            const reclaim = Math.ceil(d.Loan * (1 + interest));
-            
             client.users.fetch(d.UserID).then(user => {
-                updateData(db, user, { gbps: -reclaim, loan: 0 });
-                updateData(db, client.user, { gbps: reclaim });
+                updateData(db, user, { gbps: -d.Loan, loan: 0 });
+                updateData(db, client.user, { gbps: d.Loan });
 
-                client.channels.cache.get(client.ids.channels.botchat).send(`Reclaimed ${reclaim} GBPs from ${user}`);
+                client.channels.cache.get(client.ids.channels.botchat).send(`Reclaimed ${d.Loan} GBPs from ${user}`);
             });    
         });
     });

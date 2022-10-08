@@ -1,6 +1,5 @@
 import { getCoinData } from './getCoinData.js';
-import { Weapon } from '../rpg/classes/weapon.js';
-import { Item } from '../rpg/classes/item.js';
+import { getNetWorth } from '../gbp/getNetWorth.js';
 
 /**
  * Get array of limited user GBP data, sorted (descending) by net worth
@@ -20,19 +19,19 @@ export async function getRanks(db, includeRobots=false) {
         return null;
     }
 
-    gbpData = gbpData.Items.map(user => {
-        const items = user.Inventory.slice(1).reduce((a, b) => {
-            const item = b.weapon ? new Weapon(b) : new Item(b);
-            return a + item.sell();
-        }, 0);
+    await gbpData.Items.forEach(async user => {
+        user.cool = true;
+        user.Worth = await getNetWorth(db, user, false, coinData);
+    });
 
-        const coins = user.Coins * coinData;
+    gbpData = gbpData.Items.map(user => {
+        //const worth = await getNetWorth(db, user, false, coinData);
 
         return {
             Username: user.Username,
             UserID: user.UserID,
             HighScore: user.HighScore,
-            Worth: user.GBPs + user.Stash - user.Loan + coins + items
+            Worth: user.Worth
         };
     });
 

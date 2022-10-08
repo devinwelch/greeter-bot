@@ -1,5 +1,6 @@
 import { getData } from '../data/getData.js';
 import { updateData } from '../data/updateData.js';
+import { getNetWorth } from '../gbp/getNetWorth.js';
 import { databaseError } from '../utils/databaseError.js';
 import { MessageActionRow, MessageButton } from 'discord.js';
 
@@ -38,17 +39,15 @@ export default {
                 interaction.reply("You don't owe anything!");
             }
             else {
-                //interest = 10%
-                const total = Math.ceil(data.Loan * 1.1);
                 
                 //user cannot afford to pay back yet
-                if (data.GBPs < total) {
-                    interaction.reply(`You don't have enough yet! Come back with ${total} GBPs or I'll take it myself.`);
+                if (data.GBPs < data.Loan) {
+                    interaction.reply(`You don't have enough yet! Come back with ${data.Loan} GBPs or I'll take it myself.`);
                 }
                 //pay back loan
                 else {
-                    updateData(db, interaction.user, { gbps: -total, loan: 0 });
-                    updateData(db, client.user, { gbps: total });
+                    updateData(db, interaction.user, { gbps: -data.Loan, loan: 0 });
+                    updateData(db, client.user, { gbps: data.Loan });
                     interaction.reply('Thank you, come again!');
                 }
             }
@@ -72,7 +71,7 @@ export default {
                     interaction.reply(`You already have a loan for ${data.Loan}`);
                 }
                 //user asked for too much
-                else if (amount > getMaxLoan(data)) {
+                else if (amount > await getMaxLoan(data)) {
                     interaction.reply('Denied. Prove your worth before you try to borrow that much.');
                 }
                 //give a loan
@@ -90,26 +89,23 @@ export default {
                             .setStyle('DANGER')
                             .setCustomId('max')
                     ])];
-                    const max = getMaxLoan(data);
+                    const max = await getMaxLoan(db, data);
                     await interaction.reply({ content: `I can lend you up to ${max} GBPs.`, components: maxLoan });
 
                     wait(client, db, interaction, max);
                 }
-                //threaten to reclaim loan amount + 10% interest
+                //threaten to collect on loan
                 else {
-                    interaction.reply(`You have a loan out for ${data.Loan} GBPs. I will collect ${Math.ceil(data.Loan * 1.1)} tonight...`);
+                    interaction.reply(`You have a loan out for ${data.Loan} GBPs. I will collect ${data.Loan} tonight...`);
                 }
             }
-
         }
-
-        //Add button to take out max loan
     }
 };
 
-function getMaxLoan(data) {
+async function getMaxLoan(db, data) {
     //Average of current GBPs and highest achieved GBPs
-    return Math.max(Math.ceil((data.GBPs + data.HighScore) / 2), 0);
+    return Math.max(Math.ceil((await getNetWorth(db, data) + data.HighScore) / 2), 0);
 }
 
 async function wait(client, db, interaction, max) {
@@ -146,8 +142,11 @@ async function wait(client, db, interaction, max) {
 }
 
 function giveLoan(client, db, interaction, amount, update=false) {
-    updateData(db, interaction.user, { gbps: amount, loan: amount });
-    updateData(db, client.user, { gbps: -amount });
+    //interest = 10%
+    const total = Math.ceil(amount * 1.1);
+
+    updateData(db, interaction.user, { gbps: total, loan: total });
+    updateData(db, client.user, { gbps: -total });
     const parameters = { content: 'Done, but you better have my money by midnight...', components: [] };
     update ? interaction.update(parameters) : interaction.reply(parameters);
 }
