@@ -15,7 +15,7 @@ export class Boss extends Fighter {
         const ids = clientMember.client.ids.emojis.bosses;
         switch (this.type) {
             case 1:
-                this.max = (50 + 75 * partySize) * this.bonus;
+                this.max = (100 + 75 * partySize) * this.bonus;
                 this.name = 'greeter-bot';
                 this.entrance = `A wild ${this.name} appeared!`;
                 winText = ":w KO'd :l!";
@@ -171,7 +171,7 @@ export class Boss extends Fighter {
         //aoe dmg
         const dmgs = [];
         targets.forEach(p => {
-            const dmg = getRandom(1, 8) * this.bonus;
+            const dmg = getRandom(1, 12) * this.bonus;
             dmgs.push(Math.round(dmg));
             extra = extra.concat(p.takeDmg(dmg, this, party));
             extra = extra.concat(this.applyStatus(p, 2.5));

@@ -133,18 +133,18 @@ export class Weapon {
 }
 
 export const enchantingKey = 
-['insta', 'zerk', 'multi', 'ls', 'parry', 'stun', 'spimin', 'spimax', 'pois', 'sucpun', 'trhu', 'pri', 'speed', 'regen', 'flame'];
+['react', 'insta', 'zerk', 'multi', 'ls', 'parry', 'stun', 'spimin', 'spimax', 'pois', 'sucpun', 'trhu', 'pri', 'speed', 'regen', 'flame'];
 
 export const enchantingTable = {
-    //           Insta  Zerk    Multi   LS      Parry   Stun    SpiMin  SpiMax  Pois%   SucPun  TrHu    Pri     Speed   Regen   Flame
-    bag:        [0,     0,      0,      0,      1,      0,      3,      3,      0,      0,      1,      1,      2,      2,      0],
-    battleaxe:  [1,     3,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    bow:        [1,     1,      3,      2,      1,      1,      0,      0,      0,      0,      1,      0,      0,      2,      1],
-    daggers:    [1,     1,      0,      2,      1,      1,      0,      0,      3,      0,      1,      1,      2,      2,      1],
-    fiddle:     [3,     1,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    fists:      [1,     1,      1,      2,      1,      1,      0,      0,      0,      3,      1,      1,      2,      2,      1],
-    kamehameha: [0,     1,      1,      0,      1,      0,      0,      0,      0,      0,      1,      1,      2,      2,      0],
-    scythe:     [3,     1,      1,      3,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    sword:      [1,     1,      1,      2,      3,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    warhammer:  [1,     1,      1,      2,      1,      3,      0,      0,      0,      0,      1,      0,      0,      2,      1]
+    //           React  Insta  Zerk    Multi   LS      Parry   Stun    SpiMin  SpiMax  Pois%   SucPun  TrHu    Pri     Speed   Regen   Flame
+    bag:        [2,     0,     0,      0,      0,      1,      0,      3,      3,      0,      0,      1,      1,      2,      2,      0],
+    battleaxe:  [2,     1,     3,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    bow:        [2,     1,     1,      3,      2,      1,      1,      0,      0,      0,      0,      1,      0,      0,      2,      1],
+    daggers:    [2,     1,     1,      0,      2,      1,      1,      0,      0,      3,      0,      1,      1,      2,      2,      1],
+    fiddle:     [2,     3,     1,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    fists:      [2,     1,     1,      1,      2,      1,      1,      0,      0,      0,      3,      1,      1,      2,      2,      1],
+    kamehameha: [2,     0,     1,      1,      0,      1,      0,      0,      0,      0,      0,      1,      1,      2,      2,      0],
+    scythe:     [2,     3,     1,      1,      3,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    sword:      [2,     1,     1,      1,      2,      3,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
+    warhammer:  [2,     1,     1,      1,      2,      1,      3,      0,      0,      0,      0,      1,      0,      0,      2,      1]
 };

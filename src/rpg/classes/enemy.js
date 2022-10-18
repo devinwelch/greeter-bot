@@ -176,6 +176,6 @@ export class Enemy extends Fighter {
             return 0;
         }
         
-        return Math.round(this.bonus * (100 + (this.creature.xp || 0)));
+        return Math.round(this.bonus ** 2 * (100 + (this.creature.xp || 0)));
     }
 }

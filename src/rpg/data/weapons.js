@@ -41,7 +41,7 @@ export default {
         win: ":w split :l's skull!",
         low: 10,
         high: 12,
-        'zerk': 1,
+        zerk: 1,
         cost: 1,
         weapon: true,
         steel: true

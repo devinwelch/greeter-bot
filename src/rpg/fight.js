@@ -17,7 +17,7 @@ export async function fight(client, party, message, actions) {
     actions = actions || [];
 
     party = getOrder(party);
-    actions.push(`${party[0].name} rolled initiative.`);
+    actions.push(new Action(`${party[0].name} rolled initiative.`, 0, party));
     
     //easter egg
     const wayOfVikings = party.every(fighter => fighter.weapon.steel) && getChance(100);
@@ -45,6 +45,7 @@ export async function fight(client, party, message, actions) {
             actions.push(new Action(`${enemy.name} turned down its hearing aid!`, enemy.position, party));
         }
 
+        if (actions[actions.length - 1])
         actions[actions.length - 1].turnEnd = true;
     });
 

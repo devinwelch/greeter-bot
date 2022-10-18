@@ -12,7 +12,7 @@ import { getChance, selectRandom } from '../utils/random.js';
 export function playMe(client, voiceChannel, name, options) {
     let file, path;
 
-    if (options?.gnomed && getChance(150)) {
+    if (options?.gnomed && getChance(15)) {
         path = 'other';
         file = 'gnomed.mp3';
     }
