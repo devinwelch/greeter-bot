@@ -384,7 +384,7 @@ export class Fighter {
         }
 
         //burn
-        if (this.burning) {
+        if ((this.burning || this.weapon.flame) && getChance(50)) {
             if (!opponent.burning) {
                 actions.push(new Action(`${opponent.name} caught on fire!`, opponent.position, party));
             }

@@ -76,7 +76,7 @@ export default {
             const treasureHunter = challenger.weapon.treasureHunter;
 
             if (enemy.weapon.type === '🎻') {
-                item = generateWeapon(challenger.lvl, { chances: rareChances, type: 'fiddle', treasureHunter: treasureHunter });
+                item = generateWeapon(challenger, { chances: rareChances, type: 'fiddle', treasureHunter: treasureHunter });
                 const colors = ['mayonnaise', 'blue', 'purple', 'gold', 'crimson'];
                 awardText += `this shiny fiddle made of ${colors[item.rarity]}!`;
             }
@@ -98,7 +98,7 @@ export default {
                     type: enemy.creature.emoji === '🕷' && !challenger.wished ? 'bag' : null,
                     treasureHunter: treasureHunter
                 };
-                item = generateWeapon(challenger.lvl, options);
+                item = generateWeapon(challenger, options);
                 awardText += `a${item.rarity === 2 ? 'n' : ''} ${item.getRarity()} ${item.name}!`;
             }
 

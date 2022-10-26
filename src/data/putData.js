@@ -21,7 +21,7 @@ export function putData(db, user, options) {
             Loan        : 0,
             Coins       : options.coins || 0,
             Boxes       : 0,
-            Inventory   : [generateWeapon(1, { type: 'fists', chances: [1, 0, 0, 0, 0], plain: true })],
+            Inventory   : [generateWeapon({ lvl: 1 }, { type: 'fists', chances: [1, 0, 0, 0, 0], plain: true })],
             Equipped    : 0,
             Team        : 'none',
             Lvl         : getLvl(options.xp || 1),

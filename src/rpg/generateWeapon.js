@@ -34,12 +34,12 @@ export function generateWeapon(fighter, options) {
 
     //do not award common fists (randomly)
     let weapons = Object.values(weaponList).filter(weapon => !weapon.hidden);
-    if (!rarity) {
+    if (!rarity && options.type !== 'fists') {
         weapons = weapons.filter(w => w.type !== 'fists');
     }
 
     const w = options.type
-        ? weapons[options.type] 
+        ? weapons.find(w => w.type === options.type) 
         : selectRandom(weapons);
 
     const weapon = new Weapon(fighter, {
@@ -89,8 +89,7 @@ export function generateWeapon(fighter, options) {
 
     let stats = [];
     for (let i = 0; i < enchantingKey.length; i++) {
-        const weight = enchantingTable[weapon.type][i] ** 2;
-        for (let j = 0; j < weight; j++) {
+        for (let j = 0; j < enchantingTable[weapon.type][i]; j++) {
             stats.push(enchantingKey[i]);
         }
     }

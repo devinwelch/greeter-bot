@@ -21,6 +21,9 @@ export async function addToInventory(client, db, user, item) {
     if (!item.weapon) {
         item = new Item(item);
     }
+    else {
+        item.fighter = null;
+    }
 
     if (inventoryFull(data, item.type)) {
         addToBuybacks(client, user, item);

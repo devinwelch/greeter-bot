@@ -76,7 +76,7 @@ export function updateData(db, user, options) {
                     attributes[':lvl'] = lvl;
 
                     expressions.push('Inventory[0] = :fists');
-                    attributes[':fists'] = generateWeapon(lvl, { type: 'fists', chances: [1, 0, 0, 0, 0], plain: true });
+                    attributes[':fists'] = generateWeapon({ lvl: lvl }, { type: 'fists', chances: [1, 0, 0, 0, 0], plain: true });
                     
                     //announce to the world
                     if (user.client) {

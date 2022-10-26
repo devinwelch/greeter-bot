@@ -45,6 +45,7 @@ export class Weapon {
         this.set('stun', 0);            //% chance to stun target
 
         this.set('treasureHunter', false);  //increases loot luck
+        this.set('flame', false);           //chance to ignite foe
 
         delete this.data;
     }
