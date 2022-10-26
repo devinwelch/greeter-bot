@@ -118,7 +118,7 @@ export default {
             actions.push('You lose 5 GBPs.');
         }
 
-        display(client, message, actions, party, actions.length - 1);
+        display(client, message, actions, party, actions.length - 1, null, []);
 
         //end sound clip for enemies with battle music
         const connection = getVoiceConnection(interaction.guild.id);

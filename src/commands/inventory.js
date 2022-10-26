@@ -13,7 +13,7 @@ import { MessageActionRow, MessageButton } from 'discord.js';
 
 export default {
     name: 'inventory',
-    description: 'See and use items in your inventory',
+    description: 'View and use items in your inventory or buybacks',
     category: 'rpg',
     options: [{
         type: 3, //STRING
@@ -38,8 +38,11 @@ export default {
             }
         }
 
+        let inventory = true;
+        let hanging = false;
+
         //show inventory
-        let itemID = await display(client, db, interaction, index, true);
+        let itemID = await display(client, db, interaction, index, inventory, false, true);
         interaction.messageID = (await interaction.fetchReply()).id;
 
         //respond to interaction with UI
@@ -50,12 +53,12 @@ export default {
             switch (buttonInteraction.customId) {
                 //previous
                 case 'previous':
-                    index -= 1;
+                    index--;
                     break;
 
                 //next
                 case 'next':
-                    index += 1;
+                    index++;
                     break;
                 
                 //equip or use
@@ -80,12 +83,24 @@ export default {
                     show(interaction);
                     break;
     
+                //switch
+                case 'switch':
+                    inventory = !inventory;
+                    index = 0;
+                    break;
+                
+                //buy
+                case 'buy':
+                    hanging = await buy(client, db, interaction.user, index);
+                    break;
+                
                 //other emoji
                 default:
                     break;
             }
             
-            itemID = await display(client, db, buttonInteraction, index);
+            itemID = await display(client, db, buttonInteraction, index, inventory, hanging);
+            hanging = false;
         });
     
         //remove message when user is done interacting
@@ -96,52 +111,110 @@ export default {
     }
 };
 
-async function display(client, db, interaction, index, initial=false) {
-    const data = await getData(db, interaction.user.id);
-    if (!data) {
-        databaseError(interaction, 'inventory');
-        return null;
+async function display(client, db, interaction, index, inventory, hanging, initial=false) {
+    let text = [];
+    let id;
+
+    if (inventory) {
+        const data = await getData(db, interaction.user.id);
+        if (!data) {
+            databaseError(interaction, 'inventory');
+            return null;
+        }
+
+        index = index % data.Inventory.length;
+        if (index < 0) {
+            index += data.Inventory.length;
+        }
+
+        const i = data.Inventory[index];
+        const item = i.weapon ? new Weapon(null, i) : new Item(i);
+        text.push(item.toString(client));
+        text.push('');
+        text.push(`**[${index}/${data.Inventory.length - 1}]** ${data.Equipped === index ? '✅' : ''}`);
+
+        id = item.id;
+    }
+    else {
+        const buybacks = client.buybacks[interaction.user.id];
+        if (buybacks && buybacks.length) {
+            index = index % buybacks.length;
+            if (index < 0) {
+                index += buybacks.length;
+            }
+
+            const i = buybacks[index];
+            const item = i.weapon ? new Weapon(null, i) : new Item(i);
+
+            text.push(item.toString(client, false));
+            text.push('');
+            text.push(`**[${index + 1}/${buybacks.length}]**`);
+        }
+        else {
+            text.push('Sold out!');
+        }
     }
 
-    index = index % data.Inventory.length;
-    if (index < 0) {
-        index += data.Inventory.length;
+    if (hanging) {
+        text.push(`\n**${hanging}**`);
     }
-    const i = data.Inventory[index];
-    const item = i.weapon ? new Weapon(null, i) : new Item(i);
-    let text = [];
-    text.push(item.toString(client));
-    text.push('');
-    text.push(`**[${index}/${data.Inventory.length - 1}]** ${data.Equipped === index ? '✅' : ''}`);
-    text = text.join('\n');
+    text = text.join('\n'); 
 
     try {
+        const params = { content: text, components: getButtons(inventory) };
+
         if (initial) {
-            await interaction.reply({ content: text, components: getButtons() });
+            await interaction.reply(params);
         }
-        await (interaction.isButton() ? interaction.update(text) : interaction.editReply(text));
+        else if (interaction.isButton()) {
+            await interaction.update(params);
+        }
+        else {
+            await interaction.editReply(params);
+        }
     }
     catch {
         //oh well
     }
     
-    return item.id;
+    return id;
 }
 
-function getButtons() {
-    return [
-        new MessageActionRow()
-            .addComponents([
-                getButton('Previous', '◀', 'PRIMARY', 'previous'),
-                getButton('Use', '✅', 'SUCCESS', 'use'),
-                getButton('Next', '▶', 'PRIMARY', 'next')
+function getButtons(inventory) {
+    if (inventory) {
+        return [
+            new MessageActionRow()
+                .addComponents([
+                    getButton('Previous', '◀', 'PRIMARY', 'previous'),
+                    getButton('Use', '✅', 'SUCCESS', 'use'),
+                    getButton('Next', '▶', 'PRIMARY', 'next')
+                ]),
+            new MessageActionRow()
+                .addComponents([
+                    getButton('Give', '🎁', 'SECONDARY', 'give'),
+                    getButton('Sell', '💰', 'DANGER', 'sell'),
+                    getButton('Show off!', '🏆', 'SECONDARY', 'show')
             ]),
-        new MessageActionRow()
-            .addComponents([
-                getButton('Give', '🎁', 'SECONDARY', 'give'),
-                getButton('Sell', '💰', 'DANGER', 'sell'),
-                getButton('Show off!', '🏆', 'SECONDARY', 'show')
-        ])];
+            new MessageActionRow()
+                .addComponents([
+                    getButton('Go to Buybacks', '🔀', 'SECONDARY', 'switch')
+            ])
+        ];
+    }
+    else {
+        return [
+            new MessageActionRow()
+                .addComponents([
+                    getButton('Previous', '◀', 'PRIMARY', 'previous'),
+                    getButton('Buy', '💸', 'SUCCESS', 'buy'),
+                    getButton('Next', '▶', 'PRIMARY', 'next')
+                ]),
+            new MessageActionRow()
+                .addComponents([
+                    getButton('Go to Inventory', '🔀', 'SECONDARY', 'switch')
+            ])
+        ];
+    }
 
     function getButton(label, emoji, style, id) {
         return new MessageButton()
@@ -184,6 +257,29 @@ async function sell(client, db, user, itemID) {
     updateData(db, user, { gbps: result.item.sell(), reequip: result.index });
     addToBuybacks(client, user, result.item);
     await removeItem(db, user, result);
+}
+
+//buy back item
+async function buy(client, db, user, index) {
+    const buybacks = client.buybacks[user.id];
+    if (!buybacks || !buybacks.length || index >= buybacks.length) {
+        return 'Something went wrong.';
+    }
+
+    let data = await getData(db, user.id);
+    if (!data) {
+        return 'Something went wrong.';
+    }
+
+    if (data.Inventory.length > 10 + 5 * (data.Skills.backpack || 0)) {
+        return 'Your inventory is full!';
+    }
+
+    const item = buybacks[index];
+    updateData(db, user, { gbps: -item.sell(), inventory: item });
+    client.buybacks[user.id].splice(index, 1);
+
+    return false;
 }
 
 //show item off
