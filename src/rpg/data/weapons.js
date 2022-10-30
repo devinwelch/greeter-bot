@@ -154,9 +154,9 @@ export default {
             '882089756979240981'
         ],
         description: 'Sits around for 5 episodes before unleashing a devastating attack!',
-        upgrade: 'Hyperbolic time chamber: +25% chance per skill point to skip first phase!',
+        upgrade: 'Instant transmission: Significantly increase chance to go first!',
         win: ':w triumphs over :l, but is this the end of their conflict? Find out next time...',
-        sequence:[' is gathering energy', ': ka', ': Me', ': HA', ': *ME*', ': HA'],
+        sequence:[' is gathering energy', ': ka', ': Me', ': HA', ': *ME*', ': **HA**'],
         low: 100,
         high: 120,
         cost: 2,
@@ -177,7 +177,7 @@ export default {
             '882089773735505932'
         ],
         description: '7% base chance to insta-kill!',
-        upgrade: 'Lifesteal: heal for +10% of dmg dealt per skill point!',
+        upgrade: 'Lifesteal: heal for +8% of dmg dealt per skill point!',
         win: ":w harvested :l's soul!",
         low: 7,
         high: 20,
@@ -223,7 +223,7 @@ export default {
             '882089805666730005'
         ],
         description: 'Hits second, requires wind-up between swings!',
-        upgrade: 'Hammer smashed face: +5% stun chance per skill point!',
+        upgrade: 'Hammer smashed face: +4% stun chance per skill point!',
         win: ":w smashed :l's face!",
         low: 20,
         high: 50,

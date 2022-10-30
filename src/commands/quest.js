@@ -30,7 +30,7 @@ export default {
 
         //set up challenger and random enemy
         const challenger = new Human(interaction.member, data, db);
-        challenger.turn = 2;
+        challenger.turn = 1;
         const enemy = new Enemy(data.Lvl);
         challenger.opponents = [enemy];
         enemy.opponents = [challenger];

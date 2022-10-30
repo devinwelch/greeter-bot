@@ -100,7 +100,7 @@ export class Enemy extends Fighter {
             this.magnetized = true;
             this.weapon = Object.assign({}, opponent.weapon);
             this.name = this.name.replace('magnet', this.weapon.type);
-            opponent.weapon = generateWeapon(opponent, { chances: [1, 0, 0, 0, 0], type: 'fists' });
+            opponent.weapon = generateWeapon(opponent, { chances: [1, 0, 0, 0, 0], type: 'fists', plain: true });
             opponent.cooldown = false;
             actions.push(new Action('The magnet stole your weapon!', this.position, party));
         }

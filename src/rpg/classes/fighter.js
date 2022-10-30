@@ -14,6 +14,8 @@ export class Fighter {
 
         this.bonus = getBonus(this.lvl);
         this.infected = this.member && this.member.roles && this.member.roles.cache.has(config.ids.roles.corona);
+        this.cracked = member?.high;
+        this.cooldown = this.cracked;
 
         this.poisoned = 0;
         this.burning = 0;
@@ -305,7 +307,7 @@ export class Fighter {
 
         //superhuman powers
         if (this.cracked) {
-            dmg *= 1.1;
+            dmg *= 1.15;
         }
         
         return dmg;
@@ -315,10 +317,10 @@ export class Fighter {
     takeDmg(dmg, opponent, party) {
         const actions = [];
 
-        if (dmg >= 0 && this.hp > 0) {
+        if (dmg > 0 && this.hp > 0) {
             //superhuman powers
             if (this.cracked) {
-                dmg *= 0.9;
+                dmg *= 0.85;
             }
 
             //dmg shield first
@@ -366,6 +368,11 @@ export class Fighter {
             //opponent kills
             if (this.hp <= 0 && opponent) {
                 actions.push(new Action(opponent.weapon.win.replace(':w', opponent.name).replace(':l', this.name), opponent.position, party));
+            }
+
+            //dies
+            if (this.hp <= 0 && this.member) {
+                this.member.high = false;
             }
         }
 

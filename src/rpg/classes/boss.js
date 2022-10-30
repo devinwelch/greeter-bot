@@ -22,7 +22,7 @@ export class Boss extends Fighter {
                 icon = ids.woop;
                 break;
             case 2:
-                this.max = 90 * partySize * this.bonus;
+                this.max = (20 + 90 * partySize) * this.bonus;
                 this.name = 'The Pentahook';
                 this.entrance = 'In Paraguay there lives a man, five rusty hooks on his right hand, and rage consumes his every living day!';
                 winText = ":w ate :l's face!";
@@ -40,7 +40,7 @@ export class Boss extends Fighter {
         }
 
         this.boss = true;
-        this.hp = this.max;
+        this.hp = this.max/5;
         this.weapon = new Weapon(this, { win: winText, icon: icon });
     }
 
@@ -171,7 +171,7 @@ export class Boss extends Fighter {
         //aoe dmg
         const dmgs = [];
         targets.forEach(p => {
-            const dmg = getRandom(1, 12) * this.bonus;
+            const dmg = getRandom(1, 13) * this.bonus;
             dmgs.push(Math.round(dmg));
             extra = extra.concat(p.takeDmg(dmg, this, party));
             extra = extra.concat(this.applyStatus(p, 2.5));

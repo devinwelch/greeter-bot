@@ -40,7 +40,7 @@ export default {
     crack: {
         type: 'crack',
         name: 'Crack',
-        description: 'Smoke before your next fight to increase dmg dealt and reduce dmg taken by 10%.',
+        description: 'Smoke before your next fight to increase dmg dealt and reduce dmg taken by 15%.',
         cost: 25,
         icon: '882090098261364776'
     },

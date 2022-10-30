@@ -177,7 +177,7 @@ export async function display(client, message, actions, party, count, qt, compon
         }
         
         //add actions
-        for(let i = Math.max(0, count - 20); i < count; i++) {
+        for(let i = Math.max(0, count - 12); i < count; i++) {
             text.push(actions[i].toString());
         }
 
@@ -257,7 +257,7 @@ async function getActions(message, party, qt) {
             const factor = fighter.opponents.some(o => o.creature && o.creature.evasive) ? 3 : 1;
 
             //stumble
-            fighter.stumble = fighter.reaction !== qt.id || (time - start > fighter.weapon.reaction / factor);
+            fighter.stumble = fighter.reaction !== qt.id || (time - start > (fighter.weapon.reaction + 500) / factor);
 
             //wish
             fighter.wished = fighter.reaction === 'wish' && fighter.opponents.some(opponent => opponent.magic);

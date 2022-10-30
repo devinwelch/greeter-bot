@@ -122,18 +122,19 @@ export function generateWeapon(fighter, options) {
                 weapon.bonuses.push(`+${bonus}% chance to attack twice`);
                 break;
             case 'ls':
-                bonus = getEnchantmentBonus(5, 12);
+                bonus = getEnchantmentBonus(6, 12);
                 weapon.lifesteal += bonus;
                 weapon.bonuses.push(`+${bonus}% life steal`);
                 break;
             case 'parry':
-                bonus = getEnchantmentBonus(4, 8);
+                bonus = getEnchantmentBonus(5, 10);
                 weapon.parry += bonus;
                 weapon.bonuses.push(`+${bonus}% dmg returned to attacker`);
                 break;
             case 'stun':
-                weapon.stun += 5;
-                weapon.bonuses.push('+5% stun chance');
+                bonus = getEnchantmentBonus(2, 5);
+                weapon.stun += bonus;
+                weapon.bonuses.push(`+${bonus}% stun chance`);
                 break;
             case 'spimin':
                 bonus = getEnchantmentBonus(0, 2, 2);
@@ -172,8 +173,8 @@ export function generateWeapon(fighter, options) {
                 weapon.bonuses.push(`+${weapon.speed} speed`);
                 break;
             case 'regen':
-                bonus = getEnchantmentBonus(1, 3, 2);
-                weapon.speed = bonus;
+                bonus = getEnchantmentBonus(2, 5, 2);
+                weapon.hpRegen = bonus;
                 weapon.bonuses.push(`+${bonus}% HP regen`);
                 break;
             case 'flame':
@@ -192,7 +193,7 @@ export function generateWeapon(fighter, options) {
         for (let i=0; i<iterations; i++) {
             results.push(getRandom(min, max));
         }
-        const average = Math.round(results.reduce((a, b) => a + b, 0) / 2);
+        const average = Math.round(results.reduce((a, b) => a + b, 0) / iterations);
 
         return average;
     }

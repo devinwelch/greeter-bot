@@ -25,7 +25,7 @@ export function getOrder(party) {
     return order;
 }
 
- function shuffleFighters(party) {
+function shuffleFighters(party) {
     let order = [];
     
     while(party.length) {

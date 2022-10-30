@@ -64,6 +64,7 @@ export default {
                 //equip or use
                 case 'use':
                     await use(client, db, interaction, itemID);
+                    await delay(100); //this makes the refreshing way more consistent
                     break;
     
                 //give
@@ -76,6 +77,7 @@ export default {
                 //sell
                 case 'sell':
                     await sell(client, db, interaction.user, itemID);
+                    await delay(100); //this makes the refreshing way more consistent
                     break;
                 
                 //show off
@@ -262,9 +264,11 @@ async function sell(client, db, user, itemID) {
 //buy back item
 async function buy(client, db, user, index) {
     const buybacks = client.buybacks[user.id];
-    if (!buybacks || !buybacks.length || index >= buybacks.length) {
+    if (!buybacks || !buybacks.length) {
         return 'Something went wrong.';
     }
+
+    index = index % buybacks.length;
 
     let data = await getData(db, user.id);
     if (!data) {
@@ -275,9 +279,14 @@ async function buy(client, db, user, index) {
         return 'Your inventory is full!';
     }
 
-    const item = buybacks[index];
-    updateData(db, user, { gbps: -item.sell(), inventory: item });
-    client.buybacks[user.id].splice(index, 1);
+    try {
+        const item = buybacks[index];
+        updateData(db, user, { gbps: -item.sell(), inventory: item });
+        client.buybacks[user.id].splice(index, 1);
+    }
+    catch (error) {
+        console.log(error);
+    }
 
     return false;
 }

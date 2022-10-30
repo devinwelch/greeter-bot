@@ -40,9 +40,7 @@ export default {
         }
 
         //grammar
-        const verb =
-            attribute === 'renown' ? 'has completed' :
-            attribute === 'xp' ? 'is' : 'has';
+        const verb = attribute === 'xp' ? 'is' : 'has';
 
         //format data
         const all = attribute === 'all';
@@ -91,7 +89,7 @@ export default {
 
         //renown
         if (attribute === 'renown' || all) {
-            lines.push(`• attempted ${data.Renown} quests`);
+            lines.push(`• Gone on ${data.Renown} quests`);
         }
 
         //lvl + xp
