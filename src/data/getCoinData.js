@@ -1,3 +1,5 @@
+//TODO cache coin value
+
 /**
  * Get array of nannercoin values
  * @returns int[] or null

@@ -1,3 +1,6 @@
+//TODO: some files randomly give Error: write after end with resource [object Object]
+//I don't even where that is being caught.
+
 import { 
     joinVoiceChannel,
     getVoiceConnection,

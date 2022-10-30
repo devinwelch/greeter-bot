@@ -1,9 +1,6 @@
 import { playMe } from '../sound/playMe.js';
 import { existsSync } from 'fs';
 
-//TODO: some files randomly give Error: write after end with resource [object Object]
-//I don't even where that is being caught.
-
 export default {
     name: 'me',
     description: 'Play a personalized greeting',

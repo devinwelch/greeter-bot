@@ -1,6 +1,3 @@
-//TODO
-    //ctrl+shift+f '.ids' to make sure they are all properly checked
-
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
 import config from './config.js';

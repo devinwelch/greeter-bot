@@ -1,5 +1,6 @@
 import { getData } from '../data/getData.js';
 import { Human } from '../rpg/classes/human.js';
+import { playFile } from '../sound/playFile.js';
 import { fight, display } from '../rpg/fight.js';
 import { updateData } from '../data/updateData.js';
 import { sendInvite } from '../utils/sendInvite.js';
@@ -65,7 +66,7 @@ export default {
         //chance to play duel theme if both members in voice
         const voiceChannel = challenger.voice.channel;
         if (voiceChannel && voiceChannel === target.voice.channel && getChance(25)) {
-            //playSong(client, voiceChannel, 'duel.mp3'); TODO
+            playFile(client, voiceChannel, 'duel.mp3');
         }
 
         //initialize fighters

@@ -50,7 +50,6 @@ export async function fight(client, party, message, actions) {
     });
 
     //add buttons
-    //TODO
     let components, QTEs;
     if (message) {
         const options = {

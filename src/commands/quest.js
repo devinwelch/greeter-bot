@@ -90,7 +90,6 @@ export default {
             }
             else {
                 const options = {
-                    //TODO 500 and 1000 increased legend chances
                     chances: 
                         enemy.creature.emoji === '🦄' ? rareChances :
                         challenger.wished ? [0, 0, 20, 10, 1] :
