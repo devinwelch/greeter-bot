@@ -129,14 +129,15 @@ function getComponents(options) {
         extra.forEach(e => QTEs.push(e));
     }
 
-    if (options.magic || options.crack) {
-        const row = new MessageActionRow();
-        if (options.magic) {
-            row.addComponents([getButton({id: 'wish', emoji: '🌠' })]);
-        }
-        if (options.crack) {
-            row.addComponents([getButton({id: 'crack', emoji: items.crack.icon })]);
-        }
+    const extraRow = new MessageActionRow();
+    if (options.magic) {
+        extraRow.addComponents([getButton({id: 'wish', emoji: '🌠' })]);
+    }
+    if (options.crack) {
+        extraRow.addComponents([getButton({id: 'crack', emoji: items.crack.icon })]);
+    }
+    if (extraRow.components.length) {
+        rows.push(extraRow);
     }
 
     return [rows, QTEs];

@@ -12,6 +12,8 @@ import { databaseError } from '../utils/databaseError.js';
 import { generateWeapon } from '../rpg/generateWeapon.js';
 import { selectRandom, getRandom, getChance } from '../utils/random.js';
 
+//TODO there is a bug where sometimes the item cannot be added to inventory. maybe to do with epics?
+
 export default {
     name: 'quest',
     description: 'Fight a random enemy and pick up cool loot',
