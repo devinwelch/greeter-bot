@@ -3,6 +3,7 @@ import { updateData } from '../data/updateData.js';
 import { playFile } from '../sound/playFile.js';
 import { react } from '../utils/react.js';
 import { getChance } from '../utils/random.js';
+import { getNetWorth } from '../gbp/getNetWorth.js';
 
 export async function onMessage(client, db, message) {
     //Bots don't talk to bots nor links
@@ -13,7 +14,7 @@ export async function onMessage(client, db, message) {
     //Banana crown for the elite
     else if (/.*:BananaCrown:.*/.test(message.content)) {
         const data = await getData(db, message.author.id);
-        if (!data || data.GBPs < 1000) {
+        if (!data || (await getNetWorth(db, data)) < 1000) {
             return message.delete().catch(console.error);
         }
     }
@@ -33,11 +34,11 @@ export async function onMessage(client, db, message) {
     if (!message.guild || !message.author.dorseProtection && message.guild.id === client.ids.guilds.hooliganHouse) {
         message.channel.messages.fetch({ limit: 10 })
         .then(messages => {
-            const filteredMessages = messages.filter(msg => msg.author.id === message.author.id);
+            const filteredMessages = Array.from(messages.filter(msg => msg.author.id === message.author.id).values());
             if (filteredMessages.length > 1 &&
                 filteredMessages[0].content === filteredMessages[1].content &&
-                !filteredMessages[0].attachments.size &&
-                !filteredMessages[1].attachments.size) {
+                !filteredMessages[0].attachments?.size &&
+                !filteredMessages[1].attachments?.size) {
                     message.reply('dorse');
                     updateData(db, message.author, { gbps: -1 });
             }
