@@ -77,7 +77,7 @@ export default {
                 sell(client, db, interaction, coinData, gbpData, amount);
                 break;
             case 'give':
-                give(db, interaction, gbp Data, amount);
+                give(db, interaction, gbpData, amount);
                 break;
         }
     }
