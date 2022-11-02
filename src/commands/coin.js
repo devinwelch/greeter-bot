@@ -77,7 +77,7 @@ export default {
                 sell(client, db, interaction, coinData, gbpData, amount);
                 break;
             case 'give':
-                give(db, interaction, gbpData);
+                give(db, interaction, gbp Data, amount);
                 break;
         }
     }
@@ -169,7 +169,7 @@ async function sell(client, db, interaction, coinData, gbpData, amount) {
 async function give(db, interaction, gbpData, amount) {
     const recipient = interaction.options.getUser('user');
 
-    if (interaction.user === recipient) {
+    if (interaction.user === recipient || amount < 1) {
         interaction.reply('Fuck off, silly bitch.');
     }
     else if (gbpData.Coins >= amount) {
