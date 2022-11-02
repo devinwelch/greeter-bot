@@ -1,1 +1,1 @@
-worker: node index.js --color=always
+worker: node src/index.js --color=always
