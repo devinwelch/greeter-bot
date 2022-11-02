@@ -174,7 +174,7 @@ async function give(db, interaction, gbpData, amount) {
     }
     else if (gbpData.Coins >= amount) {
         updateData(db, interaction.user, { coins: -amount });
-        updateData(db, recipient, { coins: -amount });
+        updateData(db, recipient, { coins: amount });
         interaction.reply('Kind and generous, true royalty!');
     }
     else {
