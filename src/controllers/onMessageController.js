@@ -15,7 +15,9 @@ export async function onMessage(client, db, message) {
     else if (/.*:BananaCrown:.*/.test(message.content)) {
         const data = await getData(db, message.author.id);
         if (!data || (await getNetWorth(db, data)) < 1000) {
-            return message.delete().catch(console.error);
+            message.delete().catch(console.error);
+            process.on('unhandledRejection', () => {});
+            return;
         }
     }
     

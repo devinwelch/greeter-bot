@@ -106,9 +106,9 @@ export default {
         });
     
         //remove message when user is done interacting
-        collector.on('end', async () => {
-            const message = await interaction.fetchReply();
-            message.delete();
+        collector.on('end', () => {
+            interaction.fetchReply().then(reply => reply.delete());
+            process.on('unhandledRejection', () => {});
         });
     }
 };
@@ -460,6 +460,7 @@ async function serenade(client, db, interaction, result) {
                 updateData(db, interaction.user, { reequip: result.index });
                 removeItem(db, interaction.user, result);
                 await message.delete();
+                process.on('unhandledRejection', () => {});
             }
             catch (error) {
                 console.error(error);

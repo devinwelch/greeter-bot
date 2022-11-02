@@ -32,7 +32,10 @@ export function infect(client) {
                 botchat.messages.fetch({ limit: 100 })
                 .then(messages => {
                     messages.filter(msg => msg.mentions.has(victim) && msg.content.includes('Yuck, stay away'))
-                    .forEach(msg => msg.delete().catch(console.error));
+                    .forEach(msg => {
+                        msg.delete().catch(console.error);
+                        process.on('unhandledRejection', () => {});
+                    });
                 });
                 client.channels.cache.get(client.ids.channels.botchat).send(`${victim} caught the coronavirus! Yuck, stay away!`);
             }

@@ -85,7 +85,10 @@ export function updateData(db, user, options) {
                         botchat.messages.fetch({ limit: 100 })
                         .then(messages => {
                             messages.filter(msg => msg.mentions.has(user) && msg.content.includes('leveled up to'))
-                            .forEach(msg => msg.delete().catch(console.error));
+                            .forEach(msg => {
+                                msg.delete().catch(console.error);
+                                process.on('unhandledRejection', () => {});
+                            });
                         });
                         botchat.send(`${user} leveled up to ${lvl}!`);
                     }

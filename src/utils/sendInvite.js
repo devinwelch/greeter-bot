@@ -44,6 +44,7 @@ export async function sendInvite(client, interaction, challenger, target, event,
             //duel is canceled
             else if (buttonInteraction.customId === 'decline') {
                 interaction.message.delete().catch(console.error);
+                process.on('unhandledRejection', () => {});
                 collector.stop();
             }
         }

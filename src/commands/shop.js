@@ -119,6 +119,7 @@ export default {
         //delete message on idle timeout
         collector.on('end', () => {
             interaction.message.delete();
+            process.on('unhandledRejection', () => {});
         });
     }
 };

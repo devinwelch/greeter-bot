@@ -37,6 +37,9 @@ export function midnight(client, db) {
                 msg.content.includes('Go forth!')
             )
         )
-        .forEach(msg => msg.delete().catch(console.error));
+        .forEach(msg => {
+            msg.delete().catch(console.error);
+            process.on('unhandledRejection', () => {});
+        });
     });
 }
