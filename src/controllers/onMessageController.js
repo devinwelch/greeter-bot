@@ -53,23 +53,23 @@ export async function onMessage(client, db, message) {
 
     //Sweet dreams!
     else if (/.*:gr?oose:.*:k?night:.*/.test(message.content)) {
-        playFile(client, message.member.voice.channel, 'goosenight.wav');
+        playFile(client, message.member.voice.channel, 'other/goosenight.wav');
     }
 
     //Sweet memes!
     else if (/.*:gr?oose:.*:day:.*/.test(message.content)) {
-        playFile(client, message.member.voice.channel, 'gooseday.mp3');
+        playFile(client, message.member.voice.channel, 'other/gooseday.mp3');
     }
 
     //The never-ending debate
     else if (message.content.toLowerCase() === 'all women are queens') {
-        playFile(client, message.member.voice.channel, 'queens.mp3');
+        playFile(client, message.member.voice.channel, 'other/queens.mp3');
     }
 
     //Enforce some positivity
     else if (isQuestion(message.content)) {
-        playFile(client, message.member.voice.channel, 'doable.mp3');
-        react(message, client.ids.emoji.doable);
+        playFile(client, message.member.voice.channel, 'other/doable.mp3');
+        react(message, client.ids.emojis.doable);
     }
 
     //Man's not hot

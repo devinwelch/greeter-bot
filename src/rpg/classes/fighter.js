@@ -170,7 +170,7 @@ export class Fighter {
                     results.actions.forEach(a => actions.push(a));
                 }
     
-                if (this.weapon.cursed && getChance(Math.round(7))) {
+                if (this.weapon.cursed && getChance(5)) {
                     text = `${this.name} is just another victim of the bad girl's curse`;
                     this.hp = 0;
                 }
