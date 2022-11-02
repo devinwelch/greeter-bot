@@ -40,7 +40,7 @@ export class Boss extends Fighter {
         }
 
         this.boss = true;
-        this.hp = this.max/5;
+        this.hp = this.max;
         this.weapon = new Weapon(this, { win: winText, icon: icon });
     }
 

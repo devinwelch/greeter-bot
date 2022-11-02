@@ -294,7 +294,7 @@ async function getLoot(client, db, humans, channel, options) {
         if (item.weapon) {
             const options = { type: item.type, chances: [0, 0, 0, 0, 0] };
             options.chances[item.rarity] = 1;
-            item = generateWeapon(humans.find(human => human.member.id === winner.id).lvl || 1, options);
+            item = generateWeapon(humans.find(human => human.member.id === winner.id) || 1, options);
         }
 
         addToInventory(client, db, winner, item);
