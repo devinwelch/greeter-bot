@@ -1,5 +1,4 @@
 import { MessageActionRow, MessageButton } from 'discord.js';
-import { databaseError } from '../utils/databaseError.js';
 import { getRanks } from '../data/getRanks.js';
 
 export default {
@@ -42,15 +41,13 @@ export default {
             text.push(`${await getName(client, interaction, data[0])}, ${await getName(client, interaction, data[1])}, ${await getName(client, interaction, data[2])}:`);
             text.push('We need your unanimous concurrence for the motion to pass. You have 5 minutes to decide.');
 
-            const drops = client.emojis.resolve(client.ids.emojis.drops) || '😂';
-
             const buttons = new MessageActionRow().addComponents([
                 new MessageButton()
                     .setLabel('🦀 RESET 🦀')
                     .setStyle('DANGER')
                     .setCustomId('reset'),
                 new MessageButton()
-                    .setLabel(`${drops} LOL NO ${drops}`)
+                    .setLabel('😂 LOL NO 😂')
                     .setStyle('PRIMARY')
                     .setCustomId('nope')
             ]);
