@@ -222,7 +222,7 @@ async function getLoot(client, db, humans, channel, options) {
     let text;
 
     //guarantee pick of destiny
-    if (options.pick) {
+    if (options.pick && getChance(50)) {
         item = { type: 'pick', id: v4() };
         text = 'the Pick of Destiny';
     }
