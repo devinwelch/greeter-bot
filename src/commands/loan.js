@@ -145,8 +145,8 @@ function giveLoan(client, db, interaction, amount, update=false) {
     //interest = 10%
     const total = Math.ceil(amount * 1.1);
 
-    updateData(db, interaction.user, { gbps: total, loan: total });
-    updateData(db, client.user, { gbps: -total });
+    updateData(db, interaction.user, { gbps: amount, loan: total });
+    updateData(db, client.user, { gbps: -amount });
     const parameters = { content: 'Done, but you better have my money by midnight...', components: [] };
     update ? interaction.update(parameters) : interaction.reply(parameters);
 }
