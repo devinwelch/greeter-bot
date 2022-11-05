@@ -22,7 +22,7 @@ export function midnight(client, db) {
     });
 
     //clear channel of generic anouncements
-    const botchat = client.channels.cache.get(client.ids.botchat);
+    const botchat = client.channels.cache.get(client.ids.channels.botchat);
     const fiveDaysAgo = Date.now() - (1000 * 60 * 60 * 24 * 5); 
     botchat.messages.fetch({ limit: 100 })
     .then(messages => {

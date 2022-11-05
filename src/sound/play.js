@@ -56,7 +56,9 @@ export function play(client, voiceChannel, source, options) {
     audioPlayer.on(AudioPlayerStatus.Playing, () => {
         if (options?.timeout) {
             setTimeout(() => {
-                destroy(client, audioPlayer, connection);
+                if (getVoiceConnection(voiceChannel.guild.id)) {
+                    destroy(client, audioPlayer, connection);
+                }
             }, options.timeout);
         }
 
