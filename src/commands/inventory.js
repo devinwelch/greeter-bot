@@ -269,6 +269,9 @@ async function buy(client, db, user, index) {
     }
 
     index = index % buybacks.length;
+    if (index < 0) {
+        index += buybacks.length;
+    }
 
     let data = await getData(db, user.id);
     if (!data) {
