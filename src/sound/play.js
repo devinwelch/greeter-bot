@@ -50,7 +50,7 @@ export function play(client, voiceChannel, source, options) {
     audioPlayer.play(resource);
 
     //handle errors
-    audioPlayer.on('error', error => console.error(`Error: ${error.message} with resource ${source}`));
+    audioPlayer.on('error', (error) => console.error(`Error: ${error.message} with resource ${source?._inputs[0]?.source}`));
 
     //optional timeout and 'rocking' flag
     audioPlayer.on(AudioPlayerStatus.Playing, () => {
