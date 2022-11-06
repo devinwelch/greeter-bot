@@ -40,7 +40,12 @@ export function play(client, voiceChannel, source, options) {
     };
 
     //seek
-    source = ffmpeg(source).toFormat('mp3').setStartTime(options?.seek || 0);
+    try {
+        source = ffmpeg(source).toFormat('mp3').setStartTime(options?.seek || 0);
+    }
+    catch(error) {
+        console.error(error);
+    }
 
     //play
     const resource = createAudioResource(source, audioOptions);
