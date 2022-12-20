@@ -61,6 +61,15 @@ function getChips(client) {
             getPlainButton('100K', 100000),
             getPlainButton('500K', 500000),
             getPlainButton('1M', 1000000),
+            getPlainButton('10M', 10000000),
+            getPlainButton('100M', 100000000)
+        ]);
+
+    const row4 = new MessageActionRow()
+        .addComponents([
+            getPlainButton('1B', 1000000000),
+            getPlainButton('10B', 10000000000),
+            getPlainButton('100B', 100000000000),
             new MessageButton()
                 .setLabel('Clear')
                 .setStyle('DANGER')
@@ -71,7 +80,7 @@ function getChips(client) {
                 .setCustomId('ready')
         ]);
 
-    return [row1, row2, row3];
+    return [row1, row2, row3, row4];
 
     function getChipButton(client, value) {
         return new MessageButton()
