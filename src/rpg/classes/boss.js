@@ -63,6 +63,13 @@ export class Boss extends Fighter {
     }
 
     getAction(client, party, targets) {
+        if (this.stunned) {
+            let text = `${this.name} is stunned!`;
+            this.cooldown = false;
+            this.stunned = false;
+            return [new Action(text, this.position, party)];
+        }   
+
         switch(this.type) {
             case 1:
                 return this.woop(party, targets);

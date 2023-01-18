@@ -154,7 +154,7 @@ async function getCoinCost(db) {
 async function getTicketCost(db, userID) {
     const gbpData = await getData(db, userID);
     if (gbpData) {
-        return 10 ** gbpData.Tickets.length;
+        return 10 ** gbpData.Tickets?.length ?? 0;
     }
 
     return { error: 'GBP' };
