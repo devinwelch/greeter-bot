@@ -34,7 +34,9 @@ export function resetEconomy(client, db, data) {
                             };
 
                             if (user.Lvl < 4) {
-                                db.deleteItem(gbpParams, function(err) {
+                                gbpParams.UpdateExpression = null;
+                                gbpParams.ExpressionAttributeValues = null;
+                                db.delete(gbpParams, function(err) {
                                     if (err) {
                                         console.error(`Unable to delete user ${user.Username}. Error JSON:`, JSON.stringify(err, null, 2));
                                     }
