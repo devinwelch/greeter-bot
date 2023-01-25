@@ -9,7 +9,7 @@ import {
     StreamType,
     AudioPlayerStatus
 } from '@discordjs/voice';
-import ffmpeg from 'fluent-ffmpeg';
+//import ffmpeg from 'fluent-ffmpeg';
 
  /**
   * @param {*} options  //seek, volume, timeout, rocking
@@ -39,13 +39,13 @@ export function play(client, voiceChannel, source, options) {
         inlineVolume: true
     };
 
-    //seek
-    try {
-        source = ffmpeg(source).toFormat('mp3').setStartTime(options?.seek || 0);
-    }
-    catch(error) {
-        console.error(error);
-    }
+    //TODO: seek
+    // try {
+    //     source = ffmpeg(source).toFormat('mp3').setStartTime(options?.seek || 0);
+    // }
+    // catch(error) {
+    //     console.error(error);
+    // }
 
     //play
     const resource = createAudioResource(source, audioOptions);
