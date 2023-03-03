@@ -1,5 +1,4 @@
-//TODO: some files randomly give Error: write after end with resource [object Object]
-//I don't even where that is being caught.
+//TODO: find better way to implement seek because fluent-ffmpeg was causing write after end of resource error
 
 import { 
     joinVoiceChannel,
@@ -39,7 +38,6 @@ export function play(client, voiceChannel, source, options) {
         inlineVolume: true
     };
 
-    //TODO: seek
     // try {
     //     source = ffmpeg(source).toFormat('mp3').setStartTime(options?.seek || 0);
     // }

@@ -5,7 +5,7 @@ import { getChance, selectRandom } from '../utils/random.js';
 
 /**
  * @param {*} name //name of user
- * @param {*} options //gnomed, chud
+ * @param {*} options //gnomed, chud, base
  * @returns {string} filename
  */
 
@@ -19,6 +19,10 @@ export function playMe(client, voiceChannel, name, options) {
     else if (options?.chud) {
         path = 'friends';
         file = 'chud5.mp3';
+    }
+    else if (options?.base) {
+        path = 'friends';
+        file = `${name}.mp3`;
     }
     else {
         const regex = RegExp('^' + name.toLowerCase());

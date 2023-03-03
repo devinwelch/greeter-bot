@@ -14,7 +14,7 @@ export default {
     {
         type: 4, //INTEGER
         name: 'seek',
-        description: 'Start time in seconds',
+        description: 'Start time in seconds (currently broken)',
         required: false
     }],
     async execute(client, db, interaction) {

@@ -25,14 +25,14 @@
   "dependencies": {
     "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.11.0",
-    "aws-sdk": "^2.965.0",
+    "aws-sdk": "^2.1327.0",
     "discord.js": "^13.0.0",
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "fluent-ffmpeg": "^2.1.2",
     "node-schedule": "^2.0.0",
     "quickchart-js": "^1.4.0",
-    "sodium": "^3.0.2",
+    "sodium-native": "^4.0.1",
     "uuid": "^8.3.2",
     "ytdl-core": "^4.11.2"
   },

@@ -10,15 +10,22 @@ export default {
         name: 'user',
         description: 'Name of user',
         required: false
+    },
+    {
+        type: 3, //STRING
+        name: 'track',
+        description: 'which specific song',
+        required: false
     }],
     async execute(client, db, interaction) {
         let username = interaction.options.getUser('user')?.username.toLowerCase();
+        let track = interaction.options.getString('track', false) ?? '';
 
         if (username) {
             if (username === 'random') {
                 username = '';
             }
-            else if (username === interaction.user.username.toLowerCase()) {
+            else if (username === interaction.user.username.toLowerCase() && !track.length) {
                 username = 'congratulations';
             }
         }
@@ -26,8 +33,16 @@ export default {
             username = interaction.user.username.toLowerCase();
         }
         
-        if (!username.length || existsSync(`audio/friends/${username}.mp3`)) {
-            const file = playMe(client, interaction.member.voice.channel, username);
+        let base = false;
+        if (track === '1') {
+            track = '';
+            base = true;
+        }
+
+        const path = username + track;
+
+        if (!username.length || existsSync(`audio/friends/${path}.mp3`)) {
+            const file = playMe(client, interaction.member.voice.channel, path, { base: base });
             interaction.reply(`You played: ${file}`);
         }
         else {
