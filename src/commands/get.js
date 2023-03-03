@@ -48,11 +48,11 @@ export default {
 
         if (attribute === 'gbp' || all) {
             //raw gbp
-            lines.push(`• ${data.GBPs} good boy points (GBPs)`);
+            lines.push(`• ${data.GBPs.toLocaleString('en-US')} good boy points (GBPs)`);
 
             //stash
             if (data.Stash) {
-                lines.push(`• ${data.Stash} GBPs stashed away`);
+                lines.push(`• ${data.Stash.toLocaleString('en-US')} GBPs stashed away`);
             }
 
             //coins
@@ -64,7 +64,7 @@ export default {
                 else {
                     return databaseError(interaction, 'Coin');
                 }
-                lines.push(`• ${data.Coins} NNC (${data.Coins * coin} GBPs)`);
+                lines.push(`• ${data.Coins.toLocaleString('en-US')} NNC (${(data.Coins * coin).toLocaleString('en-US')} GBPs)`);
             }
 
             //inventory value
@@ -73,12 +73,12 @@ export default {
                     const item = b.weapon ? new Weapon(null, b) : new Item(b);
                     return a + item.sell();
                 }, 0);
-                lines.push(`• An inventory worth ${assets} GBPs`);
+                lines.push(`• An inventory worth ${assets.toLocaleString('en-US')} GBPs`);
             }
 
             //loan
             if (data.Loan) {
-                lines.push(`• *${data.Loan} GBPs in loans*`);
+                lines.push(`• *${data.Loan.toLocaleString('en-US')} GBPs in loans*`);
             }
         }
 
@@ -89,7 +89,7 @@ export default {
 
         //renown
         if (attribute === 'renown' || all) {
-            lines.push(`• Gone on ${data.Renown} quests`);
+            lines.push(`• Gone on ${data.Renown.toLocaleString('en-US')} quests`);
         }
 
         //lvl + xp
@@ -101,7 +101,7 @@ export default {
             else {
                 const delta = xpTable[data.Lvl] - xpTable[data.Lvl - 1];
                 const surplus = data.XP - xpTable[data.Lvl - 1];
-                    xp +=  ` with ${surplus}/${delta} xp (${(100 * surplus / delta).toFixed(0)}%) towards the next!`;
+                    xp +=  ` with ${surplus.toLocaleString('en-US')}/${delta.toLocaleString('en-US')} xp (${(100 * surplus / delta).toFixed(0)}%) towards the next!`;
             }
             lines.push(xp);
         }

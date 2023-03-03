@@ -40,7 +40,7 @@ export default {
         else {
             updateData(db, interaction.user, { gbps: -amount });
             updateData(db, recipient, { gbps: amount });
-            interaction.reply('You are a kind soul. Bless you.');
+            interaction.reply(`${interaction.user.username} gave ${amount} GBPs to ${recipient}. A kind soul; bless you.`);
         }
     }
 };

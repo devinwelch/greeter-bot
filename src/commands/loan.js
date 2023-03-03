@@ -1,6 +1,7 @@
 import { getData } from '../data/getData.js';
 import { updateData } from '../data/updateData.js';
 import { getNetWorth } from '../gbp/getNetWorth.js';
+import { getCoinData } from '../data/getCoinData.js';
 import { databaseError } from '../utils/databaseError.js';
 import { MessageActionRow, MessageButton } from 'discord.js';
 
@@ -71,7 +72,7 @@ export default {
                     interaction.reply(`You already have a loan for ${data.Loan}`);
                 }
                 //user asked for too much
-                else if (amount > await getMaxLoan(data)) {
+                else if (amount > await getMaxLoan(db, data)) {
                     interaction.reply('Denied. Prove your worth before you try to borrow that much.');
                 }
                 //give a loan
@@ -90,13 +91,13 @@ export default {
                             .setCustomId('max')
                     ])];
                     const max = await getMaxLoan(db, data);
-                    await interaction.reply({ content: `I can lend you up to ${max} GBPs.`, components: maxLoan });
+                    await interaction.reply({ content: `I can lend you up to ${max.toLocaleString('en-US')} GBPs.`, components: maxLoan });
 
                     wait(client, db, interaction, max);
                 }
                 //threaten to collect on loan
                 else {
-                    interaction.reply(`You have a loan out for ${data.Loan} GBPs. I will collect ${data.Loan} tonight...`);
+                    interaction.reply(`You have a loan out for ${data.Loan.toLocaleString('en-US')} GBPs. I will collect ${data.Loan} tonight...`);
                 }
             }
         }
@@ -104,8 +105,15 @@ export default {
 };
 
 async function getMaxLoan(db, data) {
-    //Average of current GBPs and highest achieved GBPs
-    return Math.max(Math.ceil((await getNetWorth(db, data) + data.HighScore) / 2), 0);
+    //get coin value but don't fail if data isn't found
+    let coinData = await getCoinData(db);
+    coinData = coinData ? coinData[coinData.length - 1] : 0;
+
+    //Average of current GBPs and (highest achieved GBPs or half of 1 NNC)
+    const netWorth = await getNetWorth(db, data);
+    const credit = Math.max(data.HighScore, coinData / 2);
+
+    return Math.max(Math.ceil((credit + netWorth) / 2), 0);
 }
 
 async function wait(client, db, interaction, max) {
@@ -147,6 +155,6 @@ function giveLoan(client, db, interaction, amount, update=false) {
 
     updateData(db, interaction.user, { gbps: amount, loan: total });
     updateData(db, client.user, { gbps: -amount });
-    const parameters = { content: 'Done, but you better have my money by midnight...', components: [] };
+    const parameters = { content: `Done, here's your loan for ${amount.toLocaleString('en-US')} GBPs, but you better have my money by midnight...`, components: [] };
     update ? interaction.update(parameters) : interaction.reply(parameters);
 }

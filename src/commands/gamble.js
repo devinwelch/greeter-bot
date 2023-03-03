@@ -47,15 +47,15 @@ export default {
 
             if (roll === 100) {
                 const bonus = Math.max(data.Skills.luck ? data.Skills.luck : 2, getRandom(2, 5));
-                resultMessage = `\nYou win big! ${bonus}x multiplier!`;
                 win = bonus * wager;
+                resultMessage = `\nYou win big! ${bonus}x multiplier! (${win.toLocaleString('en-US')} GBPs)`;
             }
             else if (roll > 55) {
-                resultMessage = `\nYou win ${wager} GBPs!`;
+                resultMessage = `\nYou win ${wager.toLocaleString('en-US')} GBPs!`;
                 win = wager;
             }
             else {
-                resultMessage = `\nYou lose ${wager} GBPs.`;
+                resultMessage = `\nYou lose ${wager.toLocaleString('en-US')} GBPs.`;
                 win = -wager;
             }
 

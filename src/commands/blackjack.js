@@ -113,6 +113,11 @@ function getControls(client, options) {
                 .setCustomId('double')
                 .setDisabled(!options.double),
             new MessageButton()
+                .setEmoji('♻')
+                .setLabel('Refresh')
+                .setStyle('SECONDARY')
+                .setCustomId('refresh'),
+            new MessageButton()
                 .setLabel('Hit')
                 .setStyle('PRIMARY')
                 .setCustomId('hit'),
@@ -403,7 +408,11 @@ async function getTurn(client, db, interaction, game) {
             player.bet += player.originalBet;
             game.deck.deal(player.hand, { luck: player.luck });
             collector.stop();
-        } else if (buttonInteraction.customId === 'stand') {
+        }
+        else if (buttonInteraction.customId === 'refresh') {
+            await checkSplitOrDouble(db, game);
+        }
+        else if (buttonInteraction.customId === 'stand') {
             collector.stop();
         }
         else if (buttonInteraction.customId === 'hit') {

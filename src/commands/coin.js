@@ -1,3 +1,5 @@
+//TODO move chart to announcements
+
 import QuickChart from 'quickchart-js';
 import { getData } from '../data/getData.js';
 import { updateData } from '../data/updateData.js';
@@ -14,31 +16,55 @@ export default {
         description: 'See how NNC is doing'
     },
     {
-        type: 1, //SUB_COMMAND
+        type: 2, //SUB_COMMAND_GROUP
         name: 'buy',
         description: 'Buy some NNC',
-        options: [{
-            type: 4, //INTEGER
-            name: 'amount',
-            description: 'Amount of NNC',
-            required: true
-        }],
+        options: [
+            {
+                type: 1, //SUB_COMMAND
+                name: 'max',
+                description: 'Buy as many NNC as possible'
+            },
+            {
+                type: 1, //SUB_COMMAND
+                name: 'amount',
+                description: 'Buy a specific amount of NNC',
+                options: [{
+                    type: 4, //INTEGER
+                    name: 'amount',
+                    description: 'How many?',
+                    required: true
+                }]
+            }
+        ]
     },
     {
-        type: 1, //SUB_COMMAND
+        type: 2, //SUB_COMMAND_GROUP
         name: 'sell',
-        description: 'Sell some NNC',
-        options: [{
-            type: 4, //INTEGER
-            name: 'amount',
-            description: 'Amount of NNC',
-            required: true
-        }],
+        description: 'Sell your NNC',
+        options: [
+            {
+                type: 1, //SUB_COMMAND
+                name: 'max',
+                description: 'Sell as many NNC as possible'
+            },
+            {
+                type: 1, //SUB_COMMAND
+                name: 'amount',
+                description: 'Sell a specific amount of NNC',
+                options: [{
+                    type: 4, //INTEGER
+                    name: 'amount',
+                    description: 'How many?',
+                    required: true
+                }]
+            }
+        ]
     },
     {
         type: 1, //SUB_COMMAND
         name: 'give',
-        description: 'Give away some NNC',
+        description: 'Give away your NNC',
         options: [{
             type: 4, //INTEGER
             name: 'amount',
@@ -63,22 +89,30 @@ export default {
             return databaseError(interaction, 'gbp');
         }
 
-        const amount = interaction.options.getInteger('amount');
+        const subcommandGroup = interaction.options.getSubcommandGroup(false);
         const subcommand = interaction.options.getSubcommand();
+        const amount = interaction.options.getInteger('amount', false);
 
-        switch (subcommand) {
-            case 'graph':
-                graph(interaction, coinData, gbpData, amount);
-                break;
-            case 'buy':
-                buy(client, db, interaction, coinData, gbpData, amount);
-                break;
-            case 'sell':
-                sell(client, db, interaction, coinData, gbpData, amount);
-                break;
-            case 'give':
-                give(db, interaction, gbpData, amount);
-                break;
+
+        if (subcommandGroup) {
+            const coinValue = coinData[coinData.length - 1];
+
+            //buy
+            if (subcommandGroup === 'buy') {
+                buy(client, db, interaction, coinValue, gbpData, amount);
+            }
+            //sell
+            else {
+                sell(client, db, interaction, coinValue, gbpData, amount);
+            }
+        }
+        //give
+        else if (subcommand === 'give') {
+            give(db, interaction, gbpData, amount);
+        }
+        //graph
+        else {
+            graph(interaction, coinData, gbpData, amount);
         }
     }
 };
@@ -122,7 +156,7 @@ async function graph(interaction, coinData, gbpData) {
             },
             title: {
                 display: true,
-                text: `1 Nannercoin = ${current} GBPs`,
+                text: `1 Nannercoin = ${current.toLocaleString('en-US')} GBPs`,
                 fontColor: color,
                 fontSize: 20
             },
@@ -136,30 +170,40 @@ async function graph(interaction, coinData, gbpData) {
 
     let text;
     if (gbpData) {
-        text = `You have ${gbpData.Coins} Nannercoins worth ${gbpData.Coins * current} GBPs total`;
+        text = `You have ${gbpData.Coins.toLocaleString('en-US')} Nannercoins worth ${(gbpData.Coins * current).toLocaleString('en-US')} GBPs total`;
     }
 
     interaction.reply({ content: text, files: [await chart.toBinary()] });
 }
 
-async function buy(client, db, interaction, coinData, gbpData, amount) {
-    const cost = coinData[coinData.length - 1] * amount;
+async function buy(client, db, interaction, coinValue, gbpData, amount) {
+    //max
+    if (!amount) {
+        amount = Math.floor(gbpData.GBPs / coinValue);
+    }
+
+    const cost = coinValue * amount;
     if (gbpData.GBPs >= cost && amount > 0) {
         updateData(db, interaction.user, { gbps: -cost, coins: amount });
         updateData(db, client.user, { gbps: cost });
-        interaction.reply('🪙');
+        interaction.reply({ content: `You purchased ${amount} NNC for ${cost.toLocaleString('en-US')} GBP 🪙`, ephemeral: true });
     }
     else {
         reject(interaction);
     }
 }
 
-async function sell(client, db, interaction, coinData, gbpData, amount) {
-    const value = coinData[coinData.length - 1] * amount;
+async function sell(client, db, interaction, coinValue, gbpData, amount) {
+    //max
+    if (!amount) {
+        amount = gbpData.Coins;
+    }
+
+    const value = coinValue * amount;
     if (gbpData.Coins >= amount && amount > 0) {
         updateData(db, interaction.user, { gbps: value, coins: -amount });
         updateData(db, client.user, { gbps: -value });
-        interaction.reply('🪙');
+        interaction.reply({ content: `You sold ${amount} NNC for ${value.toLocaleString('en-US')} GBP 🪙`, ephemeral: true });
     }
     else {
         reject(interaction);
@@ -175,7 +219,7 @@ async function give(db, interaction, gbpData, amount) {
     else if (gbpData.Coins >= amount) {
         updateData(db, interaction.user, { coins: -amount });
         updateData(db, recipient, { coins: amount });
-        interaction.reply('Kind and generous, true royalty!');
+        interaction.reply(`${interaction.user.username} gave ${amount} NNC to ${recipient}. Kind and generous, true royalty!`);
     }
     else {
         reject(interaction);
@@ -183,5 +227,5 @@ async function give(db, interaction, gbpData, amount) {
 }
 
 function reject(interaction) {
-    return interaction.reply('No deal.');
+    return interaction.reply({ content: 'No deal.', ephemeral: true });
 }

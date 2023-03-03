@@ -13,19 +13,18 @@ export default {
 
         const leaderboard = [];
         const l = ranked.length;
+        const amount = 5;
 
         leaderboard.push('');
         leaderboard.push('**Good boys**');
         leaderboard.push('```');
-        leaderboard.push(`1. ${ranked[0].Username} (${ranked[0].Worth} GBPs)`);
-        leaderboard.push(`2. ${ranked[1].Username} (${ranked[1].Worth} GBPs)`);
-        leaderboard.push(`3. ${ranked[2].Username} (${ranked[2].Worth} GBPs)`);
+        for(let i = 0; i < amount; i++)
+            leaderboard.push(`${i + 1}. ${ranked[i].Username} (${ranked[i].Worth.toLocaleString('en-US')} GBPs)`);
         leaderboard.push('```');
         leaderboard.push('**Bad boys**');
         leaderboard.push('```');
-        leaderboard.push(`${l - 2}. ${ranked[l - 3].Username} (${ranked[l - 3].Worth} GBPs)`);
-        leaderboard.push(`${l - 1}. ${ranked[l - 2].Username} (${ranked[l - 2].Worth} GBPs)`);
-        leaderboard.push(`${l    }. ${ranked[l - 1].Username} (${ranked[l - 1].Worth} GBPs)`);
+        for(let i = amount; i > 0; i--)
+            leaderboard.push(`${l - i + 1}. ${ranked[l - i].Username} (${ranked[l - i].Worth.toLocaleString('en-US')} GBPs)`);
         leaderboard.push('```');
 
         if (ranked.some(e => e.UserID === interaction.user.id)) {
