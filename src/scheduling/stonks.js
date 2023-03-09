@@ -20,9 +20,9 @@ export async function stonks(db) {
     const iterations = 3, divider = 3;
     let delta = 0;
     for (let i = 0; i < iterations; i++) {
-        delta += getRandom(-19 * divider, 20 * divider);
+        delta += getRandom(-20 * divider, 20 * divider);
     }
-    delta = 1 + delta / divider / iterations / 10000;
+    delta = 1 + delta / divider / iterations / 100;
     data.push(Math.ceil(current * delta));
 
     //slice array to keep db small

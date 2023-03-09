@@ -186,7 +186,7 @@ async function buy(client, db, interaction, coinValue, gbpData, amount) {
     if (gbpData.GBPs >= cost && amount > 0) {
         updateData(db, interaction.user, { gbps: -cost, coins: amount });
         updateData(db, client.user, { gbps: cost });
-        interaction.reply({ content: `You purchased ${amount} NNC for ${cost.toLocaleString('en-US')} GBP 🪙`, ephemeral: true });
+        interaction.reply(`You purchased ${amount} NNC for ${cost.toLocaleString('en-US')} GBP 🪙`);
     }
     else {
         reject(interaction);
@@ -203,7 +203,7 @@ async function sell(client, db, interaction, coinValue, gbpData, amount) {
     if (gbpData.Coins >= amount && amount > 0) {
         updateData(db, interaction.user, { gbps: value, coins: -amount });
         updateData(db, client.user, { gbps: -value });
-        interaction.reply({ content: `You sold ${amount} NNC for ${value.toLocaleString('en-US')} GBP 🪙`, ephemeral: true });
+        interaction.reply(`You sold ${amount} NNC for ${value.toLocaleString('en-US')} GBP 🪙`);
     }
     else {
         reject(interaction);
@@ -227,5 +227,5 @@ async function give(db, interaction, gbpData, amount) {
 }
 
 function reject(interaction) {
-    return interaction.reply({ content: 'No deal.', ephemeral: true });
+    return interaction.reply('No deal.');
 }
