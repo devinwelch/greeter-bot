@@ -18,7 +18,9 @@ export class Human extends Fighter {
             this.setBonus(skillsBonus);
         }
 
+        this.max *= (1 + (this.weapon.bonusHP || 0) / 100);
         this.hp = this.max;
+        this.shield = this.weapon.shield * this.max / 100;
     }
 
     setBonus(bonus) {
@@ -47,6 +49,9 @@ export class Human extends Fighter {
                 break;
             case 'scythe':
                 this.weapon.lifesteal += 8 * bonus;
+                break;
+            case 'shield':
+                this.weapon.bonusHP += 7.5 * bonus;
                 break;
             case 'sword':
                 this.weapon.parry += 8 * bonus;

@@ -11,6 +11,7 @@ export class Weapon {
         this.set('type');           //type for skills bonus
         this.set('name');           //weapon name literal
         this.set('rarity', 0);      //0:common, 1:rare, 2:epic, 3:legendary, 4: cursed
+        this.set('cursed', false);  //whether cursed
         this.set('icon', '👌');     //icon to display, emoji or custom ID
         this.set('description');    //item description based on type
         this.set('bonuses', []);    //listed item stat variations
@@ -43,6 +44,8 @@ export class Weapon {
         this.set('slow');               //boolean, whether to have cooldown after weapon hit
         this.set('recoil', 0);          //% hp recoil dmg on hit
         this.set('stun', 0);            //% chance to stun target
+        this.set('bonusHP', 0);         //% of bonus max HP
+        this.set('shield', 0);          //amount of shield as a % of max HP
 
         this.set('treasureHunter', false);  //increases loot luck
         this.set('flame', false);           //chance to ignite foe
@@ -103,6 +106,9 @@ export class Weapon {
         const stun = this.getStun();
         if (stun) bonuses.push(`${parry}% stun`);
 
+        const bonusHP = this.getBonusHP();
+        if (bonusHP) bonuses.push(`+${bonusHP}% max HP`);
+
         return bonuses;
     }
 
@@ -117,6 +123,7 @@ export class Weapon {
     getLifesteal()      { return this.fighter?.lifesteal    || 0 + this.lifesteal; }
     getParry()          { return this.fighter?.parry        || 0 + this.parry; }
     getStun()           { return this.fighter?.stun         || 0 + this.stun; }
+    getBonusHP()        { return this.fighter?.bonusHP      || 0 + this.bonusHP; }
 
     getMultiplier() {
         if (!this.fighter) {
@@ -134,18 +141,20 @@ export class Weapon {
 }
 
 export const enchantingKey = 
-['react', 'insta', 'zerk', 'multi', 'ls', 'parry', 'stun', 'spimin', 'spimax', 'pois', 'sucpun', 'trhu', 'pri', 'speed', 'regen', 'flame'];
+['react', 'insta', 'zerk', 'multi', 'ls', 'parry', 'stun', 'spimin', 'spimax', 'pois', 'sucpun', 'trhu', 'pri', 'speed', 'regen', 'flame', 'hp'];
 
 export const enchantingTable = {
-    //           React  Insta  Zerk    Multi   LS      Parry   Stun    SpiMin  SpiMax  Pois%   SucPun  TrHu    Pri     Speed   Regen   Flame
-    bag:        [2,     0,     0,      0,      0,      1,      0,      3,      3,      0,      0,      1,      1,      2,      2,      0],
-    battleaxe:  [2,     1,     3,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    bow:        [2,     1,     1,      3,      2,      1,      1,      0,      0,      0,      0,      1,      0,      0,      2,      1],
-    daggers:    [2,     1,     1,      0,      2,      1,      1,      0,      0,      3,      0,      1,      1,      2,      2,      1],
-    fiddle:     [2,     3,     1,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    fists:      [2,     1,     1,      1,      2,      1,      1,      0,      0,      0,      3,      1,      1,      2,      2,      1],
-    kamehameha: [2,     0,     1,      1,      0,      1,      0,      0,      0,      0,      0,      1,      1,      2,      2,      0],
-    scythe:     [2,     3,     1,      1,      3,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    sword:      [2,     1,     1,      1,      2,      3,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1],
-    warhammer:  [2,     1,     1,      1,      2,      1,      3,      0,      0,      0,      0,      1,      0,      0,      2,      1]
+    //           React  Insta  Zerk    Multi   LS      Parry   Stun    SpiMin  SpiMax  Pois%   SucPun  TrHu    Pri     Speed   Regen   Flame    HP
+    bag:        [2,     0,     0,      0,      0,      1,      0,      3,      3,      0,      0,      1,      1,      2,      2,      0,       1],
+    battleaxe:  [2,     1,     3,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1,       2],
+    bow:        [2,     1,     1,      3,      2,      1,      1,      0,      0,      0,      0,      1,      0,      0,      2,      1,       1],
+    daggers:    [2,     1,     1,      0,      2,      1,      1,      0,      0,      3,      0,      1,      1,      2,      2,      1,       1],
+    fiddle:     [2,     3,     1,      1,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1,       1],
+    fists:      [2,     1,     1,      1,      2,      1,      1,      0,      0,      0,      3,      1,      1,      2,      2,      1,       1],
+    kamehameha: [2,     0,     1,      1,      0,      1,      0,      0,      0,      0,      0,      1,      1,      2,      2,      0,       2],
+    scythe:     [2,     3,     1,      1,      3,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1,       1],
+    shield:     [1,     0,     0,      0,      0,      0,      2,      0,      0,      0,      0,      0,      0,      0,      3,      1,       3],
+    sword:      [2,     1,     1,      1,      2,      3,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1,       1],
+    tomahawks:  [2,     1,     1,      0,      2,      1,      1,      0,      0,      0,      0,      1,      1,      2,      2,      1,       1],
+    warhammer:  [2,     1,     1,      1,      2,      1,      3,      0,      0,      0,      0,      1,      0,      0,      2,      1,       2]
 };

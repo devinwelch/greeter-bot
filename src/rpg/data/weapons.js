@@ -1,3 +1,5 @@
+//TODO tomahawk (more attacks at lower hp)
+
 export default {
     //Bag of Spiders
     bag: {
@@ -12,7 +14,7 @@ export default {
             '882089523364892722',
             '882089688041656370'
         ],
-        description: 'Throw a bunch of spiders at your foe! Spiders stack and deal dmg each turn.',
+        description: 'Throw a bunch of spiders at your foe. Spiders stack and deal dmg each turn!',
         upgrade: 'Swarm: increase minimum thrown spiders by +1 per skill point!',
         win: ':l was devoured by spiders!',
         low: 1,
@@ -34,7 +36,7 @@ export default {
             '882089256892375140',
             '882089404255047690',
             '882089537864605746',
-            '882089699500490763'
+            '1084517178562330644'
         ],
         description: 'Increases 1% dmg per 1% max hp missing!',
         upgrade: "Berserker's rage: increase zerk dmg bonus 0.25% per skill point!",
@@ -186,6 +188,31 @@ export default {
         steel: true
     },
 
+    //Shield
+    shield: {
+        type: 'shield',
+        name: [
+            'Shield'
+        ],
+        icons: [
+            '1084517647191920771',
+            '1084517676245844038',
+            '1084517695338315967',
+            '1084517710030970971',
+            '1084517731317055578'
+        ],
+        description: '10% max HP shield + 1% base regen. Go AFK!',
+        upgrade: 'Absolute unit: +7.5% max health per skill point!',
+        win: ':w held the front line!',
+        low: 1,
+        high: 5,
+        shield: 10, 
+        hpRegen: 1, 
+        priority: -.5,
+        weapon: true,
+        steel: true
+    },
+
     //Sword
     sword: {
         type: 'sword',
@@ -227,7 +254,6 @@ export default {
         win: ":w smashed :l's face!",
         low: 20,
         high: 50,
-        hits: 1,
         slow: true,
         priority: -1,
         cost: 2,

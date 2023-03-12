@@ -47,7 +47,7 @@ export class Fighter {
                 actions.push(new Action(text, this.position, party));
             }
             else if (this.stumble) {
-                const text = `${this.name} ${(this.cooldown || this.weapon.sequence) ? 'stumbled' : 'missed'}!`;
+                const text = `${this.name} ${(this.cooldown || this.weapon.sequence) ? 'stumbled' : this.weapon.type === 'shield' ? 'is tanking' : 'missed'}!`;
                 actions.push(new Action(text, this.position, party));
             }
             else {
@@ -96,8 +96,10 @@ export class Fighter {
             this.getStatusEffect(dmgText, deathText, dmg, actions, party, options);
         }
         if (this.weapon.hpRegen && this.hp > 0 && this.hp < this.max) {
-            const healText = `${options.named ? `${this.name}: ` : ''}*...and regen'd **+${this.weapon.hpRegen}** hp*`;
-            this.hp = Math.min(this.max, this.hp + this.weapon.hpRegen);
+            let healAmount = this.weapon.hpRegen * this.max / 100;
+            healAmount = Math.min(healAmount, this.max - this.hp);
+            const healText = `${options.named ? `${this.name}: ` : ''}*...and regen'd **+${Math.ceil(healAmount)}** hp*`;
+            this.hp = this.hp + healAmount;
             actions.push(new Action(healText, this.position, party));
         }
 
@@ -171,8 +173,9 @@ export class Fighter {
                 }
     
                 if (this.weapon.cursed && getChance(5)) {
-                    text = `${this.name} is just another victim of the bad girl's curse`;
+                    actions.push(new Action(`${this.name} is just another victim of the bad girl's curse!`, this.position, party));
                     this.hp = 0;
+                    return;
                 }
                 else if (!results.skip) {
                     if (this.weapon.sequence) {

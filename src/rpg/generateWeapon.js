@@ -63,8 +63,14 @@ export function generateWeapon(fighter, options) {
         zerk:           w.zerk,
         instakill:      w.instakill,
         sequence:       w.sequence,
-        slow:           w.slow
+        slow:           w.slow,
+        shield:         w.shield,
+        hpRegen:        w.hpRegen
     });
+
+    if (weapon.rarity === 4) {
+        weapon.cursed = true;
+    }
 
     const lvl = fighter?.lvl || 0;
     weapon.lvl = Math.round(0.9 * lvl);
@@ -118,7 +124,7 @@ export function generateWeapon(fighter, options) {
                 break;
             case 'multi':
                 bonus = getEnchantmentBonus(3, 10, 2);
-                weapon.multi += bonus;
+                weapon.multihit += bonus;
                 weapon.bonuses.push(`+${bonus}% chance to attack twice`);
                 break;
             case 'ls':
@@ -170,16 +176,21 @@ export function generateWeapon(fighter, options) {
             case 'speed':
                 bonus = getEnchantmentBonus(10, 25);
                 weapon.speed = bonus;
-                weapon.bonuses.push(`+${weapon.speed} speed`);
+                weapon.bonuses.push(`+${bonus} speed`);
                 break;
             case 'regen':
                 bonus = getEnchantmentBonus(2, 5, 2);
-                weapon.hpRegen = bonus;
+                weapon.hpRegen += bonus;
                 weapon.bonuses.push(`+${bonus}% HP regen`);
                 break;
             case 'flame':
                 weapon.flame = true;
                 weapon.bonuses.push('+Hotness');
+                break;
+            case 'hp':
+                bonus = getEnchantmentBonus(10,20);
+                weapon.bonusHP = bonus;
+                weapon.bonuses.push(`+${bonus}% max HP`);
                 break;
         }
     }
