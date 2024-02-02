@@ -1,6 +1,3 @@
-//TODO move chart to announcements
-
-import QuickChart from 'quickchart-js';
 import { getData } from '../data/getData.js';
 import { updateData } from '../data/updateData.js';
 import { getCoinData } from '../data/getCoinData.js';
@@ -10,11 +7,7 @@ export default {
     name: 'coin',
     description: 'Invest in Nannercoins using GBPs',
     category: 'gbp',
-    options: [{
-        type: 1, //SUB_COMMAND
-        name: 'graph',
-        description: 'See how NNC is doing'
-    },
+    options: [
     {
         type: 2, //SUB_COMMAND_GROUP
         name: 'buy',
@@ -90,9 +83,7 @@ export default {
         }
 
         const subcommandGroup = interaction.options.getSubcommandGroup(false);
-        const subcommand = interaction.options.getSubcommand();
         const amount = interaction.options.getInteger('amount', false);
-
 
         if (subcommandGroup) {
             const coinValue = coinData[coinData.length - 1];
@@ -107,74 +98,11 @@ export default {
             }
         }
         //give
-        else if (subcommand === 'give') {
-            give(db, interaction, gbpData, amount);
-        }
-        //graph
         else {
-            graph(interaction, coinData, gbpData, amount);
+            give(db, interaction, gbpData, amount);
         }
     }
 };
-
-async function graph(interaction, coinData, gbpData) {
-    if (coinData.length > 7 * 24) {
-        coinData = coinData.slice(-7 * 24);
-    }
-
-    const current = coinData[coinData.length - 1];
-    const referenceLine = [...coinData].fill(coinData[Math.max(0, coinData.length - 24)]);
-    const color = current > referenceLine[0]
-        ? 'rgb(69, 255, 69)'
-        : 'rgb(255, 69, 69)';
-
-    const chart = new QuickChart();
-    chart.setConfig({ 
-        type: 'line',
-        data: {
-            labels: coinData,
-            datasets: [
-                {
-                    data: coinData,
-                    borderColor: color,
-                    fill: false,
-                    lineTension: 0.1,
-                    pointRadius: 0
-                },
-                {
-                    data: referenceLine,
-                    borderColor: 'rgb(255, 255, 255)',
-                    fill: false,
-                    borderDash: [5, 5],
-                    pointRadius: 0
-                }
-            ]
-        },
-        options: {
-            legend: {
-                display: false
-            },
-            title: {
-                display: true,
-                text: `1 Nannercoin = ${current.toLocaleString('en-US')} GBPs`,
-                fontColor: color,
-                fontSize: 20
-            },
-            scales: {
-                xAxes: [{ display: false }],
-                yAxes: [{ display: false }]
-            }
-        }
-    })
-    .setBackgroundColor('transparent');
-
-    let text;
-    if (gbpData) {
-        text = `You have ${gbpData.Coins.toLocaleString('en-US')} Nannercoins worth ${(gbpData.Coins * current).toLocaleString('en-US')} GBPs total`;
-    }
-
-    interaction.reply({ content: text, files: [await chart.toBinary()] });
-}
 
 async function buy(client, db, interaction, coinValue, gbpData, amount) {
     //max

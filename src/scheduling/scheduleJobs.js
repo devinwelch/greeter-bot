@@ -20,7 +20,7 @@ export function scheduleJobs(client, db) {
     //Hourly
     scheduleJob({ minute: 0 }, function() {
         infect(client);
-        stonks(db);
+        stonks(client, db);
     });
 
     //Minutely

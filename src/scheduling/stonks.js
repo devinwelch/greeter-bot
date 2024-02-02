@@ -1,3 +1,4 @@
+import QuickChart from 'quickchart-js';
 import { getCoinData } from '../data/getCoinData.js';
 import { updateData } from '../data/updateData.js';
 import { getNetWorth } from '../gbp/getNetWorth.js';
@@ -5,10 +6,11 @@ import { getRandom } from '../utils/random.js';
 
 /**
  * increments value of nannercoin
+ * @param client 
  * @param db 
  */
 
-export async function stonks(db) {
+export async function stonks(client, db) {
     //get coin values array
     const data = await getCoinData(db);
     if (!data) {
@@ -61,4 +63,71 @@ export async function stonks(db) {
             }
         });
     }
+
+    //post results in chat
+    post(client, current, newValues);
+}
+
+async function post(client, current, coinData) {
+    if (coinData.length > 7 * 24) {
+        coinData = coinData.slice(-7 * 24);
+    }
+
+    const referenceLine = [...coinData].fill(coinData[Math.max(0, coinData.length - 24)]);
+    const color = current > referenceLine[0]
+        ? 'rgb(69, 255, 69)'
+        : 'rgb(255, 69, 69)';
+
+    const chart = new QuickChart();
+    chart.setConfig({ 
+        type: 'line',
+        data: {
+            labels: coinData,
+            datasets: [
+                {
+                    data: coinData,
+                    borderColor: color,
+                    fill: false,
+                    lineTension: 0.1,
+                    pointRadius: 0
+                },
+                {
+                    data: referenceLine,
+                    borderColor: 'rgb(255, 255, 255)',
+                    fill: false,
+                    borderDash: [5, 5],
+                    pointRadius: 0
+                }
+            ]
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: `1 Nannercoin = ${current.toLocaleString('en-US')} GBPs`,
+                fontColor: color,
+                fontSize: 20
+            },
+            scales: {
+                xAxes: [{ display: false }],
+                yAxes: [{ display: false }]
+            }
+        }
+    })
+    .setBackgroundColor('transparent');
+
+    //announce to the world
+        const exchange = client.channels.cache.get(client.ids.channels.exchange);
+        const discriminator = 'Stonks!';
+        exchange.messages.fetch({ limit: 100 })
+        .then(messages => {
+            messages.filter(msg => msg.content.includes(discriminator))
+            .forEach(msg => {
+                msg.delete().catch(console.error);
+                process.on('unhandledRejection', () => {});
+            });
+        });
+        exchange.send({ content: discriminator, files: [await chart.toBinary()] });
 }
