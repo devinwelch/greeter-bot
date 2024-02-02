@@ -65,13 +65,21 @@ export async function stonks(client, db) {
     }
 
     //post results in chat
-    post(client, current, newValues);
+    post(client, newValues);
 }
 
-async function post(client, current, coinData) {
+async function post(client, coinData) {
     if (coinData.length > 7 * 24) {
         coinData = coinData.slice(-7 * 24);
     }
+
+    const current = coinData[coinData.length - 1];
+
+    const delta = current - (
+            coinData.length > 1
+            ? coinData[coinData.length - 2]
+            : coinData[0]
+    );
 
     const referenceLine = [...coinData].fill(coinData[Math.max(0, coinData.length - 24)]);
     const color = current > referenceLine[0]
@@ -106,7 +114,7 @@ async function post(client, current, coinData) {
             },
             title: {
                 display: true,
-                text: `1 Nannercoin = ${current.toLocaleString('en-US')} GBPs`,
+                text: `1 NNC = ${current.toLocaleString('en-US')} GBPs`,
                 fontColor: color,
                 fontSize: 20
             },
@@ -129,5 +137,5 @@ async function post(client, current, coinData) {
                 process.on('unhandledRejection', () => {});
             });
         });
-        exchange.send({ content: discriminator, files: [await chart.toBinary()] });
+        exchange.send({ content: `${discriminator} ${delta >= 0 ? '+' : ''}${delta}`, files: [await chart.toBinary()] });
 }

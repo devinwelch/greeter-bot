@@ -149,12 +149,23 @@ async function wait(client, db, interaction, max) {
     });
 }
 
-function giveLoan(client, db, interaction, amount, update=false) {
-    //interest = 10%
-    const total = Math.ceil(amount * 1.1);
+async function giveLoan(client, db, interaction, amount, update=false) {
+    //check for debt
+    const data = await getData(db, interaction.user.id);
+    if (!data) {
+        return databaseError(interaction, 'gbp');
+    }
 
-    updateData(db, interaction.user, { gbps: amount, loan: total });
-    updateData(db, client.user, { gbps: -amount });
+    let debt = 0;
+    if (data.GBPs < 0) {
+        debt = -data.GBPs;
+    }
+
+    //interest = 10%
+    const total = Math.ceil(amount * 1.1) + debt;
+
+    updateData(db, interaction.user, { gbps: amount + debt, loan: total });
+    updateData(db, client.user, { gbps: -amount - debt });
     const parameters = { content: `Done, here's your loan for ${amount.toLocaleString('en-US')} GBPs, but you better have my money by midnight...`, components: [] };
     update ? interaction.update(parameters) : interaction.reply(parameters);
 }
