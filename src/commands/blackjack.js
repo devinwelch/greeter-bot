@@ -461,7 +461,7 @@ async function getResults(client, db, interaction, game) {
         if (player > 21 || (house > player && house <= 21)) {
             win += p.bet;
             updateData(db, p.user, { gbps: -p.bet });
-            p.bet = `-${p.bet}`;
+            p.bet = `-${p.bet.toLocaleString('en-US')}`;
         }
         else if (player === house) {
             p.bet = '±0';
@@ -469,7 +469,7 @@ async function getResults(client, db, interaction, game) {
         else {
             win -= p.bet;
             updateData(db, p.user, { gbps: p.bet });
-            p.bet = `+${p.bet}`;
+            p.bet = `+${p.bet.toLocaleString('en-US')}`;
         }
     });
 
