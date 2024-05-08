@@ -213,7 +213,7 @@ async function takeBets(db, interaction, directions) {
 
         const text = [directions];
         Object.values(bets).forEach(bet =>
-            text.push(`${bet.name}: ${bet.amount}/${bet.total} ${bet.ready ? '✅' : ''}`
+            text.push(`${bet.name}: ${bet.amount.toLocaleString('en-US')}/${bet.total.toLocaleString('en-US')} ${bet.ready ? '✅' : ''}`
         ));
 
         const parameters = { content: text.join('\n') };
@@ -275,7 +275,7 @@ async function display(client, interaction, game, over=false) {
     const players = game.players.concat(game.house);
     players.forEach(p => {
         text.push([
-            `**${players[game.turn] === p ? p.user : p.user.username}** ${p.bet ? `(${p.bet} GBPs)` : ''}`,
+            `**${players[game.turn] === p ? p.user : p.user.username}** ${p.bet ? `(${p.bet.toLocaleString('en-US')} GBPs)` : ''}`,
             p.hand.map(card => card.top(client)).join('\t'),
             p.hand.map(card => card.bot(client)).join('\t'),
             ' '
@@ -317,7 +317,7 @@ async function assess(client, db, interaction, game) {
             else {
                 updateData(db, p.user, { gbps: -p.bet });
                 updateData(db, client.user, { gbps: p.bet });
-                p.bet = `-${p.bet}`;
+                p.bet = `-${p.bet.toLocaleString('en-US')}`;
             }
             p.finished = true;
         });
@@ -328,7 +328,7 @@ async function assess(client, db, interaction, game) {
                 const win = Math.round(1.5 * p.bet);
                 updateData(db, p.user, { gbps: win });
                 updateData(db, client.user, { gbps: -win });
-                p.bet = `+${win}`;
+                p.bet = `+${win.toLocaleString('en-US')}`;
                 p.finished = true;
             }
         });
