@@ -10,11 +10,12 @@ export default {
     description: 'Play blackjack at a table against greeter-bot',
     category: 'gbp',
     async execute(client, db, interaction) {
-        begin(client, db, interaction);
+        const totals = {};
+        begin(client, db, interaction, totals);
     }
 };
 
-async function begin(client, db, interaction) {
+async function begin(client, db, interaction, totals) {
     const directions = `${interaction.user.toString()} wants to play blackjack! Everyone place your bets!`;
     const chips = getChips(client);
 
@@ -36,7 +37,7 @@ async function begin(client, db, interaction) {
     const game = await setup(client, interaction, data, bets);
     await assess(client, db, interaction, game);
     await play(client, db, interaction, game);
-    getResults(client, db, interaction, game);
+    getResults(client, db, interaction, game, totals);
 }
 
 function getChips(client) {
@@ -267,7 +268,7 @@ async function setup(client, interaction, data, bets) {
     return game;
 }
 
-async function display(client, interaction, game, over=false) {
+async function display(client, interaction, game, over=false, totals=null) {
     await delay(1500);
 
     const text = [];
@@ -298,6 +299,13 @@ async function display(client, interaction, game, over=false) {
     }
     else {
         components = [];
+    }
+
+    if (totals) {
+        Object.keys(totals).forEach(user => {
+            const prefix = totals[user] > 0 ? '+' : totals[user] == 0 ? '±' : '';
+            text.push(`**${user}:** ${prefix + totals[user].toLocaleString('en-US')} GBPs`);
+        });
     }
 
     const parameters = { content: text.join('\n'), components: components };
@@ -451,7 +459,7 @@ async function getTurn(client, db, interaction, game) {
     }
 }
 
-async function getResults(client, db, interaction, game) {
+async function getResults(client, db, interaction, game, totals) {
     let win = 0;
     const house = getTotal(game.house.hand);
 
@@ -459,21 +467,28 @@ async function getResults(client, db, interaction, game) {
         const player = getTotal(p.hand);
 
         if (player > 21 || (house > player && house <= 21)) {
-            win += p.bet;
-            updateData(db, p.user, { gbps: -p.bet });
-            p.bet = `-${p.bet.toLocaleString('en-US')}`;
+            win -= p.bet;
+            updateData(db, p.user, { gbps: win });
+            p.bet = `${win.toLocaleString('en-US')}`;
         }
         else if (player === house) {
             p.bet = '±0';
         }
         else {
-            win -= p.bet;
-            updateData(db, p.user, { gbps: p.bet });
-            p.bet = `+${p.bet.toLocaleString('en-US')}`;
+            win += p.bet;
+            updateData(db, p.user, { gbps: win });
+            p.bet = `+${win.toLocaleString('en-US')}`;
+        }
+
+        if (totals[p.user.username]) {
+            totals[p.user.username] += win;
+        }
+        else {
+            totals[p.user.username] = win;
         }
     });
 
-    updateData(db, client.user, { gbps: win });
+    updateData(db, client.user, { gbps: -win });
     await display(client, interaction, game);
 
     game.finished = true;
@@ -491,14 +506,14 @@ async function getResults(client, db, interaction, game) {
     collector.on('collect', async buttonInteraction => {
         if (buttonInteraction.customId === 'yes') {
             displayAgain = false;
-            await display(client, buttonInteraction, game, true);
-            begin(client, db, interaction);
+            await display(client, buttonInteraction, game, true, totals);
+            begin(client, db, interaction, totals);
         }
     });
 
     collector.on('end', () => {
         if (displayAgain) {
-            display(client, interaction, game, true);
+            display(client, interaction, game, true, totals);
         }
     });
 }
