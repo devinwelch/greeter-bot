@@ -207,7 +207,7 @@ function getResults(client, db, message, party, actions) {
         actions.push(`Each player gains ${xp} XP!`);
 
         //have players roll for loot
-        getLoot(client, db, humans, message.channel, { chances: [0, 30, 20, 10, 1], pick: boss.type === 3 });
+        getLoot(client, db, humans, message.channel, { chances: /*[0, 30, 20, 10, 1]*/[0, 0, 1, 1, 1] , pick: boss.type === 3 });
     }
 
     //display final messages
