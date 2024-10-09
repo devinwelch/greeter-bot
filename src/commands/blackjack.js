@@ -68,8 +68,8 @@ function getChips(client) {
     const row4 = new MessageActionRow()
         .addComponents([
             getPlainButton('1B', 1000000000),
-            getPlainButton('10B', 10000000000),
-            getPlainButton('100B', 100000000000),
+            getPlainButton('1TRILLY', 1000000000000),
+            getPlainButton('10TRILLY', 10000000000000),
             new MessageButton()
                 .setLabel('Clear')
                 .setStyle('DANGER')
