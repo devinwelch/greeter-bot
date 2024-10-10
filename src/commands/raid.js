@@ -202,7 +202,7 @@ function getResults(client, db, message, party, actions) {
         actions.push(boss.getExit());
 
         //share xp
-        const xp = Math.round(Math.log(party.length) * 2000 / humans.length);
+        const xp = Math.round(Math.log(party.length) * 10000 / humans.length);
         humans.forEach(h => updateData(db, h.member.user, { xp: xp }));
         actions.push(`Each player gains ${xp} XP!`);
 
@@ -222,7 +222,7 @@ async function getLoot(client, db, humans, channel, options) {
     let text;
 
     //guarantee pick of destiny
-    if (options.pick && getChance(50)) {
+    if (options.pick && getChance(25)) {
         item = { type: 'pick', id: v4() };
         text = 'the Pick of Destiny';
     }
