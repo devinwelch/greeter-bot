@@ -117,7 +117,7 @@ export class Enemy extends Fighter {
         else if (this.weapon.type === '💉' && opponent.infected) {
             actions.push(new Action(`${opponent.name} has been vaccinated! Your corona is cured!`, this.position, party));
             if (opponent.member.roles.cache.has(client.ids.roles.corona)) {
-                opponent.member.roles.remove(client.ids.roles.corona.corona).catch(console.error);
+                opponent.member.roles.remove(client.ids.roles.corona).catch(console.error);
             }
             opponent.hp = 0;
             skip = true;
