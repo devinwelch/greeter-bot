@@ -11,7 +11,7 @@ export class Human extends Fighter {
 
         this.weapon = new Weapon(this, data.Inventory[data.Equipped]);
         let skillsBonus = data.Skills[this.weapon.type] || 0;
-        if (this.weapon.rarity >== 2) {
+        if (this.weapon.rarity >= 2) {
             skillsBonus++;
         }
         if (skillsBonus) {
