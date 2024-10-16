@@ -74,7 +74,7 @@ export default {
             let awardText = `You win ${xp} XP and `;
 
             let item, nanners = 0;
-            const rareChances = [0, 58, 30, 10, 2];
+            const rareChances = [0, 10, 10, 5, 1];
             const treasureHunter = challenger.weapon.treasureHunter;
 
             if (enemy.weapon.type === '🎻') {
@@ -94,7 +94,7 @@ export default {
                 const options = {
                     chances: 
                         enemy.creature.emoji === '🦄' ? rareChances :
-                        challenger.wished ? [0, 0, 20, 10, 1] :
+                        challenger.wished ? [0, 0, 10, 5, 1] :
                         null,
                     type: enemy.creature.emoji === '🕷' && !challenger.wished ? 'bag' : null,
                     treasureHunter: treasureHunter

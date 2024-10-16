@@ -17,7 +17,7 @@ export function generateWeapon(fighter, options) {
     const id = options.id || v4();
 
     //determine rarity
-    const chances = options.chances || [65, 23, 10, 2, 0];
+    const chances = options.chances || [64, 23, 10, 2, 1];
     if (options.treasureHunter) {
         chances[0] = Math.round(0.75 * chances[0]);
         chances[1] = Math.round(0.75 * chances[1]);
