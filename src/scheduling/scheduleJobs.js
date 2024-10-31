@@ -56,10 +56,10 @@ export function scheduleJobs(client, db) {
     // });
 
     //Funny skeleton man
-    scheduleJob('*/13 4-23 31 10 *', function() {
-        spook(client);
-    });
-    scheduleJob('*/13 0-3 1 11 *', function() {
-        spook(client);
-    });
+    //scheduleJob('*/13 4-23 31 10 *', function() {
+        //spook(client);
+    //});
+    //scheduleJob('*/13 0-3 1 11 *', function() {
+        //spook(client);
+    //});
 }
