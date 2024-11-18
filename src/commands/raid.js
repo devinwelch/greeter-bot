@@ -207,7 +207,7 @@ function getResults(client, db, message, party, actions) {
         actions.push(`Each player gains ${xp} XP!`);
 
         //have players roll for loot
-        getLoot(client, db, humans, message.channel, { chances: /*[0, 30, 20, 10, 1]*/[0, 0, 1, 1, 1] , pick: boss.type === 3 });
+        getLoot(client, db, humans, message.channel, { chances: /*[0, 30, 20, 10, 1]*/[0, 0, 2, 2, 1] , pick: boss.type === 3 });
     }
 
     //display final messages
@@ -216,25 +216,27 @@ function getResults(client, db, message, party, actions) {
 
 async function getLoot(client, db, humans, channel, options) {
     //set up variables
+    const lootIcons = ['⬜', '🔷', '💜', '⭐', '💯'];  
     const needers = new Set();
     const passers = new Set();
-    let item;
-    let text;
+    let item, text, lootIcon;
 
     //guarantee pick of destiny
     if (options.pick && getChance(25)) {
         item = { type: 'pick', id: v4() };
         text = 'the Pick of Destiny';
+        lootIcon = '🥒';
     }
     //randomize a weapon
     else {
         item = generateWeapon(humans[0], options);
         text = `a${item.rarity === 2 ? 'n' : ''} ${item.getRarity()} ${item.name}`;
+        lootIcon = lootIcons[item.rarity];
     }
 
     //skip the roll if there is only one contestant
     if (humans.length === 1) {
-        channel.send(`You found ${text}!`);
+        channel.send(`${lootIcon} You found ${text}! ${lootIcon} `);
         return addToInventory(client, db, humans[0].member.user, item);
     }
 
@@ -253,7 +255,7 @@ async function getLoot(client, db, humans, channel, options) {
 
     //send new message in chat. This helps if there have been messages since the raid ended
     text += ' dropped! Roll for it!';
-    const message = await channel.send({ content: text, components: buttons });
+    const message = await channel.send({ content: `${lootIcon} ${text} ${lootIcon} `, components: buttons });
 
     //only allow raiders to respond
     const filter = buttonInteraction => humans.map(h => h.member.user).includes(buttonInteraction.user) && buttonInteraction.message.id === message.id;

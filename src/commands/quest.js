@@ -73,22 +73,26 @@ export default {
             const xp = enemy.getXP();
             let awardText = `You win ${xp} XP and `;
 
-            let item, nanners = 0;
+            let item, lootIcon, nanners = 0;
             const rareChances = [0, 10, 10, 5, 1];
             const treasureHunter = challenger.weapon.treasureHunter;
+            const lootIcons = ['⬜', '🔷', '💜', '⭐', '💯'];            
 
             if (enemy.weapon.type === '🎻') {
                 item = generateWeapon(challenger, { chances: rareChances, type: 'fiddle', treasureHunter: treasureHunter });
                 const colors = ['mayonnaise', 'blue', 'purple', 'gold', 'crimson'];
                 awardText += `this shiny fiddle made of ${colors[item.rarity]}!`;
+                lootIcon = lootIcons[item.rarity];
             }
             else if (enemy.weapon.type === '🧒' && !enemy.enraged) {
                 nanners = getRandom(100, 500);
                 awardText += `${nanners} GBPs!`;
+                lootIcon = '🍌';
             }
             else if (getChance(15)) {
                 item = { type: 'crack', id: v4() };
                 awardText += 'found some crack!';
+                lootIcon = '🎉';
             }
             else {
                 const options = {
@@ -101,6 +105,7 @@ export default {
                 };
                 item = generateWeapon(challenger, options);
                 awardText += `a${item.rarity === 2 ? 'n' : ''} ${item.getRarity()} ${item.name}!`;
+                lootIcon = lootIcons[item.rarity];
             }
 
             updateData(db, challenger.member.user, { xp: xp, gbps: nanners, renown: 1 });
@@ -110,8 +115,8 @@ export default {
                     awardText += ' *(buyback)*';
                 }
             }
-            
-            actions.push(awardText);
+
+            actions.push(`${lootIcon} ${awardText} ${lootIcon}`);
         }
         //lose a GBP
         else {
