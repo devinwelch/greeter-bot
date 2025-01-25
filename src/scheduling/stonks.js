@@ -22,7 +22,7 @@ export async function stonks(client, db) {
     const iterations = 3, divider = 3;
     let delta = 0;
     for (let i = 0; i < iterations; i++) {
-        delta += getRandom(-20 * divider, 20 * divider);
+        delta += getRandom(/*-2*/0 * divider, 20 * divider);
     }
     delta = 1 + delta / divider / iterations / 100;
     data.push(Math.ceil(current * delta));
