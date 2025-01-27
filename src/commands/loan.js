@@ -1,4 +1,5 @@
 import { getData } from '../data/getData.js';
+import { commify } from '../utils/commify.js';
 import { updateData } from '../data/updateData.js';
 import { getNetWorth } from '../gbp/getNetWorth.js';
 import { getCoinData } from '../data/getCoinData.js';
@@ -91,13 +92,13 @@ export default {
                             .setCustomId('max')
                     ])];
                     const max = await getMaxLoan(db, data);
-                    await interaction.reply({ content: `I can lend you up to ${max.toLocaleString('en-US')} GBPs.`, components: maxLoan });
+                    await interaction.reply({ content: `I can lend you up to ${commify(max)} GBPs.`, components: maxLoan });
 
                     wait(client, db, interaction, max);
                 }
                 //threaten to collect on loan
                 else {
-                    interaction.reply(`You have a loan out for ${data.Loan.toLocaleString('en-US')} GBPs. I will collect ${data.Loan} tonight...`);
+                    interaction.reply(`You have a loan out for ${commify(data.Loan)} GBPs. I will collect it at midnight...`);
                 }
             }
         }
@@ -166,6 +167,6 @@ async function giveLoan(client, db, interaction, amount, update=false) {
 
     updateData(db, interaction.user, { gbps: amount + debt, loan: total });
     updateData(db, client.user, { gbps: -amount - debt });
-    const parameters = { content: `Done, here's your loan for ${amount.toLocaleString('en-US')} GBPs, but you better have my money by midnight...`, components: [] };
+    const parameters = { content: `Done, here's your loan for ${commify(amount)} GBPs, but you better have my money by midnight...`, components: [] };
     update ? interaction.update(parameters) : interaction.reply(parameters);
 }

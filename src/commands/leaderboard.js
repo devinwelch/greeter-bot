@@ -1,3 +1,4 @@
+import { commify } from '../utils/commify.js';
 import { getRanks } from '../data/getRanks.js';
 import { databaseError } from '../utils/databaseError.js';
 
@@ -19,12 +20,12 @@ export default {
         leaderboard.push('**Good boys**');
         leaderboard.push('```');
         for(let i = 0; i < amount; i++)
-            leaderboard.push(`${i + 1}. ${ranked[i].Username} (${ranked[i].Worth.toLocaleString('en-US')} GBPs)`);
+            leaderboard.push(`${i + 1}. ${ranked[i].Username} (${commify(ranked[i])} GBPs)`);
         leaderboard.push('```');
         leaderboard.push('**Bad boys**');
         leaderboard.push('```');
         for(let i = amount; i > 0; i--)
-            leaderboard.push(`${l - i + 1}. ${ranked[l - i].Username} (${ranked[l - i].Worth.toLocaleString('en-US')} GBPs)`);
+            leaderboard.push(`${l - i + 1}. ${ranked[l - i].Username} (${commify(ranked[l - i])} GBPs)`);
         leaderboard.push('```');
 
         if (ranked.some(e => e.UserID === interaction.user.id)) {

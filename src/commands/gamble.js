@@ -1,5 +1,6 @@
 import { delay } from '../utils/delay.js';
 import { getData } from '../data/getData.js';
+import { commify } from '../utils/commify.js';
 import { getRandom } from '../utils/random.js';
 import { updateData } from '../data/updateData.js';
 import { databaseError } from '../utils/databaseError.js';
@@ -48,14 +49,14 @@ export default {
             if (roll === 100) {
                 const bonus = Math.max(data.Skills.luck ? data.Skills.luck : 2, getRandom(2, 5));
                 win = bonus * wager;
-                resultMessage = `\nYou win big! ${bonus}x multiplier! (${win.toLocaleString('en-US')} GBPs)`;
+                resultMessage = `\nYou win big! ${bonus}x multiplier! (${commify(win)} GBPs)`;
             }
             else if (roll > 55) {
-                resultMessage = `\nYou win ${wager.toLocaleString('en-US')} GBPs!`;
+                resultMessage = `\nYou win ${commify(wager)} GBPs!`;
                 win = wager;
             }
             else {
-                resultMessage = `\nYou lose ${wager.toLocaleString('en-US')} GBPs.`;
+                resultMessage = `\nYou lose ${commify(wager)} GBPs.`;
                 win = -wager;
             }
 

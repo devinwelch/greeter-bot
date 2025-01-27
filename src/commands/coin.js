@@ -1,4 +1,5 @@
 import { getData } from '../data/getData.js';
+import { commify } from '../utils/commify.js';
 import { updateData } from '../data/updateData.js';
 import { getCoinData } from '../data/getCoinData.js';
 import { databaseError } from '../utils/databaseError.js';
@@ -114,7 +115,7 @@ async function buy(client, db, interaction, coinValue, gbpData, amount) {
     if (gbpData.GBPs >= cost && amount > 0) {
         updateData(db, interaction.user, { gbps: -cost, coins: amount });
         updateData(db, client.user, { gbps: cost });
-        interaction.reply(`You purchased ${amount} NNC for ${cost.toLocaleString('en-US')} GBP 🪙`);
+        interaction.reply(`You purchased ${commify(amount)} NNC for ${commify(cost)} GBP 🪙`);
     }
     else {
         reject(interaction);
@@ -131,7 +132,7 @@ async function sell(client, db, interaction, coinValue, gbpData, amount) {
     if (gbpData.Coins >= amount && amount > 0) {
         updateData(db, interaction.user, { gbps: value, coins: -amount });
         updateData(db, client.user, { gbps: -value });
-        interaction.reply(`You sold ${amount} NNC for ${value.toLocaleString('en-US')} GBP 🪙`);
+        interaction.reply(`You sold ${commify(amount)} NNC for ${commify(value)} GBP 🪙`);
     }
     else {
         reject(interaction);

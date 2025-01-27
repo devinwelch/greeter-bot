@@ -1,6 +1,7 @@
 import { xpTable } from '../rpg/getLvl.js';
 import { getData } from '../data/getData.js';
 import { Item } from '../rpg/classes/item.js';
+import { commify } from '../utils/commify.js';
 import { Weapon } from '../rpg/classes/weapon.js';
 import { getCoinData } from '../data/getCoinData.js';
 import { databaseError } from '../utils/databaseError.js';
@@ -48,11 +49,11 @@ export default {
 
         if (attribute === 'gbp' || all) {
             //raw gbp
-            lines.push(`• ${data.GBPs.toLocaleString('en-US')} good boy points (GBPs)`);
+            lines.push(`• ${commify(data.GBPs)} good boy points (GBPs)`);
 
             //stash
             if (data.Stash) {
-                lines.push(`• ${data.Stash.toLocaleString('en-US')} GBPs stashed away`);
+                lines.push(`• ${commify(data.Stash)} GBPs stashed away`);
             }
 
             //coins
@@ -64,7 +65,7 @@ export default {
                 else {
                     return databaseError(interaction, 'Coin');
                 }
-                lines.push(`• ${data.Coins.toLocaleString('en-US')} NNC (${(data.Coins * coin).toLocaleString('en-US')} GBPs)`);
+                lines.push(`• ${commify(data.Coins)} NNC (${commify(data.Coins * coin)} GBPs)`);
             }
 
             //inventory value
@@ -73,12 +74,12 @@ export default {
                     const item = b.weapon ? new Weapon(null, b) : new Item(b);
                     return a + item.sell();
                 }, 0);
-                lines.push(`• An inventory worth ${assets.toLocaleString('en-US')} GBPs`);
+                lines.push(`• An inventory worth ${commify(assets)} GBPs`);
             }
 
             //loan
             if (data.Loan) {
-                lines.push(`• *${data.Loan.toLocaleString('en-US')} GBPs in loans*`);
+                lines.push(`• *${commify(data.Loan)} GBPs in loans*`);
             }
         }
 
@@ -89,7 +90,7 @@ export default {
 
         //renown
         if (attribute === 'renown' || all) {
-            lines.push(`• Gone on ${data.Renown.toLocaleString('en-US')} quests`);
+            lines.push(`• Gone on ${commify(data.Renown)} quests`);
         }
 
         //lvl + xp
@@ -101,7 +102,7 @@ export default {
             else {
                 const delta = xpTable[data.Lvl] - xpTable[data.Lvl - 1];
                 const surplus = data.XP - xpTable[data.Lvl - 1];
-                    xp +=  ` with ${surplus.toLocaleString('en-US')}/${delta.toLocaleString('en-US')} xp (${(100 * surplus / delta).toFixed(0)}%) towards the next!`;
+                    xp +=  ` with ${commify(surplus)}/${commify(delta)} xp (${(100 * surplus / delta).toFixed(0)}%) towards the next!`;
             }
             lines.push(xp);
         }

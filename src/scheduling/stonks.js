@@ -1,4 +1,5 @@
 import QuickChart from 'quickchart-js';
+import { commify } from '../utils/commify.js';
 import { getCoinData } from '../data/getCoinData.js';
 import { updateData } from '../data/updateData.js';
 import { getNetWorth } from '../gbp/getNetWorth.js';
@@ -114,7 +115,7 @@ async function post(client, coinData) {
             },
             title: {
                 display: true,
-                text: `1 NNC = ${current.toLocaleString('en-US')} GBPs`,
+                text: `1 NNC = ${commify(current)} GBPs`,
                 fontColor: color,
                 fontSize: 20
             },
