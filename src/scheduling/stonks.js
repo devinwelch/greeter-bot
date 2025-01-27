@@ -138,5 +138,5 @@ async function post(client, coinData) {
                 process.on('unhandledRejection', () => {});
             });
         });
-        exchange.send({ content: `${discriminator} ${delta >= 0 ? '+' : ''}${delta}`, files: [await chart.toBinary()] });
+        exchange.send({ content: `${discriminator} ${delta >= 0 ? '+' : ''}${commify(delta)}`, files: [await chart.toBinary()] });
 }
