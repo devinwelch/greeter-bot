@@ -20,12 +20,12 @@ export default {
         leaderboard.push('**Good boys**');
         leaderboard.push('```');
         for(let i = 0; i < amount; i++)
-            leaderboard.push(`${i + 1}. ${ranked[i].Username} (${commify(ranked[i])} GBPs)`);
+            leaderboard.push(`${i + 1}. ${ranked[i].Username} (${commify(ranked[i].Worth)} GBPs)`);
         leaderboard.push('```');
         leaderboard.push('**Bad boys**');
         leaderboard.push('```');
         for(let i = amount; i > 0; i--)
-            leaderboard.push(`${l - i + 1}. ${ranked[l - i].Username} (${commify(ranked[l - i])} GBPs)`);
+            leaderboard.push(`${l - i + 1}. ${ranked[l - i].Username} (${commify(ranked[l - i].Worth)} GBPs)`);
         leaderboard.push('```');
 
         if (ranked.some(e => e.UserID === interaction.user.id)) {
