@@ -52,24 +52,24 @@ function getChips(client) {
         .addComponents([
             getChipButton(client, 500),
             getChipButton(client, 1000),
-            getPlainButton('5K', 5000),
-            getPlainButton('10K', 10000),
-            getPlainButton('50K', 50000),
+            getPlainButton('10 MILLY', 10000000),
+            getPlainButton('100 MILLY', 100000000),
+            getPlainButton('1 BILLY', 1000000000),
         ]);
     const row3 = new MessageActionRow()
         .addComponents([
-            getPlainButton('100K', 100000),
-            getPlainButton('500K', 500000),
-            getPlainButton('1M', 1000000),
-            getPlainButton('10M', 10000000),
-            getPlainButton('100M', 100000000)
+            getPlainButton('10 BILLY', 10000000000),
+            getPlainButton('100 BILLY', 100000000000),
+            getPlainButton('1 TRILLY', 1000000000000),
+            getPlainButton('10 TRILLY', 10000000000000),
+            getPlainButton('100 TRILLY', 100000000000000)
         ]);
 
     const row4 = new MessageActionRow()
         .addComponents([
-            getPlainButton('1B', 1000000000),
-            getPlainButton('1TRILLY', 1000000000000),
-            getPlainButton('10TRILLY', 10000000000000),
+            getPlainButton('1 QUADRILLY', 1000000000000000),
+            getPlainButton('10 QUADRILLY', 10000000000000000),
+            getPlainButton('100 QUADRILLY', 100000000000000000),
             new MessageButton()
                 .setLabel('Clear')
                 .setStyle('DANGER')
