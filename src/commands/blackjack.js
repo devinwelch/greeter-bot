@@ -52,24 +52,24 @@ function getChips(client) {
         .addComponents([
             getChipButton(client, 500),
             getChipButton(client, 1000),
-            getPlainButton('10 MILLY', 10000000),
-            getPlainButton('100 MILLY', 100000000),
-            getPlainButton('1 BILLY', 1000000000),
+            getPlainButton('MILLY', 1000000),
+            getPlainButton('BILLY', 1000000000),
+            getPlainButton('TRILLY', 1000000000000),
         ]);
     const row3 = new MessageActionRow()
         .addComponents([
-            getPlainButton('10 BILLY', 10000000000),
-            getPlainButton('100 BILLY', 100000000000),
-            getPlainButton('1 TRILLY', 1000000000000),
-            getPlainButton('10 TRILLY', 10000000000000),
-            getPlainButton('100 TRILLY', 100000000000000)
+            getPlainButton('QUADRILLY', 1000000000000000),
+            getPlainButton('PENTILLY', 1000000000000000000),
+            getPlainButton('SEXTILLY', 1000000000000000000000),
+            getPlainButton('SEPTILLY', 1000000000000000000000000),
+            getPlainButton('OCTILLY', 1000000000000000000000000000)
         ]);
 
     const row4 = new MessageActionRow()
         .addComponents([
-            getPlainButton('1 QUADRILLY', 1000000000000000),
-            getPlainButton('10 QUADRILLY', 10000000000000000),
-            getPlainButton('100 QUADRILLY', 100000000000000000),
+            getPlainButton('NONILLY', 1000000000000000000000000000000),
+            getPlainButton('DECILLY', 1000000000000000000000000000000000),
+            getPlainButton('GET SILLY', 1000000000000000000000000000000000000000000),
             new MessageButton()
                 .setLabel('Clear')
                 .setStyle('DANGER')
