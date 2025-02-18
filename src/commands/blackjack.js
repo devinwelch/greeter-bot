@@ -69,7 +69,7 @@ function getChips(client) {
         .addComponents([
             getPlainButton('NONILLY', 1000000000000000000000000000000),
             getPlainButton('DECILLY', 1000000000000000000000000000000000),
-            getPlainButton('GET SILLY', 1000000000000000000000000000000000000000000),
+            getPlainButton('GET SILLY', 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000),
             new MessageButton()
                 .setLabel('Clear')
                 .setStyle('DANGER')
