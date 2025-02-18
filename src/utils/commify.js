@@ -5,58 +5,58 @@
  */
 
 export function commify(number) {
-    const numberString = String(number);
+    const abs = Math.abs(number);
 
-    if (number >= 1000000000000000000000000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Vigintillion`;
+    if (abs >= Math.pow(10,63)) {
+        return `${(number / Math.pow(10,63)).toFixed(3)} Vigintillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Novemdecillion`;
+    else if (abs >= Math.pow(10,60)) {
+        return `${(number / Math.pow(10,60)).toFixed(3)} Novemdecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Octodecillion`;
+    else if (abs >= Math.pow(10,57)) {
+        return `${(number / Math.pow(10,57)).toFixed(3)} Octodecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Septendecillion`;
+    else if (abs >= Math.pow(10,54)) {
+        return `${(number / Math.pow(10,54)).toFixed(3)} Septendecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Sexdecillion 🥵`;
+    else if (abs >= Math.pow(10,51)) {
+        return `${(number / Math.pow(10,41)).toFixed(3)} Sexdecillion 🥵`;
     }
-    else if (number >= 1000000000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Quindecillion`;
+    else if (abs >= Math.pow(10,48)) {
+        return `${(number / Math.pow(10,48)).toFixed(3)} Quindecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Quattordecillion`;
+    else if (abs >= Math.pow(10,45)) {
+        return `${(number / Math.pow(10,45)).toFixed(3)} Quattordecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Tredecillion`;
+    else if (abs >= Math.pow(10,42)) {
+        return `${(number / Math.pow(10,42)).toFixed(3)} Tredecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Duodecillion`;
+    else if (abs >= Math.pow(10,39)) {
+        return `${(number / Math.pow(10,39)).toFixed(3)} Duodecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Undecillion`;
+    else if (abs >= Math.pow(10,36)) {
+        return `${(number / Math.pow(10,36)).toFixed(3)} Undecillion`;
     }
-    else if (number >= 1000000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Decillion`;
+    else if (abs >= Math.pow(10,33)) {
+        return `${(number / Math.pow(10,33)).toFixed(3)} Decillion`;
     }
-    else if (number >= 1000000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Nonillion`;
+    else if (abs >= Math.pow(10,30)) {
+        return `${(number / Math.pow(10,30)).toFixed(3)} Nonillion`;
     }
-    else if (number >= 1000000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Octillion`;
+    else if (abs >= Math.pow(10,27)) {
+        return `${(number / Math.pow(10,27)).toFixed(3)} Octillion`;
     }
-    else if (number >= 1000000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Septillion`;
+    else if (abs >= Math.pow(10,24)) {
+        return `${(number / Math.pow(10,24)).toFixed(3)} Septillion`;
     }
-    else if (number >= 1000000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Sextillion 🤤`;
+    else if (abs >= Math.pow(10,21)) {
+        return `${(number / Math.pow(10,21)).toFixed(3)} Sextillion 🤤`;
     }
-    else if (number >= 1000000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Quintillion`;
+    else if (abs >= Math.pow(10,18)) {
+        return `${(number / Math.pow(10,18)).toFixed(3)} Quintillion`;
     }
-    else if (number >= 1000000000000000) {
-        return `${numberString.substring(0,1)}.${numberString.substring(2,5)} Quadrillion`;
+    else if (abs >= Math.pow(10,15)) {
+        return `${(number / Math.pow(10,15)).toFixed(3)} Quadrillion`;
     }  
 
     return number.toLocaleString('en-US');

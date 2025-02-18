@@ -1,4 +1,5 @@
 import { updateData } from '../data/updateData.js';
+import { commify } from '../utils/commify.js';
 
 /**
  * Collect loans from all users with interest
@@ -12,7 +13,7 @@ export function collectLoans(client, db) {
                 updateData(db, user, { gbps: -d.Loan, loan: 0 });
                 updateData(db, client.user, { gbps: d.Loan });
 
-                client.channels.cache.get(client.ids.channels.botchat).send(`Reclaimed ${d.Loan} GBPs from ${user}`);
+                client.channels.cache.get(client.ids.channels.botchat).send(`Reclaimed ${commify(d.Loan)} GBPs from ${user}`);
             });    
         });
     });

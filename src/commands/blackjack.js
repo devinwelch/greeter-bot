@@ -1,5 +1,6 @@
 import { delay } from '../utils/delay.js';
 import { getData } from '../data/getData.js';
+import { commify } from '../utils/commify.js';
 import { Deck } from '../casino/classes/deck.js';
 import { updateData } from '../data/updateData.js';
 import { databaseError } from '../utils/databaseError.js';
@@ -213,7 +214,7 @@ async function takeBets(db, interaction, directions) {
 
         const text = [directions];
         Object.values(bets).forEach(bet =>
-            text.push(`${bet.name}: ${bet.amount.toLocaleString('en-US')}/${bet.total.toLocaleString('en-US')} ${bet.ready ? '✅' : ''}`
+            text.push(`${bet.name}: ${commify(bet.amount)}/${commify(bet.total)} ${bet.ready ? '✅' : ''}`
         ));
 
         const parameters = { content: text.join('\n') };
@@ -275,7 +276,7 @@ async function display(client, interaction, game, over=false) {
     const players = game.players.concat(game.house);
     players.forEach(p => {
         text.push([
-            `**${players[game.turn] === p ? p.user : p.user.username}** ${p.bet ? `(${p.bet.toLocaleString('en-US')} GBPs)` : ''}`,
+            `**${players[game.turn] === p ? p.user : p.user.username}** ${p.bet ? `(${commify(p.bet)} GBPs)` : ''}`,
             p.hand.map(card => card.top(client)).join('\t'),
             p.hand.map(card => card.bot(client)).join('\t'),
             ' '
@@ -317,7 +318,7 @@ async function assess(client, db, interaction, game) {
             else {
                 updateData(db, p.user, { gbps: -p.bet });
                 updateData(db, client.user, { gbps: p.bet });
-                p.bet = `-${p.bet.toLocaleString('en-US')}`;
+                p.bet = `-${commify(p.bet)}`;
             }
             p.finished = true;
         });
@@ -328,7 +329,7 @@ async function assess(client, db, interaction, game) {
                 const win = Math.round(1.5 * p.bet);
                 updateData(db, p.user, { gbps: win });
                 updateData(db, client.user, { gbps: -win });
-                p.bet = `+${win.toLocaleString('en-US')}`;
+                p.bet = `+${commify(win)}`;
                 p.finished = true;
             }
         });
@@ -461,7 +462,7 @@ async function getResults(client, db, interaction, game) {
         if (player > 21 || (house > player && house <= 21)) {
             win += p.bet;
             updateData(db, p.user, { gbps: -p.bet });
-            p.bet = `-${p.bet.toLocaleString('en-US')}`;
+            p.bet = `-${commify(p.bet)}`;
         }
         else if (player === house) {
             p.bet = '±0';
@@ -469,7 +470,7 @@ async function getResults(client, db, interaction, game) {
         else {
             win -= p.bet;
             updateData(db, p.user, { gbps: p.bet });
-            p.bet = `+${p.bet.toLocaleString('en-US')}`;
+            p.bet = `+${commify(p.bet)}`;
         }
     });
 
