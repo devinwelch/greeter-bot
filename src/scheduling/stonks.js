@@ -23,10 +23,10 @@ export async function stonks(client, db) {
     const iterations = 3, divider = 3;
     let delta = 0;
     for (let i = 0; i < iterations; i++) {
-        delta += getRandom(/*-2*/0 * divider, 20 * divider);
+        delta += getRandom(-19 * divider, 20 * divider);
     }
     delta = 1 + delta / divider / iterations / 100;
-    data.push(Math.ceil(current * delta));
+    data.push(Math.floor(current * delta));
 
     //slice array to keep db small
     const newValues = data.slice(Math.max(0, data.length - 50));
